@@ -1,0 +1,11 @@
+{
+  "name": "Slate — Motty Berkowitz Productions",
+  "short_name": "Slate",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F5F2EC",
+  "theme_color": "#1B1A22",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
