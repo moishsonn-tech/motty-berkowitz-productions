@@ -300,6 +300,26 @@ a{color:inherit}
 .cs-crew-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:13px}
 .cs-actions{display:flex;gap:10px;padding:16px 24px;border-top:1px solid var(--line);background:var(--surface-2)}
 
+/* ── Invoicing ───────────────────────────────────────────────────────────── */
+.inv-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.inv-stat{padding:16px 18px}
+.inv-stat .val{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:4px}
+.inv-item-row{display:grid;grid-template-columns:1fr 130px 32px;gap:10px;align-items:center;margin-bottom:8px}
+.inv-item-row .inp{font-size:13px}
+.inv-item-amt{text-align:right;font-family:var(--mono)}
+.inv-remove{width:28px;height:28px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-3)}
+.inv-remove:hover{background:var(--bad-wash);color:var(--bad);border-color:transparent}
+.inv-totals{border-top:1px solid var(--line);margin-top:8px;padding-top:12px;display:flex;flex-direction:column;gap:6px}
+.inv-total-row{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-2)}
+.inv-total-row.grand{font-size:15px;font-weight:800;color:var(--ink);padding-top:6px;border-top:1px solid var(--line-2)}
+.inv-total-row .mono{font-variant-numeric:tabular-nums}
+.inv-pay-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;
+  border-bottom:1px solid var(--line-2)}
+.inv-pay-row:last-child{border-bottom:none}
+.inv-pay-check{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px}
+.inv-pay-check input{width:17px;height:17px;accent-color:var(--good)}
+
 /* ── Modal / bottom sheet ───────────────────────────────────────────────── */
 .overlay{position:fixed;inset:0;background:rgba(20,18,10,.45);display:flex;align-items:center;justify-content:center;
   z-index:200;padding:20px}
@@ -403,6 +423,9 @@ const I = {
   more:'<svg class="ico" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>',
   print:'<svg class="ico" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="4" y="9" width="16" height="8" rx="1"/><path d="M6 17v4h12v-4"/></svg>',
   chevR:'<svg class="ico" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
+  sync:'<svg class="ico" viewBox="0 0 24 24"><path d="M20 11A8 8 0 0 0 6.3 6.3L4 8.6M4 13a8 8 0 0 0 13.7 4.7L20 15.4"/><path d="M4 4v4.6h4.6M20 20v-4.6h-4.6"/></svg>',
+  invoice:'<svg class="ico" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>',
+  trash:'<svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
 };
 const logoMark = '<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#F0B429"/><clipPath id="cl"><rect x="8" y="9" width="48" height="12" rx="3"/></clipPath><g clip-path="url(#cl)"><rect x="8" y="9" width="48" height="12" fill="#1A1814"/><g fill="#F0B429"><polygon points="15,9 21,9 13,21 7,21"/><polygon points="27,9 33,9 25,21 19,21"/><polygon points="39,9 45,9 37,21 31,21"/><polygon points="51,9 57,9 49,21 43,21"/></g></g><rect x="8" y="25" width="48" height="30" rx="3" fill="none" stroke="#1A1814" stroke-width="3"/></svg>';
 
@@ -445,7 +468,15 @@ let PROJECTS = [
      {id:'s1',heading:'Chuppah — processional & ceremony',desc:'Wide establishing of the hall, guests seated, processional down the aisle, close on the couple under the chuppah.',locId:'l1'},
      {id:'s2',heading:'First look & portraits',desc:'Close-up hands, ring exchange detail, wide couple portraits near the entrance garden.',locId:'l1'},
      {id:'s3',heading:'Reception — first dance',desc:'Wide of the dance floor, tracking shot following the couple, crowd reactions handheld.',locId:'l1'},
-   ]},
+   ],
+   invoice:{number:'INV-1041',status:'sent',issueDate:'2026-07-20',dueDate:'2026-08-14',depositPct:50,depositPaid:true,balancePaid:false,
+     items:[
+       {id:'i1',desc:'Wedding Package — Creative & Production Fee',amount:1900},
+       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850},
+       {id:'i3',desc:'Gaffer (Dovid Stern)',amount:500},
+       {id:'i4',desc:'Sound Mixer (Chaim Weiss)',amount:450},
+       {id:'i5',desc:'2nd Camera (Ruchy Green)',amount:500},
+     ]}},
   {id:'p2',name:'Rising — Music Video',client:'Shloime Gold',type:'Music Video',stage:'pre',
    shootDate:'2026-08-22',callTime:'5:30 AM',wrapTime:'8:00 PM',budget:'$6,500',
    crew:['c1','c7','c2','c5'],locationIds:['l6','l2','l3'],
@@ -456,20 +487,42 @@ let PROJECTS = [
      {id:'s6',heading:'Into the park',desc:'Walking through the park at golden hour, a crowd of dancers gradually joins him as the chorus builds.',locId:'l2'},
      {id:'s7',heading:'The lift',desc:'Aerial drone pull-back over the full crowd in the park as the chorus hits its peak.',locId:'l2'},
      {id:'s8',heading:'Closing — sunrise to sunset',desc:'Back on the rooftop, wide shot, time-lapse feel from sunrise to sunset as the track resolves.',locId:'l6'},
-   ]},
+   ],
+   invoice:{number:'INV-1042',status:'draft',issueDate:'2026-08-04',dueDate:'2026-08-22',depositPct:50,depositPaid:false,balancePaid:false,
+     items:[
+       {id:'i1',desc:'Music Video Package — Creative & Production Fee',amount:4150},
+       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850},
+       {id:'i3',desc:'Drone Operator (Levi Adler)',amount:600},
+       {id:'i4',desc:'Gaffer (Dovid Stern)',amount:500},
+       {id:'i5',desc:'Editor (Aidy Rosen)',amount:400},
+     ]}},
   {id:'p3',name:'Landers Corporate Brand Reel',client:'Landers College',type:'Corporate',stage:'post',
    shootDate:'2026-07-30',callTime:'9:00 AM',wrapTime:'4:00 PM',budget:'$3,000',
    crew:['c1','c3','c8'],locationIds:['l5'],
    scenes:[
      {id:'s9',heading:'Campus establishing',desc:'Wide establishing shots of the lobby and campus walk-and-talk with the dean.',locId:'l5'},
      {id:'s10',heading:'Student interviews',desc:'Close-up interview setups with three students, natural light near the lobby windows.',locId:'l5'},
-   ]},
+   ],
+   invoice:{number:'INV-1039',status:'paid',issueDate:'2026-07-15',dueDate:'2026-07-30',depositPct:50,depositPaid:true,balancePaid:true,
+     items:[
+       {id:'i1',desc:'Corporate Brand Reel — Creative & Production Fee',amount:1400},
+       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850},
+       {id:'i3',desc:'Sound Mixer (Chaim Weiss)',amount:450},
+       {id:'i4',desc:'Producer / PA (Baila Fried)',amount:300},
+     ]}},
   {id:'p4',name:'Berger Bar Mitzvah Highlight',client:'The Berger Family',type:'Bar Mitzvah',stage:'inquiry',
    shootDate:'2026-09-10',callTime:'10:00 AM',wrapTime:'6:00 PM',budget:'$2,800',
-   crew:[],locationIds:['l1'],scenes:[]},
+   crew:[],locationIds:['l1'],scenes:[],
+   invoice:{number:'INV-1043',status:'draft',issueDate:'2026-08-04',dueDate:'2026-09-10',depositPct:50,depositPaid:false,balancePaid:false,
+     items:[{id:'i1',desc:'Bar Mitzvah Package — Creative & Production Fee',amount:2800}]}},
   {id:'p5',name:'Community Chanuka Gala Recap',client:'Community Board',type:'Event',stage:'delivered',
    shootDate:'2026-06-01',callTime:'6:00 PM',wrapTime:'10:00 PM',budget:'$1,900',
-   crew:['c11'],locationIds:['l1'],scenes:[]},
+   crew:['c11'],locationIds:['l1'],scenes:[],
+   invoice:{number:'INV-1038',status:'paid',issueDate:'2026-05-20',dueDate:'2026-06-01',depositPct:50,depositPaid:true,balancePaid:true,
+     items:[
+       {id:'i1',desc:'Event Recap Package — Creative & Production Fee',amount:1650},
+       {id:'i2',desc:'PA (Mendy Katz)',amount:250},
+     ]}},
 ];
 // Pre-light day for the music video happens to land on the wedding date — deliberate conflict for the schedule demo.
 let EXTRA_EVENTS = [
@@ -517,6 +570,37 @@ function shotsForProject(p){
     });
   });
   return rows;
+}
+
+/* ── invoicing ────────────────────────────────────────────────────────────── */
+function parseMoney(s){return Number(String(s==null?'':s).replace(/[^0-9.\-]/g,''))||0}
+function fmtMoney(n){return '$'+Math.round(n).toLocaleString('en-US')}
+function defaultInvoice(p){
+  const items=p.crew.map(cid=>{const c=contact(cid);const rate=parseMoney(c.rate);
+    return rate?{id:'ci-'+c.id,desc:c.role+' ('+c.name+')',amount:rate}:null}).filter(Boolean);
+  const crewSum=items.reduce((s,i)=>s+i.amount,0);
+  const budgetNum=parseMoney(p.budget);
+  const fee=Math.max(budgetNum-crewSum, budgetNum?Math.round(budgetNum*0.3):500);
+  items.unshift({id:'ci-fee',desc:p.type+' Package — Creative & Production Fee',amount:fee});
+  return {number:'INV-'+(1044+PROJECTS.indexOf(p)),status:'draft',issueDate:new Date().toISOString().slice(0,10),
+    dueDate:p.shootDate,depositPct:50,depositPaid:false,balancePaid:false,items};
+}
+function getInvoice(p){ if(!p.invoice) p.invoice=defaultInvoice(p); return p.invoice; }
+function invoiceTotal(inv){ return inv.items.reduce((s,i)=>s+i.amount,0); }
+function invoicePaidToDate(inv){
+  const total=invoiceTotal(inv);
+  if(inv.balancePaid) return total;
+  if(inv.depositPaid) return Math.round(total*inv.depositPct/100);
+  return 0;
+}
+function invoiceStatusLabel(inv){
+  if(inv.balancePaid) return 'Paid';
+  if(inv.status==='sent') return 'Sent';
+  return 'Draft';
+}
+function invoiceStatusBadge(inv){
+  const label=invoiceStatusLabel(inv);
+  return {Paid:'badge-good',Sent:'badge-warn',Draft:'badge-neutral'}[label];
 }
 
 /* ── schedule + conflict detection ───────────────────────────────────────── */
@@ -605,6 +689,14 @@ function nextSteps(){
     if((p.stage==='pre'||p.stage==='production') && (p.type==='Music Video'||p.type==='Wedding') && p.scenes.length===0){
       steps.push({icon:I.film,text:`Build the storyline for <b>${esc(p.name)}</b> to generate its shot list`,id:p.id,tab:'storyline'});
     }
+    if(p.invoice){
+      const inv=p.invoice, outstanding=invoiceTotal(inv)-invoicePaidToDate(inv);
+      if(p.stage!=='inquiry' && invoiceStatusLabel(inv)==='Draft'){
+        steps.push({icon:I.invoice,text:`Send the invoice for <b>${esc(p.name)}</b>`,id:p.id,tab:'financials'});
+      } else if(p.stage==='production' && outstanding>0){
+        steps.push({icon:I.invoice,text:`Collect the outstanding balance (${fmtMoney(outstanding)}) for <b>${esc(p.name)}</b>`,id:p.id,tab:'financials'});
+      }
+    }
   });
   return steps;
 }
@@ -685,7 +777,7 @@ function projectCard(p){
 }
 
 /* ── Project detail ──────────────────────────────────────────────────── */
-const PTABS = [['overview','Overview'],['storyline','Storyline'],['shotlist','Shot List'],['locations','Locations'],['crew','Cast & Crew'],['callsheet','Call Sheet']];
+const PTABS = [['overview','Overview'],['storyline','Storyline'],['shotlist','Shot List'],['locations','Locations'],['crew','Cast & Crew'],['financials','Financials'],['callsheet','Call Sheet']];
 function viewProject(){
   const p=project(S.projectId); if(!p) return `<div class="empty">Project not found.</div>`;
   return `
@@ -814,6 +906,56 @@ function tabCrew(p){
     <div class="chip-row">${avail.map(c=>`<span class="chip" data-action="addCrew" data-id="${p.id}" data-cid="${c.id}">${I.plus} ${esc(c.name)} — ${esc(c.role)}</span>`).join('')||'Everyone in the directory is already assigned.'}</div>
   </div>`;
 }
+function tabFinancials(p){
+  const inv=getInvoice(p);
+  const total=invoiceTotal(inv);
+  const paid=invoicePaidToDate(inv);
+  const outstanding=total-paid;
+  const depositAmt=Math.round(total*inv.depositPct/100);
+  const balanceAmt=total-depositAmt;
+  return `
+  <div class="inv-summary">
+    <div class="card inv-stat"><span class="stat-label">Invoice Total</span><span class="val">${fmtMoney(total)}</span></div>
+    <div class="card inv-stat"><span class="stat-label">Paid to Date</span><span class="val" style="color:var(--good)">${fmtMoney(paid)}</span></div>
+    <div class="card inv-stat"><span class="stat-label">Outstanding</span><span class="val" style="color:${outstanding>0?'var(--bad)':'var(--ink)'}">${fmtMoney(outstanding)}</span></div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div class="stat-label">${esc(inv.number)}</div>
+        <div style="font-size:15px;font-weight:700;margin-top:2px">Issued ${fmtDate(inv.issueDate)} · Due ${fmtDate(inv.dueDate)}</div>
+      </div>
+      <span class="badge ${invoiceStatusBadge(inv)}">${invoiceStatusLabel(inv)}</span>
+    </div>
+    <div class="stat-label" style="margin-bottom:10px">Line items</div>
+    ${inv.items.map(it=>`<div class="inv-item-row">
+      <input class="inp" value="${esc(it.desc)}" data-action="editInvoiceItem" data-id="${p.id}" data-item="${it.id}" data-field="desc">
+      <input class="inp inv-item-amt" type="number" value="${it.amount}" data-action="editInvoiceItem" data-id="${p.id}" data-item="${it.id}" data-field="amount">
+      <button class="inv-remove" data-action="removeInvoiceItem" data-id="${p.id}" data-item="${it.id}">${I.trash}</button>
+    </div>`).join('')}
+    <button class="btn btn-sm btn-ghost" data-action="addInvoiceItem" data-id="${p.id}">${I.plus} Add Line Item</button>
+    <div class="inv-totals">
+      <div class="inv-total-row grand"><span>Total</span><span class="mono">${fmtMoney(total)}</span></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="stat-label" style="margin-bottom:6px">Payments</div>
+    <div class="inv-pay-row">
+      <label class="inv-pay-check"><input type="checkbox" ${inv.depositPaid?'checked':''} data-action="toggleDeposit" data-id="${p.id}">
+        Deposit received — ${inv.depositPct}% (${fmtMoney(depositAmt)})</label>
+    </div>
+    <div class="inv-pay-row">
+      <label class="inv-pay-check"><input type="checkbox" ${inv.balancePaid?'checked':''} data-action="toggleBalance" data-id="${p.id}">
+        Balance received (${fmtMoney(balanceAmt)})</label>
+    </div>
+  </div>
+  <div class="cs-actions" style="border:1px solid var(--line);border-radius:var(--r-lg);margin-top:14px">
+    <button class="btn btn-primary" data-action="sendInvoice" data-id="${p.id}">${I.mail} Send Invoice</button>
+    <button class="btn btn-ghost" data-action="syncQuickbooks" data-id="${p.id}">${I.sync} Sync to QuickBooks</button>
+    <button class="btn btn-subtle" data-action="printCallsheet">${I.print} Print / PDF</button>
+  </div>
+  `;
+}
 function tabCallsheet(p){
   const l=getLoc(p.locationIds[0]); const crew=p.crew.map(contact).filter(Boolean);
   return `<div class="callsheet">
@@ -845,7 +987,7 @@ function tabCallsheet(p){
     </div>
   </div>`;
 }
-const TABS = {overview:tabOverview,storyline:tabStoryline,shotlist:tabShotlist,locations:tabLocations,crew:tabCrew,callsheet:tabCallsheet};
+const TABS = {overview:tabOverview,storyline:tabStoryline,shotlist:tabShotlist,locations:tabLocations,crew:tabCrew,financials:tabFinancials,callsheet:tabCallsheet};
 
 /* ── Locations directory ─────────────────────────────────────────────── */
 function viewLocations(){
@@ -984,6 +1126,16 @@ const ACTIONS = {
   addCrew:(el)=>{project(el.dataset.id).crew.push(el.dataset.cid);render()},
   sendCallsheet:(el)=>{showToast((el.dataset.via==='email'?'Email':'WhatsApp')+' send needs the backend proxy wired up — see INTEGRATIONS.md')},
   printCallsheet:()=>{window.print()},
+  addInvoiceItem:(el)=>{const inv=getInvoice(project(el.dataset.id));
+    inv.items.push({id:'ci-'+Date.now(),desc:'New line item',amount:0});render()},
+  removeInvoiceItem:(el)=>{const inv=getInvoice(project(el.dataset.id));
+    inv.items=inv.items.filter(i=>i.id!==el.dataset.item);render()},
+  toggleDeposit:(el)=>{getInvoice(project(el.dataset.id)).depositPaid=el.checked;render()},
+  toggleBalance:(el)=>{const inv=getInvoice(project(el.dataset.id));inv.balancePaid=el.checked;
+    if(el.checked)inv.status='sent';render()},
+  sendInvoice:(el)=>{const inv=getInvoice(project(el.dataset.id));inv.status='sent';render();
+    showToast('Invoice marked sent — connect an email relay in the backend proxy to actually deliver it (see INTEGRATIONS.md)')},
+  syncQuickbooks:()=>{showToast('Connect a QuickBooks account to sync invoices — needs QuickBooks OAuth wired up in the backend proxy')},
   openModal:(el)=>{S.modal=el.dataset.modal;render()},
   closeModal:()=>{S.modal=null;render()},
   newProject:()=>{S.modal='project';render()},
@@ -1023,6 +1175,13 @@ document.addEventListener('input',e=>{
     sc[el.dataset.field]=el.value;
     if(el.dataset.field==='locId')render();
   }
+  if(el.dataset.action==='editInvoiceItem'){
+    const inv=getInvoice(project(el.dataset.id)); const it=inv.items.find(i=>i.id===el.dataset.item);
+    it[el.dataset.field]=el.dataset.field==='amount'?parseMoney(el.value):el.value;
+  }
+});
+document.addEventListener('change',e=>{
+  if(e.target.dataset.action==='editInvoiceItem')render();
 });
 
 /* ── Opener: the logo draws itself on first load each session ─────────────── */
