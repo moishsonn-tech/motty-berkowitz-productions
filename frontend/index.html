@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Slate — Motty Berkowitz Productions</title>
+<title>Motty Berkowitz Video Production</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
 /* ── Tokens ──────────────────────────────────────────────────────────────── */
 :root{
-  --accent:#C8862E; --accent-dark:#A66E20; --accent-wash:rgba(200,134,46,.13); --accent-ink:#2A1B04;
+  --accent:#F0B429; --accent-dark:#C4900E; --accent-wash:rgba(240,180,41,.14); --accent-ink:#241A02;
   --bg:#F5F2EC; --surface:#FFFFFF; --surface-2:#EEEAE1;
-  --sb-bg:#1B1A22; --sb-ink:#EFEDE8; --sb-mut:#8E8B97; --sb-line:rgba(255,255,255,.08); --sb-active-ink:#2A1B04;
+  --sb-bg:#1A1814; --sb-ink:#EFEDE8; --sb-mut:#948F86; --sb-line:rgba(255,255,255,.08); --sb-active-ink:#241A02;
   --ink:#201E26; --ink-2:#5B5867; --ink-3:#8B8894; --ink-4:#C7C4CC;
   --line:#E4E0D6; --line-2:#EEEBE3;
   --good:#3E8F63; --good-wash:rgba(62,143,99,.13);
@@ -312,6 +312,40 @@ a{color:inherit}
   display:flex;align-items:center;gap:8px}
 .toast .ico{width:15px;height:15px;color:var(--accent)}
 
+/* ── Opener ──────────────────────────────────────────────────────────────── */
+.opener{position:fixed;inset:0;background:#1A1814;z-index:9999;display:flex;align-items:center;
+  justify-content:center;cursor:pointer}
+.opener.lift{animation:mb-lift .85s cubic-bezier(.76,0,.24,1) forwards}
+.opener-inner{position:relative;display:flex;flex-direction:column;align-items:center;gap:16px}
+.opener-mark-wrap{position:relative;display:inline-flex;
+  animation:mb-pulse .6s cubic-bezier(.34,1.56,.64,1) 1.6s both}
+.opener-mark{width:150px;height:auto;overflow:visible;display:block}
+.opener-mark path{fill:none;stroke:#F0B429;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:100;stroke-dashoffset:100;animation:mb-draw 1.5s cubic-bezier(.65,0,.35,1) .2s forwards}
+.opener-ring{position:absolute;top:50%;left:50%;width:170px;height:170px;margin:-85px 0 0 -85px;
+  border:1.5px solid #F0B429;border-radius:50%;opacity:0;animation:mb-ring 1s ease-out forwards}
+.opener-ring.r1{animation-delay:1.6s}
+.opener-ring.r2{animation-delay:1.78s}
+.opener-word{opacity:0;text-align:center;animation:mb-fadeup .6s ease 1.9s forwards}
+.ow-name{font-family:var(--font);font-size:19px;font-weight:700;color:#F0B429;letter-spacing:-.01em}
+.ow-tag{font-family:var(--font);font-size:10.5px;font-weight:600;color:#B8A87E;letter-spacing:.28em;margin-top:5px}
+@keyframes mb-draw{to{stroke-dashoffset:0}}
+@keyframes mb-pulse{
+  0%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(240,180,41,0))}
+  40%{transform:scale(.95)}
+  70%{transform:scale(1.06);filter:drop-shadow(0 0 20px rgba(240,180,41,.6))}
+  100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(240,180,41,0))}
+}
+@keyframes mb-ring{0%{transform:scale(.3);opacity:.5}100%{transform:scale(2.3);opacity:0}}
+@keyframes mb-fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes mb-lift{to{transform:translateY(-100%)}}
+@media (prefers-reduced-motion:reduce){
+  .opener-mark path{animation:none;stroke-dashoffset:0}
+  .opener-mark-wrap{animation:none}
+  .opener-ring{display:none}
+  .opener-word{animation:none;opacity:1}
+}
+
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width:900px){
   .sidebar{position:fixed;left:0;top:0;z-index:150;transform:translateX(-100%);transition:transform .22s ease;
@@ -370,7 +404,7 @@ const I = {
   print:'<svg class="ico" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="4" y="9" width="16" height="8" rx="1"/><path d="M6 17v4h12v-4"/></svg>',
   chevR:'<svg class="ico" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
 };
-const logoMark = '<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#C8862E"/><clipPath id="cl"><rect x="8" y="9" width="48" height="12" rx="3"/></clipPath><g clip-path="url(#cl)"><rect x="8" y="9" width="48" height="12" fill="#1B1A22"/><g fill="#C8862E"><polygon points="15,9 21,9 13,21 7,21"/><polygon points="27,9 33,9 25,21 19,21"/><polygon points="39,9 45,9 37,21 31,21"/><polygon points="51,9 57,9 49,21 43,21"/></g></g><rect x="8" y="25" width="48" height="30" rx="3" fill="none" stroke="#1B1A22" stroke-width="3"/></svg>';
+const logoMark = '<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#F0B429"/><clipPath id="cl"><rect x="8" y="9" width="48" height="12" rx="3"/></clipPath><g clip-path="url(#cl)"><rect x="8" y="9" width="48" height="12" fill="#1A1814"/><g fill="#F0B429"><polygon points="15,9 21,9 13,21 7,21"/><polygon points="27,9 33,9 25,21 19,21"/><polygon points="39,9 45,9 37,21 31,21"/><polygon points="51,9 57,9 49,21 43,21"/></g></g><rect x="8" y="25" width="48" height="30" rx="3" fill="none" stroke="#1A1814" stroke-width="3"/></svg>';
 
 /* ══════════════════════════════ SEED DATA ══════════════════════════════ */
 const COLORS = {Wedding:'#C8862E','Music Video':'#4A6FA5',Corporate:'#3E8F63','Bar Mitzvah':'#8C5FB0',Event:'#C9622A'};
@@ -512,7 +546,7 @@ function render(){
     ${S.sidebarOpen?`<div class="sidebar-backdrop open" data-action="closeSidebar"></div>`:''}
     <aside class="sidebar ${S.sidebarOpen?'open':''}">
       <div class="brand">${logoMark.replace('<svg ','<svg style="width:30px;height:30px" ')}
-        <div><div class="brand-name">Slate</div><div class="brand-sub">Motty Berkowitz Productions</div></div></div>
+        <div><div class="brand-name">motty berkowitz</div><div class="brand-sub">video production</div></div></div>
       <nav class="nav">
         ${navItem('dashboard',I.dash,'Dashboard')}
         ${navItem('boards',I.boards,'Boards')}
@@ -521,7 +555,7 @@ function render(){
         ${navItem('locations',I.pin,'Locations')}
         ${navItem('contacts',I.users,'Cast &amp; Crew')}
       </nav>
-      <div class="sidebar-foot"><div class="sidebar-version">Slate v0.1 · prototype</div></div>
+      <div class="sidebar-foot"><div class="sidebar-version">v0.1 · prototype</div></div>
     </aside>
     <div class="shell-main">
       <div class="topbar">
@@ -991,7 +1025,46 @@ document.addEventListener('input',e=>{
   }
 });
 
+/* ── Opener: the logo draws itself on first load each session ─────────────── */
+function showOpener(){
+  if(sessionStorage.getItem('mb-opener-seen'))return;
+  sessionStorage.setItem('mb-opener-seen','1');
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const el=document.createElement('div');
+  el.className='opener';
+  el.innerHTML=`<div class="opener-inner">
+    <span class="opener-ring r1"></span><span class="opener-ring r2"></span>
+    <span class="opener-mark-wrap"><svg class="opener-mark" viewBox="0 0 400 260">
+      <path pathLength="100" d="M 25,225 C 25,150 30,55 45,45 C 60,35 55,110 80,190 C 95,235 100,150 130,60
+        C 145,15 165,10 168,60 C 170,110 168,160 168,215 C 168,45 175,35 200,38 C 230,42 232,85 205,100
+        C 190,108 175,108 168,108 C 195,110 245,118 248,160 C 251,202 210,222 178,212 C 165,208 160,195 168,185
+        C 178,173 200,180 196,200 C 193,214 175,214 170,206"/>
+    </svg></span>
+    <div class="opener-word"><div class="ow-name">motty berkowitz</div><div class="ow-tag">video production</div></div>
+  </div>`;
+  document.body.appendChild(el);
+  let dismissed=false;
+  const dismiss=()=>{
+    if(dismissed)return; dismissed=true;
+    el.classList.add('lift');
+    el.addEventListener('animationend',()=>el.remove(),{once:true});
+    setTimeout(()=>el.remove(),1200);
+  };
+  el.addEventListener('click',dismiss);
+  document.addEventListener('keydown',function esc(e){
+    if(e.key==='Enter'||e.key==='Escape'){dismiss();document.removeEventListener('keydown',esc);}
+  });
+  setTimeout(dismiss,3000);
+  const freeze=new URLSearchParams(location.search).get('freeze');
+  if(freeze!=null){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      el.getAnimations({subtree:true}).forEach(a=>{a.pause();a.currentTime=Number(freeze);});
+    }));
+  }
+}
+
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+showOpener();
 render();
 </script>
 </body>
