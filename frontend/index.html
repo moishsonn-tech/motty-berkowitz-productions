@@ -140,6 +140,37 @@ a{color:inherit}
 .page-head h1{font-size:23px}
 .page-head p{color:var(--ink-2);font-size:13.5px;margin-top:3px}
 
+/* ── Dashboard ───────────────────────────────────────────────────────────── */
+.welcome-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.welcome-head svg{width:32px;height:32px;flex:none}
+.welcome-head h1{font-size:22px}
+.welcome-head .wdate{color:var(--ink-3);font-size:12.5px;font-weight:600;margin-top:1px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat-tile{cursor:pointer;transition:transform .15s,box-shadow .15s}
+.stat-tile:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.stat-tile.flagship{grid-column:span 2;background:var(--accent-wash);border-color:rgba(200,134,46,.35)}
+.stat-tile .val{display:block;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;
+  letter-spacing:-.01em;margin:5px 0 2px}
+.stat-tile.flagship .val{font-size:32px;color:var(--accent-dark)}
+.stat-tile .sub{font-size:11.5px;color:var(--ink-3)}
+.stat-tile.flag .val{color:var(--bad)}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:28px 0 12px}
+.section-head h2{font-size:16px}
+.step-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);
+  border-radius:var(--r-md);background:var(--surface);margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-sm)}
+.step-row .ico{width:16px;height:16px;color:var(--accent);flex:none}
+.step-row .step-text{flex:1;font-size:13px;color:var(--ink-2)}
+.step-row .step-text b{font-weight:700;color:var(--ink)}
+.oproj-row{display:flex;align-items:center;gap:14px;padding:13px 16px;border:1px solid var(--line);
+  border-radius:var(--r-md);background:var(--surface);margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-sm);
+  transition:transform .15s,box-shadow .15s}
+.oproj-row:hover{transform:translateY(-1px);box-shadow:var(--sh-md)}
+.oproj-name{font-weight:700;font-size:13.5px}
+.oproj-client{font-size:12px;color:var(--ink-3)}
+.oproj-date{font-size:12px;color:var(--ink-2);width:110px;flex:none}
+@media (max-width:900px){.stat-row{grid-template-columns:repeat(2,1fr)}.stat-tile.flagship{grid-column:span 2}
+  .oproj-date{width:auto}}
+
 /* ── Kanban ──────────────────────────────────────────────────────────────── */
 .board{display:grid;grid-template-columns:repeat(5,minmax(250px,1fr));gap:14px;align-items:start;overflow-x:auto}
 .col{background:var(--surface-2);border-radius:var(--r-lg);padding:12px;min-width:250px}
@@ -318,6 +349,7 @@ a{color:inherit}
 <script>
 /* ══════════════════════════════ ICONS ══════════════════════════════ */
 const I = {
+  dash:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>',
   boards:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="16" rx="2"/><rect x="14" y="4" width="7" height="10" rx="2"/></svg>',
   schedule:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
   pin:'<svg class="ico" viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>',
@@ -336,6 +368,7 @@ const I = {
   clock:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
   more:'<svg class="ico" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>',
   print:'<svg class="ico" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="4" y="9" width="16" height="8" rx="1"/><path d="M6 17v4h12v-4"/></svg>',
+  chevR:'<svg class="ico" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
 };
 const logoMark = '<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#C8862E"/><clipPath id="cl"><rect x="8" y="9" width="48" height="12" rx="3"/></clipPath><g clip-path="url(#cl)"><rect x="8" y="9" width="48" height="12" fill="#1B1A22"/><g fill="#C8862E"><polygon points="15,9 21,9 13,21 7,21"/><polygon points="27,9 33,9 25,21 19,21"/><polygon points="39,9 45,9 37,21 31,21"/><polygon points="51,9 57,9 49,21 43,21"/></g></g><rect x="8" y="25" width="48" height="30" rx="3" fill="none" stroke="#1B1A22" stroke-width="3"/></svg>';
 
@@ -416,7 +449,7 @@ const STAGES = [
 
 /* ══════════════════════════════ STATE ══════════════════════════════ */
 const S = {
-  view:'boards', projectId:null, tab:'overview', sidebarOpen:false,
+  view:'dashboard', projectId:null, tab:'overview', sidebarOpen:false,
   locSearch:'', locType:'all', contactSearch:'', contactRole:'all', shotLoc:'all', shotSearch:'',
   modal:null, toast:null,
 };
@@ -424,6 +457,7 @@ const S = {
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmtDate(iso){const d=new Date(iso+'T00:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
 function dayNum(iso){return new Date(iso+'T00:00:00').getDate()}
+function daysUntil(iso){const ms=new Date(iso+'T00:00:00')-new Date(new Date().toDateString());return Math.round(ms/86400000)}
 function monAbbr(iso){return new Date(iso+'T00:00:00').toLocaleDateString('en-US',{month:'short'})}
 function project(id){return PROJECTS.find(p=>p.id===id)}
 function contact(id){return CONTACTS.find(c=>c.id===id)}
@@ -480,6 +514,7 @@ function render(){
       <div class="brand">${logoMark.replace('<svg ','<svg style="width:30px;height:30px" ')}
         <div><div class="brand-name">Slate</div><div class="brand-sub">Motty Berkowitz Productions</div></div></div>
       <nav class="nav">
+        ${navItem('dashboard',I.dash,'Dashboard')}
         ${navItem('boards',I.boards,'Boards')}
         ${navItem('schedule',I.schedule,'Schedule')}
         <div class="nav-group-label">Directories</div>
@@ -505,17 +540,83 @@ function navItem(view,icon,label){
   return `<button class="nav-item ${S.view===view?'active':''}" data-action="nav" data-view="${view}">${icon}<span>${label}</span></button>`;
 }
 function mobileNav(){
-  const items=[['boards',I.boards,'Boards'],['schedule',I.schedule,'Schedule'],['locations',I.pin,'Locations'],['contacts',I.users,'Crew']];
+  const items=[['dashboard',I.dash,'Home'],['boards',I.boards,'Boards'],['schedule',I.schedule,'Schedule'],['locations',I.pin,'Locations'],['contacts',I.users,'Crew']];
   return `<nav class="bottomnav">${items.map(([v,ic,l])=>`<button class="bn-item ${S.view===v?'active':''}" data-action="nav" data-view="${v}">${ic}<span>${l}</span></button>`).join('')}</nav>`;
 }
 function topbarTitle(){
   if(S.view==='project'){const p=project(S.projectId);return esc(p?p.name:'')}
-  return {boards:'Boards',schedule:'Schedule',locations:'Locations',contacts:'Cast & Crew'}[S.view]||'';
+  return {dashboard:'Dashboard',boards:'Boards',schedule:'Schedule',locations:'Locations',contacts:'Cast & Crew'}[S.view]||'';
 }
 function searchBox(){
   const val = S.view==='locations'?S.locSearch:S.contactSearch;
   const field = S.view==='locations'?'locSearch':'contactSearch';
   return `<div class="search-box">${I.search}<input class="inp" placeholder="Search…" value="${esc(val)}" data-field="${field}" data-action="liveSearch"></div>`;
+}
+
+/* ── Dashboard ────────────────────────────────────────────────────────── */
+function nextSteps(){
+  const steps=[];
+  PROJECTS.forEach(p=>{
+    if(p.stage==='delivered')return;
+    const days=daysUntil(p.shootDate);
+    if(p.stage==='inquiry'){
+      steps.push({icon:I.mail,text:`Follow up with <b>${esc(p.client)}</b> — ${esc(p.name)} is still in Inquiry`,id:p.id});
+    }
+    if(days>=0 && days<=14 && p.stage!=='inquiry'){
+      steps.push({icon:I.calendar,text:`<b>${esc(p.name)}</b> shoots in ${days} day${days===1?'':'s'} — confirm the call sheet`,id:p.id,tab:'callsheet'});
+    }
+    if((p.stage==='pre'||p.stage==='production') && p.crew.length===0){
+      steps.push({icon:I.users,text:`<b>${esc(p.name)}</b> has no crew assigned yet`,id:p.id,tab:'crew'});
+    }
+    if((p.stage==='pre'||p.stage==='production') && (p.type==='Music Video'||p.type==='Wedding') && p.scenes.length===0){
+      steps.push({icon:I.film,text:`Build the storyline for <b>${esc(p.name)}</b> to generate its shot list`,id:p.id,tab:'storyline'});
+    }
+  });
+  return steps;
+}
+function viewDashboard(){
+  const open=PROJECTS.filter(p=>p.stage!=='delivered');
+  const upcoming=open.filter(p=>daysUntil(p.shootDate)>=0).sort((a,b)=>a.shootDate.localeCompare(b.shootDate));
+  const next=upcoming[0];
+  const conflicts=conflictsFor(allEvents());
+  const steps=nextSteps();
+  const today=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  return `
+  <div class="welcome-head">${logoMark}
+    <div><h1>Welcome back</h1><div class="wdate">${today}</div></div></div>
+  <div class="stat-row">
+    <div class="card stat-tile flagship" data-action="nav" data-view="schedule">
+      <span class="stat-label">Next Shoot</span>
+      <span class="val">${next?daysUntil(next.shootDate)+'d':'—'}</span>
+      <span class="sub">${next?esc(next.name)+' · '+fmtDate(next.shootDate):'Nothing scheduled'}</span>
+    </div>
+    <div class="card stat-tile" data-action="nav" data-view="boards">
+      <span class="stat-label">Open Projects</span><span class="val">${open.length}</span>
+      <span class="sub">In progress right now</span>
+    </div>
+    <div class="card stat-tile ${conflicts.length?'flag':''}" data-action="nav" data-view="schedule">
+      <span class="stat-label">Conflicts</span><span class="val">${conflicts.length}</span>
+      <span class="sub">${conflicts.length?'Need resolving':'All clear'}</span>
+    </div>
+  </div>
+  ${conflicts.length?`<div class="conflict-banner" style="margin-top:18px">${I.alert}<div>
+      <b>${conflicts.length} scheduling conflict${conflicts.length===1?'':'s'} to resolve</b>
+      ${conflicts.map(c=>`${c.people.map(pid=>esc(contact(pid).name)).join(', ')} booked on both "${esc(eventTitle(c.a))}" and "${esc(eventTitle(c.b))}", ${fmtDate(c.a.date)}`).join(' · ')}
+    </div></div>`:''}
+  <div class="section-head"><h2>Next Steps</h2></div>
+  ${steps.length?steps.map(s=>`<div class="step-row" data-action="openProject" data-id="${s.id}" data-tab="${s.tab||'overview'}">${s.icon}<span class="step-text">${s.text}</span></div>`).join(''):`<div class="empty">You're all caught up — no open action items.</div>`}
+  <div class="section-head"><h2>Open Projects</h2><button class="btn btn-sm btn-ghost" data-action="nav" data-view="boards">View all ${I.chevR}</button></div>
+  ${open.length?open.sort((a,b)=>a.shootDate.localeCompare(b.shootDate)).map(p=>{
+    const crew=p.crew.slice(0,4).map(cid=>{const c=contact(cid);return c?`<span class="avatar" style="background:${personColor(c.id)}" title="${esc(c.name)}">${initials(c.name)}</span>`:''}).join('');
+    return `<div class="oproj-row" data-action="openProject" data-id="${p.id}">
+      <span class="type-dot" style="background:${COLORS[p.type]}"></span>
+      <div style="flex:1"><div class="oproj-name">${esc(p.name)}</div><div class="oproj-client">${esc(p.client)}</div></div>
+      <span class="badge badge-neutral">${STAGES.find(s=>s.k===p.stage).label}</span>
+      <span class="oproj-date mono">${fmtDate(p.shootDate)}</span>
+      <span class="avatar-stack">${crew}</span>
+    </div>`;
+  }).join(''):`<div class="empty">No open projects.</div>`}
+  `;
 }
 
 /* ── Boards (Kanban) ─────────────────────────────────────────────────── */
@@ -791,7 +892,7 @@ function viewSchedule(){
   `;
 }
 
-const VIEWS = {boards:viewBoards,project:viewProject,locations:viewLocations,contacts:viewContacts,schedule:viewSchedule};
+const VIEWS = {dashboard:viewDashboard,boards:viewBoards,project:viewProject,locations:viewLocations,contacts:viewContacts,schedule:viewSchedule};
 
 /* ── Modals ───────────────────────────────────────────────────────────── */
 function modalHTML(){
@@ -838,7 +939,7 @@ const ACTIONS = {
   nav:(el)=>{S.view=el.dataset.view;S.sidebarOpen=false;if(el.dataset.view==='project')S.tab='overview';render()},
   openSidebar:()=>{S.sidebarOpen=true;render()},
   closeSidebar:()=>{S.sidebarOpen=false;render()},
-  openProject:(el)=>{S.projectId=el.dataset.id;S.view='project';S.tab='overview';render()},
+  openProject:(el)=>{S.projectId=el.dataset.id;S.view='project';S.tab=el.dataset.tab||'overview';render()},
   setTab:(el)=>{S.tab=el.dataset.tab;render()},
   setStage:(el)=>{project(el.dataset.id).stage=el.dataset.stage;render()},
   addScene:(el)=>{const p=project(el.dataset.id);const n=p.scenes.length+1;
