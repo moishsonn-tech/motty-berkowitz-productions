@@ -228,11 +228,24 @@ a{color:inherit}
 .audio-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .audio-title{font-weight:800;font-size:14.5px}
 .audio-artist{color:var(--sb-mut);font-size:12px}
-.wave{display:flex;align-items:flex-end;gap:2px;height:46px;position:relative;margin-bottom:6px}
-.wave i{flex:1;background:rgba(200,134,46,.45);border-radius:2px;display:block}
+.wave{display:flex;align-items:flex-end;gap:2px;height:46px;position:relative;margin-bottom:6px;cursor:pointer}
+.wave i{flex:1;background:rgba(200,134,46,.45);border-radius:2px;display:block;pointer-events:none}
+.wave-progress{position:absolute;top:0;left:0;bottom:0;background:rgba(240,180,41,.16);pointer-events:none;border-radius:2px}
+.wave-marker{position:absolute;top:-6px;height:58px;width:2px;background:var(--accent);cursor:ew-resize;z-index:2}
+.wave-marker::before{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:9px;height:9px;
+  border-radius:50%;background:var(--accent)}
 .wave-markers{display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--sb-mut)}
 .wave-markers span{display:flex;flex-direction:column;align-items:center;gap:2px}
 .wave-markers b{color:var(--accent);font-weight:700}
+.audio-controls{display:flex;align-items:center;gap:10px;margin-top:12px}
+.audio-playbtn{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#1A1814;border:none;
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none;transition:transform .12s}
+.audio-playbtn:active{transform:scale(.92)}
+.audio-playbtn .ico{width:15px;height:15px}
+.audio-time{font-size:12px;color:var(--sb-mut)}
+.audio-hint{font-size:11.5px;color:var(--sb-mut)}
+.audio-loadbtn{margin-left:auto;cursor:pointer}
+.scene-t{font-size:10px;color:var(--accent);font-weight:700;margin-top:3px}
 
 /* ── Shot list ───────────────────────────────────────────────────────────── */
 .shot-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
@@ -426,6 +439,8 @@ const I = {
   sync:'<svg class="ico" viewBox="0 0 24 24"><path d="M20 11A8 8 0 0 0 6.3 6.3L4 8.6M4 13a8 8 0 0 0 13.7 4.7L20 15.4"/><path d="M4 4v4.6h4.6M20 20v-4.6h-4.6"/></svg>',
   invoice:'<svg class="ico" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>',
   trash:'<svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+  play:'<svg class="ico" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8V4z" fill="currentColor" stroke="none"/></svg>',
+  pause:'<svg class="ico" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/></svg>',
 };
 const logoMark = '<svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#F0B429"/><clipPath id="cl"><rect x="8" y="9" width="48" height="12" rx="3"/></clipPath><g clip-path="url(#cl)"><rect x="8" y="9" width="48" height="12" fill="#1A1814"/><g fill="#F0B429"><polygon points="15,9 21,9 13,21 7,21"/><polygon points="27,9 33,9 25,21 19,21"/><polygon points="39,9 45,9 37,21 31,21"/><polygon points="51,9 57,9 49,21 43,21"/></g></g><rect x="8" y="25" width="48" height="30" rx="3" fill="none" stroke="#1A1814" stroke-width="3"/></svg>';
 
@@ -623,6 +638,81 @@ function conflictsFor(events){
 }
 function eventTitle(e){const p=project(e.projectId);return p?p.name+(e.label!=='Shoot Day'?' — '+e.label:''):e.label}
 
+/* ── Audio player (real playback + real waveform, session-only — no upload/storage yet) ──── */
+const AUD = {projectId:null, el:null, url:null, duration:0, peaks:[]};
+function fmtTime(s){ if(!isFinite(s)||s<0)s=0; const m=Math.floor(s/60); const sec=Math.floor(s%60); return m+':'+String(sec).padStart(2,'0'); }
+function computePeaks(buf,n){
+  const data=buf.getChannelData(0), step=Math.floor(data.length/n)||1, peaks=[];
+  for(let i=0;i<n;i++){
+    let max=0; const start=i*step, end=Math.min(data.length,start+step);
+    for(let j=start;j<end;j++){ const v=Math.abs(data[j]); if(v>max)max=v; }
+    peaks.push(Math.max(4,Math.round(max*46)));
+  }
+  return peaks;
+}
+function updateAudioProgress(){
+  const fill=document.getElementById('mb-progress'), time=document.getElementById('mb-time');
+  if(fill && AUD.el.duration) fill.style.width=(AUD.el.currentTime/AUD.el.duration*100)+'%';
+  if(time) time.textContent = fmtTime(AUD.el.currentTime)+' / '+fmtTime(AUD.el.duration||0);
+}
+async function handleAudioFile(input){
+  const file=input.files[0]; if(!file)return;
+  const pid=input.dataset.id;
+  if(AUD.url) URL.revokeObjectURL(AUD.url);
+  if(!AUD.el){
+    AUD.el=new Audio();
+    AUD.el.addEventListener('timeupdate',updateAudioProgress);
+    AUD.el.addEventListener('play',render);
+    AUD.el.addEventListener('pause',render);
+    AUD.el.addEventListener('ended',render);
+  }
+  AUD.el.pause();
+  AUD.projectId=pid; AUD.duration=0; AUD.peaks=[];
+  AUD.url=URL.createObjectURL(file);
+  AUD.el.src=AUD.url;
+  AUD.el.addEventListener('loadedmetadata',function onMeta(){
+    AUD.duration=AUD.el.duration||0;
+    AUD.el.removeEventListener('loadedmetadata',onMeta);
+    render();
+  });
+  showToast('Loading audio…');
+  try{
+    const arrBuf=await file.arrayBuffer();
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const audioBuf=await ctx.decodeAudioData(arrBuf);
+    AUD.peaks=computePeaks(audioBuf,60);
+    ctx.close();
+  }catch(err){ AUD.peaks=[]; }
+  render();
+}
+function audioPanel(p){
+  const loaded = AUD.projectId===p.id && AUD.duration>0;
+  const bars = loaded && AUD.peaks.length ? AUD.peaks
+    : Array.from({length:60},(_,i)=>6+Math.round(20*Math.abs(Math.sin(i*0.4))+Math.random()*10));
+  return `<div class="audio-panel">
+    <div class="audio-head">
+      <div><div class="audio-title">🎵 ${esc(p.audioTrack.title)}</div><div class="audio-artist">${esc(p.audioTrack.artist)} · ${esc(p.audioTrack.duration)}</div></div>
+      <span class="badge badge-info">${loaded?'Audio loaded':'Audio synced to storyline'}</span>
+    </div>
+    <div class="wave" id="mb-wave" data-action="seekAudio" data-id="${p.id}">
+      ${bars.map(h=>`<i style="height:${h}px"></i>`).join('')}
+      ${loaded?`<div class="wave-progress" id="mb-progress" style="width:${AUD.el.duration?AUD.el.currentTime/AUD.el.duration*100:0}%"></div>`:''}
+      ${loaded?p.scenes.map((sc,i)=>{
+        const pct = sc.t!=null ? Math.max(0,Math.min(100,sc.t/AUD.duration*100)) : (i/(p.scenes.length-1||1)*100);
+        return `<div class="wave-marker" style="left:${pct}%" data-action="dragMarker" data-id="${p.id}" data-scene="${sc.id}" title="SC${i+1}"></div>`;
+      }).join(''):''}
+    </div>
+    <div class="wave-markers">${p.scenes.map((sc,i)=>`<span><b>SC${i+1}</b>${sc.t!=null?fmtTime(sc.t):Math.round(i/(p.scenes.length-1||1)*100)+'%'}</span>`).join('')}</div>
+    <div class="audio-controls">
+      ${loaded?`<button class="audio-playbtn" data-action="toggleAudioPlay" data-id="${p.id}">${AUD.el.paused?I.play:I.pause}</button>
+        <span class="mono audio-time" id="mb-time">${fmtTime(AUD.el.currentTime)} / ${fmtTime(AUD.duration)}</span>`
+        :`<span class="audio-hint">Pick a local audio file to play &amp; mark real split points — session only, no upload yet</span>`}
+      <label class="btn btn-sm btn-subtle audio-loadbtn">${I.plus} ${loaded?'Replace':'Load'} Audio File
+        <input type="file" accept="audio/*" style="display:none" data-action="loadAudioFile" data-id="${p.id}"></label>
+    </div>
+  </div>`;
+}
+
 /* ══════════════════════════════ RENDER ══════════════════════════════ */
 function render(){
   const app=document.getElementById('app');
@@ -777,7 +867,7 @@ function projectCard(p){
 }
 
 /* ── Project detail ──────────────────────────────────────────────────── */
-const PTABS = [['overview','Overview'],['storyline','Storyline'],['shotlist','Shot List'],['locations','Locations'],['crew','Cast & Crew'],['financials','Financials'],['callsheet','Call Sheet']];
+const PTABS = [['overview','Overview'],['storyline','Storyline'],['shotlist','Shot List'],['locations','Locations'],['crew','Cast & Crew'],['financials','Financials'],['callsheet','Call Sheet'],['notes','Notes']];
 function viewProject(){
   const p=project(S.projectId); if(!p) return `<div class="empty">Project not found.</div>`;
   return `
@@ -824,14 +914,8 @@ function tabOverview(p){
 }
 function tabStoryline(p){
   const isMV = !!p.audioTrack;
-  const bars = Array.from({length:60},(_,i)=>6+Math.round(20*Math.abs(Math.sin(i*0.4))+Math.random()*10));
   return `
-  ${isMV?`<div class="audio-panel">
-      <div class="audio-head"><div><div class="audio-title">${I.chat?'':''}🎵 ${esc(p.audioTrack.title)}</div><div class="audio-artist">${esc(p.audioTrack.artist)} · ${esc(p.audioTrack.duration)}</div></div>
-        <span class="badge badge-info">Audio synced to storyline</span></div>
-      <div class="wave">${bars.map(h=>`<i style="height:${h}px"></i>`).join('')}</div>
-      <div class="wave-markers">${p.scenes.map((sc,i)=>`<span><b>SC${i+1}</b>${Math.round(i/(p.scenes.length-1||1)*100)}%</span>`).join('')}</div>
-    </div>`:''}
+  ${isMV?audioPanel(p):''}
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <div class="stat-label">Scenes drive the shot list automatically — add one below</div>
     <button class="btn btn-sm btn-primary" data-action="addScene" data-id="${p.id}">${I.plus} Add Scene</button>
@@ -840,8 +924,9 @@ function tabStoryline(p){
   `;
 }
 function sceneCard(p,sc,i){
+  const canMark = !!p.audioTrack && AUD.projectId===p.id && AUD.duration>0;
   return `<div class="scene-card">
-    <div class="scene-num">SC${i+1}</div>
+    <div class="scene-num">SC${i+1}${sc.t!=null?`<div class="scene-t mono">${fmtTime(sc.t)}</div>`:''}</div>
     <div class="scene-body">
       <div class="field"><input class="inp" style="font-weight:700" value="${esc(sc.heading)}" data-action="editScene" data-id="${p.id}" data-scene="${sc.id}" data-field="heading"></div>
       <div class="field"><textarea class="txt" data-action="editScene" data-id="${p.id}" data-scene="${sc.id}" data-field="desc">${esc(sc.desc)}</textarea></div>
@@ -851,6 +936,7 @@ function sceneCard(p,sc,i){
           ${LOCATIONS.map(l=>`<option value="${l.id}" ${sc.locId===l.id?'selected':''}>${esc(l.name)}</option>`).join('')}
         </select>
       </div>
+      ${canMark?`<button class="btn btn-sm btn-subtle" data-action="markSplit" data-id="${p.id}" data-scene="${sc.id}">${I.plus} Mark split here</button>`:''}
     </div>
   </div>`;
 }
@@ -987,7 +1073,16 @@ function tabCallsheet(p){
     </div>
   </div>`;
 }
-const TABS = {overview:tabOverview,storyline:tabStoryline,shotlist:tabShotlist,locations:tabLocations,crew:tabCrew,financials:tabFinancials,callsheet:tabCallsheet};
+function tabNotes(p){
+  return `<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap">
+      <div class="stat-label">Project notes</div>
+      <button class="btn btn-sm btn-ghost" data-action="syncGoogleDocs" data-id="${p.id}">${I.sync} Sync to Google Docs</button>
+    </div>
+    <textarea class="txt" style="min-height:340px" placeholder="Notes, ideas, client feedback…" data-action="editNotes" data-id="${p.id}">${esc(p.notes||'')}</textarea>
+  </div>`;
+}
+const TABS = {overview:tabOverview,storyline:tabStoryline,shotlist:tabShotlist,locations:tabLocations,crew:tabCrew,financials:tabFinancials,callsheet:tabCallsheet,notes:tabNotes};
 
 /* ── Locations directory ─────────────────────────────────────────────── */
 function viewLocations(){
@@ -1115,7 +1210,9 @@ const ACTIONS = {
   nav:(el)=>{S.view=el.dataset.view;S.sidebarOpen=false;if(el.dataset.view==='project')S.tab='overview';render()},
   openSidebar:()=>{S.sidebarOpen=true;render()},
   closeSidebar:()=>{S.sidebarOpen=false;render()},
-  openProject:(el)=>{S.projectId=el.dataset.id;S.view='project';S.tab=el.dataset.tab||'overview';render()},
+  openProject:(el)=>{
+    if(AUD.el && AUD.projectId && AUD.projectId!==el.dataset.id) AUD.el.pause();
+    S.projectId=el.dataset.id;S.view='project';S.tab=el.dataset.tab||'overview';render()},
   setTab:(el)=>{S.tab=el.dataset.tab;render()},
   setStage:(el)=>{project(el.dataset.id).stage=el.dataset.stage;render()},
   addScene:(el)=>{const p=project(el.dataset.id);const n=p.scenes.length+1;
@@ -1136,6 +1233,15 @@ const ACTIONS = {
   sendInvoice:(el)=>{const inv=getInvoice(project(el.dataset.id));inv.status='sent';render();
     showToast('Invoice marked sent — connect an email relay in the backend proxy to actually deliver it (see INTEGRATIONS.md)')},
   syncQuickbooks:()=>{showToast('Connect a QuickBooks account to sync invoices — needs QuickBooks OAuth wired up in the backend proxy')},
+  syncGoogleDocs:()=>{showToast('Auto-creating a synced Google Doc needs Google OAuth wired up in the backend proxy — see INTEGRATIONS.md')},
+  toggleAudioPlay:(el)=>{ if(!AUD.el||AUD.projectId!==el.dataset.id)return;
+    if(AUD.el.paused)AUD.el.play(); else AUD.el.pause(); },
+  seekAudio:(el,ev)=>{ if(!AUD.el||AUD.projectId!==el.dataset.id||!AUD.duration||!ev)return;
+    const rect=el.getBoundingClientRect(); const x=ev.clientX-rect.left;
+    AUD.el.currentTime=Math.max(0,Math.min(1,x/rect.width))*AUD.duration; updateAudioProgress(); },
+  markSplit:(el)=>{ if(!AUD.el||AUD.projectId!==el.dataset.id)return;
+    const p=project(el.dataset.id); const sc=p.scenes.find(s=>s.id===el.dataset.scene);
+    sc.t=AUD.el.currentTime; render(); },
   openModal:(el)=>{S.modal=el.dataset.modal;render()},
   closeModal:()=>{S.modal=null;render()},
   newProject:()=>{S.modal='project';render()},
@@ -1163,7 +1269,26 @@ const ACTIONS = {
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-stop]')&&e.target.closest('.overlay')&&!e.target.closest('[data-action]'))return;
   const el=e.target.closest('[data-action]'); if(!el)return;
-  const fn=ACTIONS[el.dataset.action]; if(fn)fn(el);
+  const fn=ACTIONS[el.dataset.action]; if(fn)fn(el,e);
+});
+document.addEventListener('pointerdown',e=>{
+  const m=e.target.closest('[data-action="dragMarker"]'); if(!m)return;
+  e.stopPropagation(); e.preventDefault();
+  const wave=document.getElementById('mb-wave'); if(!wave)return;
+  const rect=wave.getBoundingClientRect();
+  const p=project(m.dataset.id); const sc=p&&p.scenes.find(s=>s.id===m.dataset.scene); if(!sc)return;
+  let pct=null;
+  const move=ev=>{
+    const x=Math.min(rect.width,Math.max(0,ev.clientX-rect.left));
+    pct=x/rect.width; m.style.left=(pct*100)+'%';
+  };
+  const up=()=>{
+    document.removeEventListener('pointermove',move);
+    document.removeEventListener('pointerup',up);
+    if(pct!=null && AUD.duration){ sc.t=pct*AUD.duration; render(); }
+  };
+  document.addEventListener('pointermove',move);
+  document.addEventListener('pointerup',up);
 });
 document.addEventListener('input',e=>{
   const el=e.target;
@@ -1179,9 +1304,11 @@ document.addEventListener('input',e=>{
     const inv=getInvoice(project(el.dataset.id)); const it=inv.items.find(i=>i.id===el.dataset.item);
     it[el.dataset.field]=el.dataset.field==='amount'?parseMoney(el.value):el.value;
   }
+  if(el.dataset.action==='editNotes'){ project(el.dataset.id).notes=el.value; }
 });
 document.addEventListener('change',e=>{
   if(e.target.dataset.action==='editInvoiceItem')render();
+  if(e.target.dataset.action==='loadAudioFile')handleAudioFile(e.target);
 });
 
 /* ── Opener: the logo draws itself on first load each session ─────────────── */
