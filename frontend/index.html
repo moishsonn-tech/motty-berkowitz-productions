@@ -11,19 +11,20 @@
 <style>
 /* ── Tokens ──────────────────────────────────────────────────────────────── */
 :root{
-  --accent:#F0B429; --accent-dark:#C4900E; --accent-wash:rgba(240,180,41,.14); --accent-ink:#241A02;
-  --bg:#F5F2EC; --surface:#FFFFFF; --surface-2:#EEEAE1;
+  --accent:#E8A63C; --accent-dark:#BD7F1E; --accent-wash:rgba(232,166,60,.13); --accent-ink:#241A02;
+  --bg:#FAFAF8; --surface:#FFFFFF; --surface-2:#F4F3EF;
   --sb-bg:#1A1814; --sb-ink:#EFEDE8; --sb-mut:#948F86; --sb-line:rgba(255,255,255,.08); --sb-active-ink:#241A02;
-  --ink:#201E26; --ink-2:#5B5867; --ink-3:#8B8894; --ink-4:#C7C4CC;
-  --line:#E4E0D6; --line-2:#EEEBE3;
-  --good:#3E8F63; --good-wash:rgba(62,143,99,.13);
-  --warn:#C9622A; --warn-wash:rgba(201,98,42,.13);
-  --bad:#C23B3B; --bad-wash:rgba(194,59,59,.13);
-  --info:#4A6FA5; --info-wash:rgba(74,111,165,.13);
+  --ink:#201E26; --ink-2:#635F6C; --ink-3:#93909B; --ink-4:#D2CFD6;
+  --line:#EBE8E2; --line-2:#F2F0EA;
+  --good:#4CAA78; --good-wash:rgba(76,170,120,.11);
+  --warn:#D2853F; --warn-wash:rgba(210,133,63,.11);
+  --bad:#D2645F; --bad-wash:rgba(210,100,95,.11);
+  --info:#5C82BD; --info-wash:rgba(92,130,189,.11);
   --r-sm:8px; --r-md:12px; --r-lg:20px; --r-xl:28px;
-  --sh-sm:0 1px 3px rgba(20,18,10,.06),0 1px 1px rgba(20,18,10,.04);
-  --sh-md:0 4px 12px rgba(20,18,10,.09),0 2px 4px rgba(20,18,10,.05);
-  --sh-lg:0 16px 32px rgba(20,18,10,.14),0 4px 10px rgba(20,18,10,.07);
+  --sh-sm:0 1px 2px rgba(20,18,10,.04),0 1px 1px rgba(20,18,10,.03);
+  --sh-md:0 6px 16px rgba(20,18,10,.08),0 2px 5px rgba(20,18,10,.05);
+  --sh-lg:0 20px 40px rgba(20,18,10,.13),0 6px 12px rgba(20,18,10,.06);
+  --sh-float:0 10px 22px rgba(20,18,10,.09),0 2px 6px rgba(20,18,10,.05);
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
   --sidebar-w:236px; --topbar-h:60px; --bottomnav-h:64px;
@@ -33,8 +34,8 @@
     --bg:#17161C; --surface:#201F27; --surface-2:#26252E;
     --ink:#EEECE8; --ink-2:#B7B4BE; --ink-3:#87838F; --ink-4:#514E58;
     --line:#34323C; --line-2:#2A2932;
-    --accent-wash:rgba(200,134,46,.18); --good-wash:rgba(62,143,99,.18);
-    --warn-wash:rgba(201,98,42,.18); --bad-wash:rgba(194,59,59,.18); --info-wash:rgba(74,111,165,.18);
+    --accent-wash:rgba(200,134,46,.18); --good-wash:rgba(76,170,120,.16);
+    --warn-wash:rgba(210,133,63,.16); --bad-wash:rgba(210,100,95,.16); --info-wash:rgba(92,130,189,.16);
   }
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -85,23 +86,27 @@ a{color:inherit}
 .bottomnav{display:none}
 
 /* ── Icons ───────────────────────────────────────────────────────────────── */
-.ico{stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ico{stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 
 /* ── Buttons / chips / inputs ───────────────────────────────────────────── */
 .btn{padding:9px 16px;border-radius:var(--r-md);font-size:13px;font-weight:700;cursor:pointer;border:1px solid transparent;
-  display:inline-flex;align-items:center;gap:6px;transition:transform .12s,filter .15s,background .15s;white-space:nowrap}
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  transition:transform .15s,filter .15s,background .15s,box-shadow .2s}
 .btn .ico{width:15px;height:15px}
 .btn:active{transform:scale(.96)}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{filter:brightness(1.05)}
-.btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
-.btn-ghost:hover{background:var(--surface-2)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 3px 10px rgba(232,166,60,.32),0 1px 2px rgba(232,166,60,.2)}
+.btn-primary:hover{filter:brightness(1.04);transform:translateY(-1px);
+  box-shadow:0 6px 16px rgba(232,166,60,.4),0 2px 4px rgba(232,166,60,.24)}
+.btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink);box-shadow:var(--sh-sm)}
+.btn-ghost:hover{background:var(--surface-2);transform:translateY(-1px);box-shadow:var(--sh-md)}
 .btn-subtle{background:var(--surface-2);color:var(--ink-2)}
+.btn-subtle:hover{transform:translateY(-1px);box-shadow:var(--sh-sm)}
 .btn-sm{padding:6px 11px;font-size:12px;border-radius:var(--r-sm)}
 .iconbtn{width:32px;height:32px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);
-  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none;box-shadow:var(--sh-sm);
+  transition:transform .15s,box-shadow .2s,background .15s}
 .iconbtn .ico{width:16px;height:16px}
-.iconbtn:hover{background:var(--surface-2)}
+.iconbtn:hover{background:var(--surface-2);transform:translateY(-1px);box-shadow:var(--sh-md)}
 
 .chip{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:999px;font-size:12.5px;
   font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;
@@ -149,7 +154,7 @@ a{color:inherit}
 .welcome-head .wdate{color:var(--ink-3);font-size:12.5px;font-weight:600;margin-top:1px}
 .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .stat-tile{cursor:pointer;transition:transform .15s,box-shadow .15s}
-.stat-tile:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.stat-tile:hover{transform:translateY(-3px);box-shadow:var(--sh-float)}
 .stat-tile.flagship{grid-column:span 2;background:var(--accent-wash);border-color:rgba(200,134,46,.35)}
 .stat-tile .val{display:block;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;
   letter-spacing:-.01em;margin:5px 0 2px}
@@ -159,14 +164,18 @@ a{color:inherit}
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:28px 0 12px}
 .section-head h2{font-size:16px}
 .step-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);
-  border-radius:var(--r-md);background:var(--surface);margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-sm)}
-.step-row .ico{width:16px;height:16px;color:var(--accent);flex:none}
+  border-radius:var(--r-md);background:var(--surface);margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-sm);
+  transition:transform .15s,box-shadow .15s}
+.step-row:hover{transform:translateY(-2px);box-shadow:var(--sh-float)}
+.step-row .step-ico{width:30px;height:30px;border-radius:50%;background:var(--accent-wash);flex:none;
+  display:inline-flex;align-items:center;justify-content:center}
+.step-row .ico{width:15px;height:15px;color:var(--accent-dark);flex:none}
 .step-row .step-text{flex:1;font-size:13px;color:var(--ink-2)}
 .step-row .step-text b{font-weight:700;color:var(--ink)}
 .oproj-row{display:flex;align-items:center;gap:14px;padding:13px 16px;border:1px solid var(--line);
   border-radius:var(--r-md);background:var(--surface);margin-bottom:8px;cursor:pointer;box-shadow:var(--sh-sm);
   transition:transform .15s,box-shadow .15s}
-.oproj-row:hover{transform:translateY(-1px);box-shadow:var(--sh-md)}
+.oproj-row:hover{transform:translateY(-2px);box-shadow:var(--sh-float)}
 .oproj-name{font-weight:700;font-size:13.5px}
 .oproj-client{font-size:12px;color:var(--ink-3)}
 .oproj-date{font-size:12px;color:var(--ink-2);width:110px;flex:none}
@@ -183,7 +192,7 @@ a{color:inherit}
 .col-body{display:flex;flex-direction:column;gap:10px;min-height:40px}
 .pcard{background:var(--surface);border-radius:var(--r-md);border:1px solid var(--line);padding:14px;cursor:pointer;
   box-shadow:var(--sh-sm);transition:transform .15s,box-shadow .15s}
-.pcard:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.pcard:hover{transform:translateY(-3px);box-shadow:var(--sh-float)}
 .pcard-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
 .type-dot{width:8px;height:8px;border-radius:50%;flex:none}
 .pcard-title{font-size:14px;font-weight:700;line-height:1.3;margin-bottom:3px}
@@ -268,7 +277,7 @@ a{color:inherit}
 .grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .loc-card,.person-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
   padding:16px;box-shadow:var(--sh-sm);transition:box-shadow .15s,transform .15s}
-.loc-card:hover,.person-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px)}
+.loc-card:hover,.person-card:hover{box-shadow:var(--sh-float);transform:translateY(-3px)}
 .loc-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .loc-name{font-weight:700;font-size:14px;margin-bottom:2px}
 .loc-addr{font-size:12px;color:var(--ink-3);display:flex;gap:4px;align-items:flex-start;margin-bottom:8px}
@@ -292,8 +301,10 @@ a{color:inherit}
 .day-group{margin-bottom:22px}
 .day-label{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-bottom:10px}
 .event-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;
-  display:flex;gap:16px;align-items:center;margin-bottom:10px;box-shadow:var(--sh-sm)}
-.event-card.conflict{border-color:rgba(194,59,59,.4);box-shadow:0 0 0 1px rgba(194,59,59,.15)}
+  display:flex;gap:16px;align-items:center;margin-bottom:10px;box-shadow:var(--sh-sm);cursor:pointer;
+  transition:transform .15s,box-shadow .15s}
+.event-card:hover{transform:translateY(-2px);box-shadow:var(--sh-float)}
+.event-card.conflict{border-color:rgba(210,100,95,.4);box-shadow:0 0 0 1px rgba(210,100,95,.15)}
 .event-date{width:52px;flex:none;text-align:center}
 .event-date b{display:block;font-size:20px;line-height:1.1}
 .event-date span{font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700}
@@ -411,31 +422,31 @@ a{color:inherit}
 <script>
 /* ══════════════════════════════ ICONS ══════════════════════════════ */
 const I = {
-  dash:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>',
-  boards:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="16" rx="2"/><rect x="14" y="4" width="7" height="10" rx="2"/></svg>',
-  schedule:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
-  pin:'<svg class="ico" viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>',
-  users:'<svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="17.5" cy="9" r="2.6"/><path d="M15.7 14.2c2.6.4 4.3 2.5 4.3 5.8"/></svg>',
-  search:'<svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
-  plus:'<svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
-  back:'<svg class="ico" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>',
-  menu:'<svg class="ico" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>',
-  close:'<svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
-  calendar:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
-  film:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 8h18M3 16h18M8 3v18M16 3v18"/></svg>',
-  alert:'<svg class="ico" viewBox="0 0 24 24"><path d="M12 3l10 18H2L12 3z"/><path d="M12 10v4M12 17.5h.01"/></svg>',
-  mail:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
-  chat:'<svg class="ico" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4V4z"/></svg>',
-  check:'<svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>',
-  clock:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
-  more:'<svg class="ico" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>',
-  print:'<svg class="ico" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="4" y="9" width="16" height="8" rx="1"/><path d="M6 17v4h12v-4"/></svg>',
-  chevR:'<svg class="ico" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
-  sync:'<svg class="ico" viewBox="0 0 24 24"><path d="M20 11A8 8 0 0 0 6.3 6.3L4 8.6M4 13a8 8 0 0 0 13.7 4.7L20 15.4"/><path d="M4 4v4.6h4.6M20 20v-4.6h-4.6"/></svg>',
-  invoice:'<svg class="ico" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>',
-  trash:'<svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
-  play:'<svg class="ico" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8V4z" fill="currentColor" stroke="none"/></svg>',
-  pause:'<svg class="ico" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/></svg>',
+  dash:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
+  boards:'<svg class="ico" viewBox="0 0 24 24"><path d="M6 5v11"/><path d="M12 5v6"/><path d="M18 5v14"/></svg>',
+  schedule:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>',
+  pin:'<svg class="ico" viewBox="0 0 24 24"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>',
+  users:'<svg class="ico" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  search:'<svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+  plus:'<svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+  back:'<svg class="ico" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>',
+  menu:'<svg class="ico" viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M4 6h16"/><path d="M4 18h16"/></svg>',
+  close:'<svg class="ico" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+  calendar:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>',
+  film:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg>',
+  alert:'<svg class="ico" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+  mail:'<svg class="ico" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
+  chat:'<svg class="ico" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  check:'<svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',
+  clock:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  more:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>',
+  print:'<svg class="ico" viewBox="0 0 24 24"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3h12v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>',
+  chevR:'<svg class="ico" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>',
+  sync:'<svg class="ico" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>',
+  invoice:'<svg class="ico" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M10.3 15h3.4"/></svg>',
+  trash:'<svg class="ico" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>',
+  play:'<svg class="ico" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3" fill="currentColor" stroke="none"/></svg>',
+  pause:'<svg class="ico" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/></svg>',
 };
 const logoMark = '<img src="assets/mb-mark.png" alt="Motty Berkowitz" class="brand-mark-img">';
 
@@ -815,7 +826,7 @@ function viewDashboard(){
       ${conflicts.map(c=>`${c.people.map(pid=>esc(contact(pid).name)).join(', ')} booked on both "${esc(eventTitle(c.a))}" and "${esc(eventTitle(c.b))}", ${fmtDate(c.a.date)}`).join(' · ')}
     </div></div>`:''}
   <div class="section-head"><h2>Next Steps</h2></div>
-  ${steps.length?steps.map(s=>`<div class="step-row" data-action="openProject" data-id="${s.id}" data-tab="${s.tab||'overview'}">${s.icon}<span class="step-text">${s.text}</span></div>`).join(''):`<div class="empty">You're all caught up — no open action items.</div>`}
+  ${steps.length?steps.map(s=>`<div class="step-row" data-action="openProject" data-id="${s.id}" data-tab="${s.tab||'overview'}"><span class="step-ico">${s.icon}</span><span class="step-text">${s.text}</span></div>`).join(''):`<div class="empty">You're all caught up — no open action items.</div>`}
   <div class="section-head"><h2>Open Projects</h2><button class="btn btn-sm btn-ghost" data-action="nav" data-view="boards">View all ${I.chevR}</button></div>
   ${open.length?open.sort((a,b)=>a.shootDate.localeCompare(b.shootDate)).map(p=>{
     const crew=p.crew.slice(0,4).map(cid=>{const c=contact(cid);return c?`<span class="avatar" style="background:${personColor(c.id)}" title="${esc(c.name)}">${initials(c.name)}</span>`:''}).join('');
