@@ -14,6 +14,7 @@
   --accent:#E8A63C; --accent-dark:#BD7F1E; --accent-wash:rgba(232,166,60,.13); --accent-ink:#241A02;
   --bg:#FAFAF8; --surface:#FFFFFF; --surface-2:#F4F3EF;
   --sb-bg:#1A1814; --sb-ink:#EFEDE8; --sb-mut:#948F86; --sb-line:rgba(255,255,255,.08); --sb-active-ink:#241A02;
+  --sidebar-bg:#FFFFFF; --sidebar-ink:#201E26; --sidebar-mut:#8B8894; --sidebar-line:rgba(32,30,38,.07);
   --ink:#201E26; --ink-2:#635F6C; --ink-3:#93909B; --ink-4:#D2CFD6;
   --line:#EBE8E2; --line-2:#F2F0EA;
   --good:#4CAA78; --good-wash:rgba(76,170,120,.11);
@@ -36,6 +37,7 @@
     --line:#34323C; --line-2:#2A2932;
     --accent-wash:rgba(200,134,46,.18); --good-wash:rgba(76,170,120,.16);
     --warn-wash:rgba(210,133,63,.16); --bad-wash:rgba(210,100,95,.16); --info-wash:rgba(92,130,189,.16);
+    --sidebar-bg:#201F27; --sidebar-ink:#EEECE8; --sidebar-mut:#87838F; --sidebar-line:rgba(255,255,255,.08);
   }
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -50,23 +52,25 @@ a{color:inherit}
 
 /* ── Shell ───────────────────────────────────────────────────────────────── */
 #app{display:flex;min-height:100vh}
-.sidebar{width:var(--sidebar-w);flex:none;background:var(--sb-bg);color:var(--sb-ink);
-  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:18px 14px}
+.sidebar{width:var(--sidebar-w);flex:none;background:var(--sidebar-bg);color:var(--sidebar-ink);
+  display:flex;flex-direction:column;position:sticky;top:16px;height:calc(100vh - 32px);
+  margin:16px;padding:18px 14px;border-radius:var(--r-xl);box-shadow:var(--sh-float);
+  border:1px solid var(--sidebar-line)}
 .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 22px}
 .brand svg,.brand-mark-img{width:auto;height:26px;flex:none;object-fit:contain}
 .brand-name{font-size:16px;font-weight:800;letter-spacing:-.01em}
-.brand-sub{font-size:10.5px;color:var(--sb-mut);letter-spacing:.03em}
+.brand-sub{font-size:10.5px;color:var(--sidebar-mut);letter-spacing:.03em}
 .nav{display:flex;flex-direction:column;gap:2px;flex:1}
 .nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:var(--r-md);
-  color:var(--sb-mut);cursor:pointer;font-weight:600;font-size:13.5px;transition:background .15s,color .15s;
+  color:var(--sidebar-mut);cursor:pointer;font-weight:600;font-size:13.5px;transition:background .15s,color .15s;
   border:none;background:none;text-align:left;width:100%}
 .nav-item .ico{width:18px;height:18px;flex:none}
-.nav-item:hover{background:rgba(255,255,255,.06);color:var(--sb-ink)}
-.nav-item.active{background:var(--accent);color:var(--sb-active-ink)}
-.nav-group-label{font-size:10px;font-weight:700;color:var(--sb-mut);text-transform:uppercase;
+.nav-item:hover{background:var(--surface-2);color:var(--sidebar-ink)}
+.nav-item.active{background:var(--accent);color:var(--sb-active-ink);box-shadow:0 3px 10px rgba(232,166,60,.32)}
+.nav-group-label{font-size:10px;font-weight:700;color:var(--sidebar-mut);text-transform:uppercase;
   letter-spacing:.09em;padding:16px 12px 6px}
-.sidebar-foot{border-top:1px solid var(--sb-line);padding-top:12px;margin-top:8px}
-.sidebar-version{font-size:10.5px;color:var(--sb-mut);padding:4px 12px}
+.sidebar-foot{border-top:1px solid var(--sidebar-line);padding-top:12px;margin-top:8px}
+.sidebar-version{font-size:10.5px;color:var(--sidebar-mut);padding:4px 12px}
 
 .shell-main{flex:1;min-width:0;display:flex;flex-direction:column}
 .topbar{height:var(--topbar-h);flex:none;display:flex;align-items:center;gap:14px;padding:0 24px;
@@ -387,8 +391,8 @@ a{color:inherit}
 
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width:900px){
-  .sidebar{position:fixed;left:0;top:0;z-index:150;transform:translateX(-100%);transition:transform .22s ease;
-    box-shadow:var(--sh-lg)}
+  .sidebar{position:fixed;left:0;top:0;z-index:150;margin:0;height:100vh;border-radius:0;border:none;
+    transform:translateX(-100%);transition:transform .22s ease;box-shadow:var(--sh-lg)}
   .sidebar.open{transform:translateX(0)}
   .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:140}
   .sidebar-backdrop.open{display:block}
