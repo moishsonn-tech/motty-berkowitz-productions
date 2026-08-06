@@ -120,6 +120,23 @@ a{color:inherit}
 .chip-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;-ms-overflow-style:none;scrollbar-width:none}
 .chip-row::-webkit-scrollbar{display:none}
 
+/* Viewfinder-style focus: small corner brackets instead of a plain outline, keyboard-focus only */
+.inp,.sel,.txt,.btn,.iconbtn,.chip{position:relative}
+.inp:focus-visible,.sel:focus-visible,.txt:focus-visible,.btn:focus-visible,.iconbtn:focus-visible,.chip:focus-visible{outline:none}
+.inp:focus-visible::after,.sel:focus-visible::after,.txt:focus-visible::after,.btn:focus-visible::after,
+.iconbtn:focus-visible::after,.chip:focus-visible::after{
+  content:'';position:absolute;inset:-4px;pointer-events:none;border-radius:inherit;
+  background:
+    linear-gradient(var(--accent),var(--accent)) top left/9px 2px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) top left/2px 9px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) top right/9px 2px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) top right/2px 9px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) bottom left/9px 2px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) bottom left/2px 9px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) bottom right/9px 2px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) bottom right/2px 9px no-repeat;
+}
+
 .field label{display:block;font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;
   letter-spacing:.06em;margin-bottom:6px}
 .inp,.sel,.txt{width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r-sm);
@@ -151,6 +168,15 @@ a{color:inherit}
 .page-head h1{font-size:23px}
 .page-head p{color:var(--ink-2);font-size:13.5px;margin-top:3px}
 
+.timecode{display:inline-flex;align-items:center;font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--ink);background:var(--surface-2);
+  padding:3px 8px;border-radius:6px}
+
+/* Sprocket-hole divider — a quiet nod to film stock, used sparingly under page headers */
+.sprocket-divider{height:6px;margin-bottom:20px;opacity:.4;
+  background-image:radial-gradient(circle,var(--ink-4) 1.4px,transparent 1.4px);
+  background-size:13px 6px;background-repeat:repeat-x;background-position:left center}
+
 /* ── Dashboard ───────────────────────────────────────────────────────────── */
 .welcome-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
 .welcome-head svg,.welcome-head .brand-mark-img{width:auto;height:30px;flex:none;object-fit:contain}
@@ -169,11 +195,6 @@ a{color:inherit}
 .week-card{margin-bottom:14px}
 .week-strip-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;
   flex-wrap:wrap;gap:10px}
-.week-open-link{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;
-  color:var(--ink-2);cursor:pointer;background:var(--surface-2);padding:6px 12px;border-radius:999px;
-  transition:background .15s}
-.week-open-link:hover{background:var(--line-2)}
-.week-open-link b{color:var(--accent-dark);font-variant-numeric:tabular-nums}
 .week-legend{display:flex;gap:14px;font-size:11.5px;color:var(--ink-3);font-weight:600}
 .week-legend span{display:inline-flex;align-items:center;gap:5px}
 .week-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
@@ -373,7 +394,7 @@ a{color:inherit}
 .month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .month-dow{font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--ink-3);text-align:center;padding-bottom:6px}
 .month-cell{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:8px;
-  min-height:92px;cursor:pointer;transition:box-shadow .15s,transform .15s}
+  height:100px;overflow:hidden;cursor:pointer;transition:box-shadow .15s,transform .15s}
 .month-cell:hover{box-shadow:var(--sh-sm);transform:translateY(-1px)}
 .month-cell.out{opacity:.4}
 .month-cell.today{border-color:var(--accent);background:var(--accent-wash)}
@@ -394,7 +415,7 @@ a{color:inherit}
 .week-ev-time{color:var(--ink-3);font-size:10.5px}
 .week-ev.conflict{border-color:rgba(210,100,95,.4)}
 @media (max-width:900px){
-  .month-cell{min-height:60px;padding:5px}
+  .month-cell{height:76px;padding:5px}
   .week-grid{grid-template-columns:1fr;gap:0}
   .week-col{border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:10px}
 }
@@ -443,6 +464,19 @@ a{color:inherit}
   padding:12px 20px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:var(--sh-lg);z-index:300;
   display:flex;align-items:center;gap:8px}
 .toast .ico{width:15px;height:15px;color:var(--accent)}
+
+/* Signature sign-off — a quick moment when something real gets marked done (paid, delivered) */
+.signoff{position:fixed;bottom:24px;right:24px;z-index:400;display:flex;align-items:center;gap:10px;
+  background:var(--sb-bg);color:var(--sb-ink);padding:12px 18px;border-radius:999px;box-shadow:var(--sh-lg);
+  animation:signoff-in .3s ease both,signoff-out .3s ease 1.7s forwards}
+.signoff img{height:20px;width:auto;display:block;
+  clip-path:inset(0 100% 0 0);animation:mb-reveal .6s cubic-bezier(.65,0,.35,1) .1s forwards}
+.signoff span{font-size:12.5px;font-weight:700;color:var(--accent);white-space:nowrap}
+@keyframes signoff-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes signoff-out{to{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){
+  .signoff img{animation:none;clip-path:none}
+}
 
 /* ── Opener ──────────────────────────────────────────────────────────────── */
 .opener{position:fixed;inset:0;background:#1A1814;z-index:9999;display:flex;align-items:center;
@@ -641,8 +675,10 @@ let PROJECTS = [
 ];
 // Pre-light day for the music video happens to land on the wedding date — deliberate conflict for the schedule demo.
 let EXTRA_EVENTS = [
-  {id:'e1',projectId:'p2',label:'Tech Scout / Pre-Light',date:'2026-08-14',callTime:'6:00 PM',wrapTime:'9:00 PM',crew:['c2','c7']},
+  {id:'e1',projectId:'p2',type:'Shoot Day',label:'Tech Scout / Pre-Light',date:'2026-08-14',callTime:'6:00 PM',wrapTime:'9:00 PM',crew:['c2','c7']},
 ];
+const EVENT_TYPES = ['Call','Meeting','Shoot Day','Release Date','Other'];
+function eventTypeBadge(t){ return {Call:'badge-info',Meeting:'badge-warn','Shoot Day':'badge-good','Release Date':'badge-bad',Other:'badge-neutral'}[t]||'badge-neutral'; }
 
 const STAGES = [
   {k:'inquiry',label:'Inquiry'},{k:'pre',label:'Pre-Production'},
@@ -783,13 +819,12 @@ function weekStrip(){
         <span><i class="week-dot app"></i>Shoots</span>
         <span><i class="week-dot gcal"></i>Google Calendar</span>
       </span>
-      <span class="week-open-link" data-action="nav" data-view="boards"><b>${PROJECTS.filter(p=>p.stage!=='delivered').length}</b> Open Projects ${I.chevR}</span>
     </div>
     <div class="week-strip">
       ${days.map(d=>{
         const iso=isoLocal(d), isToday=iso===todayIso;
         const appN=app.filter(e=>e.date===iso).length, gcalN=GCAL_EVENTS.filter(e=>e.date===iso).length;
-        return `<div class="week-day ${isToday?'today':''}" data-action="nav" data-view="schedule">
+        return `<div class="week-day ${isToday?'today':''}" data-action="calGoDay" data-date="${iso}">
           <div class="week-day-name">${d.toLocaleDateString('en-US',{weekday:'short'})}</div>
           <div class="week-day-num">${d.getDate()}</div>
           <div class="week-day-dots">${'<span class="week-dot app"></span>'.repeat(Math.min(appN,3))}${'<span class="week-dot gcal"></span>'.repeat(Math.min(gcalN,3))}</div>
@@ -975,14 +1010,14 @@ function nextSteps(){
       steps.push({icon:I.users,text:`<b>${esc(p.name)}</b> has no crew assigned yet`,id:p.id,tab:'crew',sort:days});
     }
     if(p.stage==='pre' && (p.type==='Music Video'||p.type==='Wedding') && flatScenes(p).length===0){
-      steps.push({icon:I.film,text:`Build the storyline for <b>${esc(p.name)}</b> to generate its shot list`,id:p.id,tab:'storyline',sort:days});
+      steps.push({icon:I.film,text:`<b>${esc(p.name)}</b> needs its storyline built to generate a shot list`,id:p.id,tab:'storyline',sort:days});
     }
     if(p.invoice){
       const inv=p.invoice, outstanding=invoiceTotal(inv)-invoicePaidToDate(inv);
       if(invoiceStatusLabel(inv)==='Draft'){
-        steps.push({icon:I.invoice,text:`Send the invoice for <b>${esc(p.name)}</b>`,id:p.id,tab:'financials',sort:days});
+        steps.push({icon:I.invoice,text:`<b>${esc(p.name)}</b> — invoice needs to be sent`,id:p.id,tab:'financials',sort:days});
       } else if((p.stage==='pre'||p.stage==='post') && outstanding>0){
-        steps.push({icon:I.invoice,text:`Collect the outstanding balance (${fmtMoney(outstanding)}) for <b>${esc(p.name)}</b>`,id:p.id,tab:'financials',sort:days});
+        steps.push({icon:I.invoice,text:`<b>${esc(p.name)}</b> has an outstanding balance of ${fmtMoney(outstanding)}`,id:p.id,tab:'financials',sort:days});
       }
     }
   });
@@ -1019,7 +1054,12 @@ function viewDashboard(){
   return `
   <div class="welcome-head">${logoMark}
     <div><h1>Welcome back</h1><div class="wdate">${today}</div></div></div>
+  <div class="sprocket-divider"></div>
   ${weekStrip()}
+  <div class="card stat-tile" style="max-width:260px;margin-top:14px" data-action="nav" data-view="boards">
+    <span class="stat-label">Open Projects</span><span class="val">${open.length}</span>
+    <span class="sub">In progress right now</span>
+  </div>
   ${conflicts.length?`<div class="conflict-banner">${I.alert}<div>
       <b>${conflicts.length} scheduling conflict${conflicts.length===1?'':'s'} to resolve</b>
       ${conflicts.map(c=>`${c.people.map(pid=>esc(contact(pid).name)).join(', ')} booked on both "${esc(eventTitle(c.a))}" and "${esc(eventTitle(c.b))}", ${fmtDate(c.a.date)}`).join(' · ')}
@@ -1046,6 +1086,7 @@ function viewBoards(){
       <div><h1>Boards</h1><p>Every project, from first inquiry to delivered film.</p></div>
       <button class="btn btn-primary" data-action="newProject">${I.plus} New Project</button>
     </div>
+    <div class="sprocket-divider"></div>
     <div class="board">
       ${STAGES.map(st=>{
         const items=PROJECTS.filter(p=>p.stage===st.k);
@@ -1338,8 +1379,8 @@ function tabCallsheet(p){
       </div>
       <div class="cs-section"><h4>Schedule</h4>
         <div class="cs-grid">
-          <div><div class="stat-label">Call time</div><div class="mono" style="font-weight:700">${p.callTime}</div></div>
-          <div><div class="stat-label">Wrap</div><div class="mono" style="font-weight:700">${p.wrapTime}</div></div>
+          <div><div class="stat-label">Call time</div><span class="timecode" style="margin-top:4px">${p.callTime}</span></div>
+          <div><div class="stat-label">Wrap</div><span class="timecode" style="margin-top:4px">${p.wrapTime}</span></div>
           <div><div class="stat-label">Weather</div><div style="font-weight:700">Check morning of</div></div>
         </div>
       </div>
@@ -1384,6 +1425,7 @@ function viewLocations(){
   return `
   <div class="page-head"><div><h1>Locations</h1><p>Every venue, set, and address — searchable across all projects.</p></div>
     <button class="btn btn-primary" data-action="openModal" data-modal="location">${I.plus} Add Location</button></div>
+  <div class="sprocket-divider"></div>
   <div class="chip-row" style="margin-bottom:18px">${types.map(t=>`<span class="chip ${S.locType===t?'active':''}" data-action="locTypeFilter" data-type="${t}">${t==='all'?'All types':t}</span>`).join('')}</div>
   <div class="grid-cards">${filtered.map(locCard).join('')||`<div class="empty">${I.pin}<div>No locations match.</div></div>`}</div>`;
 }
@@ -1406,6 +1448,7 @@ function viewContacts(){
   return `
   <div class="page-head"><div><h1>Cast &amp; Crew</h1><p>Actors, musicians, camera, lighting, sound &amp; post — one directory.</p></div>
     <button class="btn btn-primary" data-action="openModal" data-modal="contact">${I.plus} Add Person</button></div>
+  <div class="sprocket-divider"></div>
   <div class="chip-row" style="margin-bottom:18px">${roles.map(r=>`<span class="chip ${S.contactRole===r?'active':''}" data-action="roleFilter" data-role="${esc(r)}">${r==='all'?'All roles':r}</span>`).join('')}</div>
   <div class="grid-cards">${filtered.map(personCard).join('')||`<div class="empty">${I.users}<div>No one matches.</div></div>`}</div>`;
 }
@@ -1423,17 +1466,17 @@ function personCard(c){
 function eventCardHTML(e,conflictEventIds){
   const p=project(e.projectId); const crew=e.crew.map(contact).filter(Boolean);
   const loc=p?getLoc(p.locationIds[0]):null;
-  return `<div class="event-card ${conflictEventIds.has(e.id)?'conflict':''}" data-action="openProject" data-id="${e.projectId}">
+  return `<div class="event-card ${conflictEventIds.has(e.id)?'conflict':''}" ${p?`data-action="openProject" data-id="${p.id}"`:''}>
     <div class="event-date"><b>${dayNum(e.date)}</b><span>${monAbbr(e.date)}</span></div>
     <div class="event-main">
       <div class="event-title">${esc(eventTitle(e))} ${conflictEventIds.has(e.id)?'<span class=\"badge badge-bad\">Conflict</span>':''}</div>
       <div class="event-sub">
-        <span class="mono">${I.clock.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${e.callTime}–${e.wrapTime}</span>
+        <span class="timecode">${I.clock.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${e.callTime}–${e.wrapTime}</span>
         ${loc?`<span>${I.pin.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${esc(loc.name)}</span>`:''}
         <span>${I.users.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${crew.map(c=>esc(c.name)).join(', ')||'No crew yet'}</span>
       </div>
     </div>
-    <span class="badge badge-neutral">${esc(p?p.type:'')}</span>
+    ${e.type&&e.type!=='Shoot Day'?`<span class="badge ${eventTypeBadge(e.type)}">${esc(e.type)}</span>`:`<span class="badge badge-neutral">${esc(p?p.type:'')}</span>`}
   </div>`;
 }
 function calRefDate(){return new Date(S.calDate+'T00:00:00')}
@@ -1458,8 +1501,11 @@ function calToolbar(){
       <button class="iconbtn" data-action="calNav" data-dir="1">${I.chevR}</button>
       <span class="cal-nav-label">${esc(calRangeLabel())}</span>
     </div>
-    <div class="chip-row" style="flex:none">
-      ${['day','week','month'].map(v=>`<span class="chip ${S.calView===v?'active':''}" data-action="calSetView" data-view="${v}">${v[0].toUpperCase()+v.slice(1)}</span>`).join('')}
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <div class="chip-row" style="flex:none">
+        ${['day','week','month'].map(v=>`<span class="chip ${S.calView===v?'active':''}" data-action="calSetView" data-view="${v}">${v[0].toUpperCase()+v.slice(1)}</span>`).join('')}
+      </div>
+      <button class="btn btn-sm btn-primary" data-action="openModal" data-modal="event">${I.plus} Add Event</button>
     </div>
   </div>`;
 }
@@ -1475,7 +1521,7 @@ function monthView(events,conflictEventIds){
       const out=d.getMonth()!==ref.getMonth(), isToday=iso===todayIso, shown=dayEvents.slice(0,3);
       return `<div class="month-cell ${out?'out':''} ${isToday?'today':''}" data-action="calGoDay" data-date="${iso}">
         <div class="month-cell-num">${d.getDate()}</div>
-        ${shown.map(e=>`<div class="month-pill ${conflictEventIds.has(e.id)?'conflict':''}" data-action="openProject" data-id="${e.projectId}" title="${esc(eventTitle(e))}">${esc(eventTitle(e))}</div>`).join('')}
+        ${shown.map(e=>`<div class="month-pill ${conflictEventIds.has(e.id)?'conflict':''}" ${project(e.projectId)?`data-action="openProject" data-id="${e.projectId}"`:''} title="${esc(eventTitle(e))}">${esc(eventTitle(e))}</div>`).join('')}
         ${dayEvents.length>3?`<div class="month-more">+${dayEvents.length-3} more</div>`:''}
       </div>`;
     }).join('')}
@@ -1492,7 +1538,7 @@ function weekView(events,conflictEventIds){
           <div class="dow">${d.toLocaleDateString('en-US',{weekday:'short'})}</div>
           <div class="num">${d.getDate()}</div>
         </div>
-        ${dayEvents.map(e=>`<div class="week-ev ${conflictEventIds.has(e.id)?'conflict':''}" data-action="openProject" data-id="${e.projectId}">
+        ${dayEvents.map(e=>`<div class="week-ev ${conflictEventIds.has(e.id)?'conflict':''}" ${project(e.projectId)?`data-action="openProject" data-id="${e.projectId}"`:''}>
           <div class="week-ev-title">${esc(eventTitle(e))}</div>
           <div class="week-ev-time mono">${e.callTime}–${e.wrapTime}</div>
         </div>`).join('')}
@@ -1513,6 +1559,7 @@ function viewSchedule(){
     : dayView(events,conflictEventIds);
   return `
   <div class="page-head"><div><h1>Schedule</h1><p>Every shoot day across every project — crew conflicts are flagged automatically.</p></div></div>
+  <div class="sprocket-divider"></div>
   ${conflicts.map(c=>`<div class="conflict-banner">${I.alert}<div>
       <b>Scheduling conflict on ${fmtDate(c.a.date)}</b>
       ${c.people.map(pid=>esc(contact(pid).name)).join(', ')} ${c.people.length===1?'is':'are'} booked on both
@@ -1561,11 +1608,39 @@ function modalHTML(){
       <button class="btn btn-primary" style="width:100%;justify-content:center" data-action="saveProject">${I.plus} Create Project</button>
     </div></div>`;
   }
+  if(S.modal==='event'){
+    return `<div class="overlay" data-action="closeModal"><div class="modal" data-stop>
+      <div class="modal-head"><h3>Add Event</h3><button class="iconbtn" data-action="closeModal">${I.close}</button></div>
+      <div class="field-row">
+        <div class="field"><label>Event type</label><select class="sel" id="f-etype">
+          ${EVENT_TYPES.map(t=>`<option>${t}</option>`).join('')}
+        </select></div>
+        <div class="field"><label>Project (optional)</label><select class="sel" id="f-eproj">
+          <option value="">— None —</option>
+          ${PROJECTS.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}
+        </select></div>
+      </div>
+      <div class="field"><label>Title</label><input class="inp" id="f-elabel" placeholder="e.g. Client check-in call"></div>
+      <div class="field"><label>Date</label><input class="inp" type="date" id="f-edate"></div>
+      <div class="field-row">
+        <div class="field"><label>Start time</label><input class="inp" id="f-ecall" placeholder="2:00 PM"></div>
+        <div class="field"><label>End time</label><input class="inp" id="f-ewrap" placeholder="4:00 PM"></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" data-action="saveEvent">${I.plus} Add Event</button>
+    </div></div>`;
+  }
   return '';
 }
 
 /* ══════════════════════════════ ACTIONS ══════════════════════════════ */
 function showToast(msg){S.toast=msg;render();setTimeout(()=>{S.toast=null;render()},2600)}
+function showSignOff(label){
+  const el=document.createElement('div');
+  el.className='signoff';
+  el.innerHTML=`<img src="assets/mb-mark.png" alt=""><span>${esc(label)}</span>`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2000);
+}
 const ACTIONS = {
   nav:(el)=>{S.view=el.dataset.view;S.sidebarOpen=false;if(el.dataset.view==='project')S.tab='overview';render()},
   openSidebar:()=>{S.sidebarOpen=true;render()},
@@ -1574,7 +1649,10 @@ const ACTIONS = {
     if(AUD.el && AUD.projectId && AUD.projectId!==el.dataset.id) AUD.el.pause();
     S.projectId=el.dataset.id;S.view='project';S.tab=el.dataset.tab||'overview';render()},
   setTab:(el)=>{S.tab=el.dataset.tab;render()},
-  setStage:(el)=>{project(el.dataset.id).stage=el.dataset.stage;render()},
+  setStage:(el)=>{
+    const p=project(el.dataset.id); const was=p.stage; p.stage=el.dataset.stage; render();
+    if(el.dataset.stage==='delivered'&&was!=='delivered')showSignOff('Delivered');
+  },
   addScene:(el)=>{
     const p=project(el.dataset.id);
     const sc={id:'s'+Date.now(),heading:'New scene',desc:'Describe the action…',locId:(p.locationIds[0]||LOCATIONS[0].id),subScenes:[]};
@@ -1600,7 +1678,7 @@ const ACTIONS = {
   shotLocFilter:(el)=>{S.shotLoc=el.dataset.loc;render()},
   calSetView:(el)=>{S.calView=el.dataset.view;render()},
   calToday:()=>{S.calDate=isoLocal(new Date());render()},
-  calGoDay:(el)=>{S.calDate=el.dataset.date;S.calView='day';render()},
+  calGoDay:(el)=>{S.calDate=el.dataset.date;S.calView='day';S.view='schedule';render()},
   calNav:(el)=>{
     const dir=Number(el.dataset.dir); const d=calRefDate();
     if(S.calView==='day')d.setDate(d.getDate()+dir);
@@ -1625,7 +1703,8 @@ const ACTIONS = {
     inv.items=inv.items.filter(i=>i.id!==el.dataset.item);render()},
   toggleDeposit:(el)=>{getInvoice(project(el.dataset.id)).depositPaid=el.checked;render()},
   toggleBalance:(el)=>{const inv=getInvoice(project(el.dataset.id));inv.balancePaid=el.checked;
-    if(el.checked)inv.status='sent';render()},
+    if(el.checked)inv.status='sent';render();
+    if(el.checked)showSignOff('Invoice Paid');},
   sendInvoice:(el)=>{const inv=getInvoice(project(el.dataset.id));inv.status='sent';render();
     showToast('Invoice marked sent — connect an email relay in the backend proxy to actually deliver it (see INTEGRATIONS.md)')},
   syncQuickbooks:()=>{showToast('Connect a QuickBooks account to sync invoices — needs QuickBooks OAuth wired up in the backend proxy')},
@@ -1667,10 +1746,20 @@ const ACTIONS = {
       crew:[],locationIds:[],scenes:[]});
     S.modal=null;render();showToast('Project created');
   },
+  saveEvent:()=>{
+    const v=id=>document.getElementById(id).value.trim();
+    if(!v('f-elabel')){showToast('Title is required');return}
+    if(!v('f-edate')){showToast('Date is required');return}
+    EXTRA_EVENTS.push({id:'e'+Date.now(),projectId:v('f-eproj')||null,type:v('f-etype'),label:v('f-elabel'),
+      date:v('f-edate'),callTime:v('f-ecall')||'TBD',wrapTime:v('f-ewrap')||'TBD',crew:[]});
+    S.modal=null;render();showToast('Event added');
+  },
 };
 document.addEventListener('click',e=>{
-  if(e.target.closest('[data-stop]')&&e.target.closest('.overlay')&&!e.target.closest('[data-action]'))return;
-  const el=e.target.closest('[data-action]'); if(!el)return;
+  const stop=e.target.closest('[data-stop]');
+  const el=e.target.closest('[data-action]');
+  if(stop && (!el || !stop.contains(el))) return;
+  if(!el)return;
   const fn=ACTIONS[el.dataset.action]; if(fn)fn(el,e);
 });
 document.addEventListener('pointerdown',e=>{
