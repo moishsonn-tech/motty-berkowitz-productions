@@ -165,6 +165,30 @@ a{color:inherit}
 .stat-tile.flagship .val{font-size:32px;color:var(--accent-dark)}
 .stat-tile .sub{font-size:11.5px;color:var(--ink-3)}
 .stat-tile.flag .val{color:var(--bad)}
+
+.week-card{margin-bottom:14px}
+.week-strip-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;
+  flex-wrap:wrap;gap:10px}
+.week-open-link{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;
+  color:var(--ink-2);cursor:pointer;background:var(--surface-2);padding:6px 12px;border-radius:999px;
+  transition:background .15s}
+.week-open-link:hover{background:var(--line-2)}
+.week-open-link b{color:var(--accent-dark);font-variant-numeric:tabular-nums}
+.week-legend{display:flex;gap:14px;font-size:11.5px;color:var(--ink-3);font-weight:600}
+.week-legend span{display:inline-flex;align-items:center;gap:5px}
+.week-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.week-dot.app{background:var(--accent)}
+.week-dot.gcal{background:var(--info)}
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.week-day{border-radius:var(--r-md);padding:12px 6px;text-align:center;cursor:pointer;
+  background:var(--surface-2);transition:transform .15s,box-shadow .15s;border:1px solid transparent}
+.week-day:hover{transform:translateY(-2px);box-shadow:var(--sh-sm)}
+.week-day.today{background:var(--accent-wash);border-color:rgba(232,166,60,.35)}
+.week-day-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+.week-day.today .week-day-name{color:var(--accent-dark)}
+.week-day-num{font-size:18px;font-weight:800;margin:4px 0 6px;font-variant-numeric:tabular-nums}
+.week-day-dots{display:flex;justify-content:center;gap:3px;min-height:7px}
+@media (max-width:900px){.week-day{padding:8px 3px}.week-day-num{font-size:15px}.week-strip{gap:5px}}
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:28px 0 12px}
 .section-head h2{font-size:16px}
 .step-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);
@@ -187,7 +211,7 @@ a{color:inherit}
   .oproj-date{width:auto}}
 
 /* ── Kanban ──────────────────────────────────────────────────────────────── */
-.board{display:grid;grid-template-columns:repeat(5,minmax(250px,1fr));gap:14px;align-items:start;overflow-x:auto}
+.board{display:grid;grid-template-columns:repeat(4,minmax(250px,1fr));gap:14px;align-items:start;overflow-x:auto}
 .col{background:var(--surface-2);border-radius:var(--r-lg);padding:12px;min-width:250px}
 .col-head{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 12px}
 .col-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}
@@ -224,6 +248,14 @@ a{color:inherit}
 .proj-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}
 .proj-title{font-size:24px;margin-bottom:4px}
 .proj-sub{color:var(--ink-2);font-size:13.5px}
+.inline-edit{border:1px solid transparent;background:transparent;border-radius:var(--r-sm);
+  transition:border-color .15s,background .15s;font-family:var(--font)}
+.inline-edit:hover{border-color:var(--line)}
+.inline-edit:focus{border-color:var(--accent);background:var(--surface);outline:none}
+.proj-title-input{font-size:24px;font-weight:800;width:100%;padding:3px 6px;margin:-3px 0 2px -6px;color:var(--ink)}
+.proj-sub-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;color:var(--ink-2);font-size:13.5px}
+.proj-sub-input,.proj-sub-select{padding:3px 6px;font-size:13.5px;color:var(--ink-2);cursor:text}
+.proj-sub-select{cursor:pointer}
 .stage-track{display:flex;gap:6px;margin-top:14px}
 .stage-pip{flex:1;text-align:center;padding:7px 4px;border-radius:var(--r-sm);font-size:10.5px;font-weight:700;
   text-transform:uppercase;letter-spacing:.04em;background:var(--surface-2);color:var(--ink-3);cursor:pointer;
@@ -318,6 +350,39 @@ a{color:inherit}
 .event-sub span{display:flex;gap:4px;align-items:center}
 .event-sub .ico{width:12px;height:12px}
 
+/* ── Calendar toolbar / month / week views ──────────────────────────────── */
+.cal-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.cal-nav{display:flex;align-items:center;gap:8px}
+.cal-nav-label{font-weight:800;font-size:15px;min-width:170px}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.month-dow{font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--ink-3);text-align:center;padding-bottom:6px}
+.month-cell{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:8px;
+  min-height:92px;cursor:pointer;transition:box-shadow .15s,transform .15s}
+.month-cell:hover{box-shadow:var(--sh-sm);transform:translateY(-1px)}
+.month-cell.out{opacity:.4}
+.month-cell.today{border-color:var(--accent);background:var(--accent-wash)}
+.month-cell-num{font-size:12.5px;font-weight:700;margin-bottom:5px}
+.month-pill{font-size:10px;font-weight:600;padding:2px 6px;border-radius:5px;margin-bottom:3px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;background:var(--accent-wash);color:var(--accent-dark)}
+.month-pill.conflict{background:var(--bad-wash);color:var(--bad)}
+.month-more{font-size:10px;color:var(--ink-3);font-weight:600}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.week-col-head{text-align:center;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--line);cursor:pointer}
+.week-col-head .dow{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--ink-3)}
+.week-col-head .num{font-size:16px;font-weight:800;margin-top:2px}
+.week-col.today .week-col-head .num{color:var(--accent-dark)}
+.week-ev{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:7px 8px;
+  margin-bottom:6px;font-size:11.5px;cursor:pointer;transition:box-shadow .15s}
+.week-ev:hover{box-shadow:var(--sh-sm)}
+.week-ev-title{font-weight:700;margin-bottom:2px}
+.week-ev-time{color:var(--ink-3);font-size:10.5px}
+.week-ev.conflict{border-color:rgba(210,100,95,.4)}
+@media (max-width:900px){
+  .month-cell{min-height:60px;padding:5px}
+  .week-grid{grid-template-columns:1fr;gap:0}
+  .week-col{border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:10px}
+}
+
 /* ── Call sheet ──────────────────────────────────────────────────────────── */
 .callsheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
 .cs-band{background:var(--sb-bg);color:var(--sb-ink);padding:20px 24px}
@@ -334,6 +399,7 @@ a{color:inherit}
 .inv-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
 .inv-stat{padding:16px 18px}
 .inv-stat .val{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:4px}
+.inv-stat .sub{font-size:11.5px;color:var(--ink-3);display:block;margin-top:2px}
 .inv-item-row{display:grid;grid-template-columns:1fr 130px 32px;gap:10px;align-items:center;margin-bottom:8px}
 .inv-item-row .inp{font-size:13px}
 .inv-item-amt{text-align:right;font-family:var(--mono)}
@@ -399,9 +465,8 @@ a{color:inherit}
   .hamburger{display:inline-flex}
   .search-box{display:none}
   .content{padding:16px;padding-bottom:calc(var(--bottomnav-h) + 22px + env(safe-area-inset-bottom))}
-  .board{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:82%}
-  .board{scroll-snap-type:x mandatory}
-  .col{scroll-snap-align:start}
+  .board{display:flex;flex-direction:column;overflow-x:hidden}
+  .col{min-width:0}
   .cs-grid{grid-template-columns:1fr 1fr}
   .field-row{grid-template-columns:1fr}
   .shot-row{grid-template-columns:44px 1fr;row-gap:4px}
@@ -486,7 +551,7 @@ function initials(n){return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUppe
 function personColor(id){const h=[...id].reduce((a,c)=>a+c.charCodeAt(0),0)%360;return `hsl(${h} 42% 46%)`}
 
 let PROJECTS = [
-  {id:'p1',name:'Klein Wedding Film',client:'The Klein Family',type:'Wedding',stage:'production',
+  {id:'p1',name:'Klein Wedding Film',client:'The Klein Family',type:'Wedding',stage:'pre',
    shootDate:'2026-08-14',callTime:'2:00 PM',wrapTime:'10:00 PM',budget:'$4,200',
    crew:['c1','c2','c3','c10'],locationIds:['l1'],
    scenes:[
@@ -496,11 +561,11 @@ let PROJECTS = [
    ],
    invoice:{number:'INV-1041',status:'sent',issueDate:'2026-07-20',dueDate:'2026-08-14',depositPct:50,depositPaid:true,balancePaid:false,
      items:[
-       {id:'i1',desc:'Wedding Package — Creative & Production Fee',amount:1900},
-       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850},
-       {id:'i3',desc:'Gaffer (Dovid Stern)',amount:500},
-       {id:'i4',desc:'Sound Mixer (Chaim Weiss)',amount:450},
-       {id:'i5',desc:'2nd Camera (Ruchy Green)',amount:500},
+       {id:'i1',desc:'Wedding Package — Creative & Production Fee',amount:1900,category:'motty'},
+       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850,category:'other'},
+       {id:'i3',desc:'Gaffer (Dovid Stern)',amount:500,category:'other'},
+       {id:'i4',desc:'Sound Mixer (Chaim Weiss)',amount:450,category:'other'},
+       {id:'i5',desc:'2nd Camera (Ruchy Green)',amount:500,category:'other'},
      ]}},
   {id:'p2',name:'Rising — Music Video',client:'Shloime Gold',type:'Music Video',stage:'pre',
    shootDate:'2026-08-22',callTime:'5:30 AM',wrapTime:'8:00 PM',budget:'$6,500',
@@ -515,11 +580,11 @@ let PROJECTS = [
    ],
    invoice:{number:'INV-1042',status:'draft',issueDate:'2026-08-04',dueDate:'2026-08-22',depositPct:50,depositPaid:false,balancePaid:false,
      items:[
-       {id:'i1',desc:'Music Video Package — Creative & Production Fee',amount:4150},
-       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850},
-       {id:'i3',desc:'Drone Operator (Levi Adler)',amount:600},
-       {id:'i4',desc:'Gaffer (Dovid Stern)',amount:500},
-       {id:'i5',desc:'Editor (Aidy Rosen)',amount:400},
+       {id:'i1',desc:'Music Video Package — Creative & Production Fee',amount:4150,category:'motty'},
+       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850,category:'other'},
+       {id:'i3',desc:'Drone Operator (Levi Adler)',amount:600,category:'other'},
+       {id:'i4',desc:'Gaffer (Dovid Stern)',amount:500,category:'other'},
+       {id:'i5',desc:'Editor (Aidy Rosen)',amount:400,category:'other'},
      ]}},
   {id:'p3',name:'Landers Corporate Brand Reel',client:'Landers College',type:'Corporate',stage:'post',
    shootDate:'2026-07-30',callTime:'9:00 AM',wrapTime:'4:00 PM',budget:'$3,000',
@@ -530,23 +595,23 @@ let PROJECTS = [
    ],
    invoice:{number:'INV-1039',status:'paid',issueDate:'2026-07-15',dueDate:'2026-07-30',depositPct:50,depositPaid:true,balancePaid:true,
      items:[
-       {id:'i1',desc:'Corporate Brand Reel — Creative & Production Fee',amount:1400},
-       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850},
-       {id:'i3',desc:'Sound Mixer (Chaim Weiss)',amount:450},
-       {id:'i4',desc:'Producer / PA (Baila Fried)',amount:300},
+       {id:'i1',desc:'Corporate Brand Reel — Creative & Production Fee',amount:1400,category:'motty'},
+       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850,category:'other'},
+       {id:'i3',desc:'Sound Mixer (Chaim Weiss)',amount:450,category:'other'},
+       {id:'i4',desc:'Producer / PA (Baila Fried)',amount:300,category:'other'},
      ]}},
   {id:'p4',name:'Berger Bar Mitzvah Highlight',client:'The Berger Family',type:'Bar Mitzvah',stage:'inquiry',
    shootDate:'2026-09-10',callTime:'10:00 AM',wrapTime:'6:00 PM',budget:'$2,800',
    crew:[],locationIds:['l1'],scenes:[],
    invoice:{number:'INV-1043',status:'draft',issueDate:'2026-08-04',dueDate:'2026-09-10',depositPct:50,depositPaid:false,balancePaid:false,
-     items:[{id:'i1',desc:'Bar Mitzvah Package — Creative & Production Fee',amount:2800}]}},
+     items:[{id:'i1',desc:'Bar Mitzvah Package — Creative & Production Fee',amount:2800,category:'motty'}]}},
   {id:'p5',name:'Community Chanuka Gala Recap',client:'Community Board',type:'Event',stage:'delivered',
    shootDate:'2026-06-01',callTime:'6:00 PM',wrapTime:'10:00 PM',budget:'$1,900',
    crew:['c11'],locationIds:['l1'],scenes:[],
    invoice:{number:'INV-1038',status:'paid',issueDate:'2026-05-20',dueDate:'2026-06-01',depositPct:50,depositPaid:true,balancePaid:true,
      items:[
-       {id:'i1',desc:'Event Recap Package — Creative & Production Fee',amount:1650},
-       {id:'i2',desc:'PA (Mendy Katz)',amount:250},
+       {id:'i1',desc:'Event Recap Package — Creative & Production Fee',amount:1650,category:'motty'},
+       {id:'i2',desc:'PA (Mendy Katz)',amount:250,category:'other'},
      ]}},
 ];
 // Pre-light day for the music video happens to land on the wedding date — deliberate conflict for the schedule demo.
@@ -555,7 +620,7 @@ let EXTRA_EVENTS = [
 ];
 
 const STAGES = [
-  {k:'inquiry',label:'Inquiry'},{k:'pre',label:'Pre-Production'},{k:'production',label:'Production'},
+  {k:'inquiry',label:'Inquiry'},{k:'pre',label:'Pre-Production'},
   {k:'post',label:'Post-Production'},{k:'delivered',label:'Delivered'},
 ];
 
@@ -563,7 +628,7 @@ const STAGES = [
 const S = {
   view:'dashboard', projectId:null, tab:'overview', sidebarOpen:false,
   locSearch:'', locType:'all', contactSearch:'', contactRole:'all', shotLoc:'all', shotSearch:'',
-  modal:null, toast:null,
+  modal:null, toast:null, calView:'month', calDate:isoLocal(new Date()),
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -602,11 +667,11 @@ function parseMoney(s){return Number(String(s==null?'':s).replace(/[^0-9.\-]/g,'
 function fmtMoney(n){return '$'+Math.round(n).toLocaleString('en-US')}
 function defaultInvoice(p){
   const items=p.crew.map(cid=>{const c=contact(cid);const rate=parseMoney(c.rate);
-    return rate?{id:'ci-'+c.id,desc:c.role+' ('+c.name+')',amount:rate}:null}).filter(Boolean);
+    return rate?{id:'ci-'+c.id,desc:c.role+' ('+c.name+')',amount:rate,category:'other'}:null}).filter(Boolean);
   const crewSum=items.reduce((s,i)=>s+i.amount,0);
   const budgetNum=parseMoney(p.budget);
   const fee=Math.max(budgetNum-crewSum, budgetNum?Math.round(budgetNum*0.3):500);
-  items.unshift({id:'ci-fee',desc:p.type+' Package — Creative & Production Fee',amount:fee});
+  items.unshift({id:'ci-fee',desc:p.type+' Package — Creative & Production Fee',amount:fee,category:'motty'});
   return {number:'INV-'+(1044+PROJECTS.indexOf(p)),status:'draft',issueDate:new Date().toISOString().slice(0,10),
     dueDate:p.shootDate,depositPct:50,depositPaid:false,balancePaid:false,items};
 }
@@ -647,6 +712,39 @@ function conflictsFor(events){
   return conflicts;
 }
 function eventTitle(e){const p=project(e.projectId);return p?p.name+(e.label!=='Shoot Day'?' — '+e.label:''):e.label}
+
+/* ── Dashboard week strip (app events now; Google Calendar events once the backend syncs them) ── */
+let GCAL_EVENTS = [];
+function isoLocal(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function weekDates(){
+  const days=[]; const base=new Date(); base.setHours(0,0,0,0);
+  for(let i=0;i<7;i++){const d=new Date(base);d.setDate(base.getDate()+i);days.push(d)}
+  return days;
+}
+function weekStrip(){
+  const days=weekDates(); const app=allEvents(); const todayIso=isoLocal(new Date());
+  return `<div class="card week-card">
+    <div class="week-strip-head">
+      <span class="stat-label">This Week</span>
+      <span class="week-legend">
+        <span><i class="week-dot app"></i>Shoots</span>
+        <span><i class="week-dot gcal"></i>Google Calendar</span>
+      </span>
+      <span class="week-open-link" data-action="nav" data-view="boards"><b>${PROJECTS.filter(p=>p.stage!=='delivered').length}</b> Open Projects ${I.chevR}</span>
+    </div>
+    <div class="week-strip">
+      ${days.map(d=>{
+        const iso=isoLocal(d), isToday=iso===todayIso;
+        const appN=app.filter(e=>e.date===iso).length, gcalN=GCAL_EVENTS.filter(e=>e.date===iso).length;
+        return `<div class="week-day ${isToday?'today':''}" data-action="nav" data-view="schedule">
+          <div class="week-day-name">${d.toLocaleDateString('en-US',{weekday:'short'})}</div>
+          <div class="week-day-num">${d.getDate()}</div>
+          <div class="week-day-dots">${'<span class="week-dot app"></span>'.repeat(Math.min(appN,3))}${'<span class="week-dot gcal"></span>'.repeat(Math.min(gcalN,3))}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
 
 /* ── Audio player (real playback + real waveform, session-only — no upload/storage yet) ──── */
 const AUD = {projectId:null, el:null, url:null, duration:0, peaks:[]};
@@ -778,54 +876,62 @@ function nextSteps(){
     if(p.stage==='delivered')return;
     const days=daysUntil(p.shootDate);
     if(p.stage==='inquiry'){
-      steps.push({icon:I.mail,text:`Follow up with <b>${esc(p.client)}</b> — ${esc(p.name)} is still in Inquiry`,id:p.id});
+      steps.push({icon:I.calendar,text:`<b>${esc(p.name)}</b> has no confirmed shoot date — confirm date with ${esc(p.client)}`,id:p.id,sort:Infinity});
+      return;
     }
-    if(days>=0 && days<=14 && p.stage!=='inquiry'){
-      steps.push({icon:I.calendar,text:`<b>${esc(p.name)}</b> shoots in ${days} day${days===1?'':'s'} — confirm the call sheet`,id:p.id,tab:'callsheet'});
+    if(days>=0 && days<=14){
+      steps.push({icon:I.calendar,text:`<b>${esc(p.name)}</b> shoots in ${days} day${days===1?'':'s'} — confirm the call sheet`,id:p.id,tab:'callsheet',sort:days});
     }
-    if((p.stage==='pre'||p.stage==='production') && p.crew.length===0){
-      steps.push({icon:I.users,text:`<b>${esc(p.name)}</b> has no crew assigned yet`,id:p.id,tab:'crew'});
+    if(p.stage==='pre' && p.crew.length===0){
+      steps.push({icon:I.users,text:`<b>${esc(p.name)}</b> has no crew assigned yet`,id:p.id,tab:'crew',sort:days});
     }
-    if((p.stage==='pre'||p.stage==='production') && (p.type==='Music Video'||p.type==='Wedding') && p.scenes.length===0){
-      steps.push({icon:I.film,text:`Build the storyline for <b>${esc(p.name)}</b> to generate its shot list`,id:p.id,tab:'storyline'});
+    if(p.stage==='pre' && (p.type==='Music Video'||p.type==='Wedding') && p.scenes.length===0){
+      steps.push({icon:I.film,text:`Build the storyline for <b>${esc(p.name)}</b> to generate its shot list`,id:p.id,tab:'storyline',sort:days});
     }
     if(p.invoice){
       const inv=p.invoice, outstanding=invoiceTotal(inv)-invoicePaidToDate(inv);
-      if(p.stage!=='inquiry' && invoiceStatusLabel(inv)==='Draft'){
-        steps.push({icon:I.invoice,text:`Send the invoice for <b>${esc(p.name)}</b>`,id:p.id,tab:'financials'});
-      } else if(p.stage==='production' && outstanding>0){
-        steps.push({icon:I.invoice,text:`Collect the outstanding balance (${fmtMoney(outstanding)}) for <b>${esc(p.name)}</b>`,id:p.id,tab:'financials'});
+      if(invoiceStatusLabel(inv)==='Draft'){
+        steps.push({icon:I.invoice,text:`Send the invoice for <b>${esc(p.name)}</b>`,id:p.id,tab:'financials',sort:days});
+      } else if((p.stage==='pre'||p.stage==='post') && outstanding>0){
+        steps.push({icon:I.invoice,text:`Collect the outstanding balance (${fmtMoney(outstanding)}) for <b>${esc(p.name)}</b>`,id:p.id,tab:'financials',sort:days});
       }
     }
   });
-  return steps;
+  return steps.sort((a,b)=>a.sort-b.sort);
+}
+function financialSummary(){
+  const withInv=PROJECTS.filter(p=>p.invoice);
+  let payoutDue=0,otherOwed=0,collected=0,invoiced=0;
+  withInv.forEach(p=>{
+    const inv=getInvoice(p),total=invoiceTotal(inv),paid=invoicePaidToDate(inv),owed=total-paid;
+    invoiced+=total;collected+=paid;
+    if(p.stage==='delivered')payoutDue+=owed;else otherOwed+=owed;
+  });
+  return `
+  <div class="section-head"><h2>Financial Overview</h2>
+    <button class="btn btn-sm btn-ghost" data-action="syncQuickbooks">${I.sync} Sync to QuickBooks</button></div>
+  <div class="inv-summary">
+    <div class="card inv-stat"><span class="stat-label">Awaiting Payout</span>
+      <span class="val" style="color:${payoutDue>0?'var(--bad)':'var(--ink)'}">${fmtMoney(payoutDue)}</span>
+      <span class="sub">Finalized projects, balance still owed</span></div>
+    <div class="card inv-stat"><span class="stat-label">Other Money Owed</span>
+      <span class="val" style="color:${otherOwed>0?'var(--warn)':'var(--ink)'}">${fmtMoney(otherOwed)}</span>
+      <span class="sub">Active projects, not yet collected</span></div>
+    <div class="card inv-stat"><span class="stat-label">Collected to Date</span>
+      <span class="val" style="color:var(--good)">${fmtMoney(collected)}</span>
+      <span class="sub">of ${fmtMoney(invoiced)} invoiced</span></div>
+  </div>`;
 }
 function viewDashboard(){
   const open=PROJECTS.filter(p=>p.stage!=='delivered');
-  const upcoming=open.filter(p=>daysUntil(p.shootDate)>=0).sort((a,b)=>a.shootDate.localeCompare(b.shootDate));
-  const next=upcoming[0];
   const conflicts=conflictsFor(allEvents());
   const steps=nextSteps();
   const today=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   return `
   <div class="welcome-head">${logoMark}
     <div><h1>Welcome back</h1><div class="wdate">${today}</div></div></div>
-  <div class="stat-row">
-    <div class="card stat-tile flagship" data-action="nav" data-view="schedule">
-      <span class="stat-label">Next Shoot</span>
-      <span class="val">${next?daysUntil(next.shootDate)+'d':'—'}</span>
-      <span class="sub">${next?esc(next.name)+' · '+fmtDate(next.shootDate):'Nothing scheduled'}</span>
-    </div>
-    <div class="card stat-tile" data-action="nav" data-view="boards">
-      <span class="stat-label">Open Projects</span><span class="val">${open.length}</span>
-      <span class="sub">In progress right now</span>
-    </div>
-    <div class="card stat-tile ${conflicts.length?'flag':''}" data-action="nav" data-view="schedule">
-      <span class="stat-label">Conflicts</span><span class="val">${conflicts.length}</span>
-      <span class="sub">${conflicts.length?'Need resolving':'All clear'}</span>
-    </div>
-  </div>
-  ${conflicts.length?`<div class="conflict-banner" style="margin-top:18px">${I.alert}<div>
+  ${weekStrip()}
+  ${conflicts.length?`<div class="conflict-banner">${I.alert}<div>
       <b>${conflicts.length} scheduling conflict${conflicts.length===1?'':'s'} to resolve</b>
       ${conflicts.map(c=>`${c.people.map(pid=>esc(contact(pid).name)).join(', ')} booked on both "${esc(eventTitle(c.a))}" and "${esc(eventTitle(c.b))}", ${fmtDate(c.a.date)}`).join(' · ')}
     </div></div>`:''}
@@ -833,15 +939,14 @@ function viewDashboard(){
   ${steps.length?steps.map(s=>`<div class="step-row" data-action="openProject" data-id="${s.id}" data-tab="${s.tab||'overview'}"><span class="step-ico">${s.icon}</span><span class="step-text">${s.text}</span></div>`).join(''):`<div class="empty">You're all caught up — no open action items.</div>`}
   <div class="section-head"><h2>Open Projects</h2><button class="btn btn-sm btn-ghost" data-action="nav" data-view="boards">View all ${I.chevR}</button></div>
   ${open.length?open.sort((a,b)=>a.shootDate.localeCompare(b.shootDate)).map(p=>{
-    const crew=p.crew.slice(0,4).map(cid=>{const c=contact(cid);return c?`<span class="avatar" style="background:${personColor(c.id)}" title="${esc(c.name)}">${initials(c.name)}</span>`:''}).join('');
     return `<div class="oproj-row" data-action="openProject" data-id="${p.id}">
       <span class="type-dot" style="background:${COLORS[p.type]}"></span>
       <div style="flex:1"><div class="oproj-name">${esc(p.name)}</div><div class="oproj-client">${esc(p.client)}</div></div>
       <span class="badge badge-neutral">${STAGES.find(s=>s.k===p.stage).label}</span>
       <span class="oproj-date mono">${fmtDate(p.shootDate)}</span>
-      <span class="avatar-stack">${crew}</span>
     </div>`;
   }).join(''):`<div class="empty">No open projects.</div>`}
+  ${financialSummary()}
   `;
 }
 
@@ -884,9 +989,19 @@ function viewProject(){
     <button class="back-link" data-action="nav" data-view="boards">${I.back} All Boards</button>
     <div class="slate-strip"></div>
     <div class="proj-head">
-      <div>
-        <div class="proj-title">${esc(p.name)}</div>
-        <div class="proj-sub">${esc(p.client)} · ${esc(p.type)} · Shoot ${fmtDate(p.shootDate)} · Budget ${esc(p.budget)}</div>
+      <div style="flex:1;min-width:0">
+        <input class="proj-title-input inline-edit" value="${esc(p.name)}" data-action="editProject" data-id="${p.id}" data-field="name">
+        <div class="proj-sub-row">
+          <input class="proj-sub-input inline-edit" value="${esc(p.client)}" data-action="editProject" data-id="${p.id}" data-field="client" placeholder="Client">
+          <span>·</span>
+          <select class="proj-sub-select inline-edit" data-action="editProject" data-id="${p.id}" data-field="type">
+            ${['Wedding','Music Video','Corporate','Bar Mitzvah','Event'].map(t=>`<option ${p.type===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+          <span>· Shoot</span>
+          <input type="date" class="proj-sub-input inline-edit mono" value="${p.shootDate}" data-action="editProject" data-id="${p.id}" data-field="shootDate">
+          <span>· Budget</span>
+          <input class="proj-sub-input inline-edit" style="width:90px" value="${esc(p.budget)}" data-action="editProject" data-id="${p.id}" data-field="budget">
+        </div>
       </div>
       <span class="badge badge-neutral">${STAGES.find(s=>s.k===p.stage).label}</span>
     </div>
@@ -905,17 +1020,25 @@ function viewProject(){
 }
 function tabOverview(p){
   const crew=p.crew.map(cid=>contact(cid)).filter(Boolean);
-  const locs=p.locationIds.map(getLoc).filter(Boolean);
   return `<div class="card">
     <div class="stat-label" style="margin-bottom:10px">Project info</div>
     <div class="field-row">
-      <div><div class="stat-label">Client</div><div style="margin-top:4px;font-weight:600">${esc(p.client)}</div></div>
-      <div><div class="stat-label">Type</div><div style="margin-top:4px;font-weight:600">${esc(p.type)}</div></div>
-      <div style="margin-top:14px"><div class="stat-label">Shoot day</div><div style="margin-top:4px;font-weight:600">${fmtDate(p.shootDate)}</div></div>
-      <div style="margin-top:14px"><div class="stat-label">Call → Wrap</div><div style="margin-top:4px;font-weight:600 " class="mono">${p.callTime} – ${p.wrapTime}</div></div>
-      <div style="margin-top:14px"><div class="stat-label">Budget</div><div style="margin-top:4px;font-weight:600">${esc(p.budget)}</div></div>
-      <div style="margin-top:14px"><div class="stat-label">Locations</div><div style="margin-top:4px;font-weight:600">${locs.map(l=>esc(l.name)).join(', ')||'—'}</div></div>
+      <div class="field"><label>Client</label><input class="inp" value="${esc(p.client)}" data-action="editProject" data-id="${p.id}" data-field="client"></div>
+      <div class="field"><label>Type</label><select class="sel" data-action="editProject" data-id="${p.id}" data-field="type">
+        ${['Wedding','Music Video','Corporate','Bar Mitzvah','Event'].map(t=>`<option ${p.type===t?'selected':''}>${t}</option>`).join('')}
+      </select></div>
+      <div class="field"><label>Shoot day</label><input class="inp" type="date" value="${p.shootDate}" data-action="editProject" data-id="${p.id}" data-field="shootDate"></div>
+      <div class="field"><label>Budget</label><input class="inp" value="${esc(p.budget)}" data-action="editProject" data-id="${p.id}" data-field="budget"></div>
+      <div class="field"><label>Call time</label><input class="inp" value="${esc(p.callTime)}" data-action="editProject" data-id="${p.id}" data-field="callTime"></div>
+      <div class="field"><label>Wrap time</label><input class="inp" value="${esc(p.wrapTime)}" data-action="editProject" data-id="${p.id}" data-field="wrapTime"></div>
     </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="stat-label" style="margin-bottom:10px">Linked locations</div>
+    <div class="chip-row">${LOCATIONS.map(l=>{
+      const linked=p.locationIds.includes(l.id);
+      return `<span class="chip ${linked?'active':''}" data-action="toggleProjectLocation" data-id="${p.id}" data-loc="${l.id}">${linked?I.check:I.plus} ${esc(l.name)}</span>`;
+    }).join('')}</div>
   </div>
   <div class="card" style="margin-top:14px">
     <div class="stat-label" style="margin-bottom:10px">Crew on this project</div>
@@ -1002,6 +1125,13 @@ function tabCrew(p){
     <div class="chip-row">${avail.map(c=>`<span class="chip" data-action="addCrew" data-id="${p.id}" data-cid="${c.id}">${I.plus} ${esc(c.name)} — ${esc(c.role)}</span>`).join('')||'Everyone in the directory is already assigned.'}</div>
   </div>`;
 }
+function invItemRow(p,it){
+  return `<div class="inv-item-row">
+    <input class="inp" value="${esc(it.desc)}" data-action="editInvoiceItem" data-id="${p.id}" data-item="${it.id}" data-field="desc">
+    <input class="inp inv-item-amt" type="number" value="${it.amount}" data-action="editInvoiceItem" data-id="${p.id}" data-item="${it.id}" data-field="amount">
+    <button class="inv-remove" data-action="removeInvoiceItem" data-id="${p.id}" data-item="${it.id}">${I.trash}</button>
+  </div>`;
+}
 function tabFinancials(p){
   const inv=getInvoice(p);
   const total=invoiceTotal(inv);
@@ -1009,6 +1139,10 @@ function tabFinancials(p){
   const outstanding=total-paid;
   const depositAmt=Math.round(total*inv.depositPct/100);
   const balanceAmt=total-depositAmt;
+  const mottyItems=inv.items.filter(i=>i.category!=='other');
+  const otherItems=inv.items.filter(i=>i.category==='other');
+  const mottySum=mottyItems.reduce((s,i)=>s+i.amount,0);
+  const otherSum=otherItems.reduce((s,i)=>s+i.amount,0);
   return `
   <div class="inv-summary">
     <div class="card inv-stat"><span class="stat-label">Invoice Total</span><span class="val">${fmtMoney(total)}</span></div>
@@ -1023,13 +1157,16 @@ function tabFinancials(p){
       </div>
       <span class="badge ${invoiceStatusBadge(inv)}">${invoiceStatusLabel(inv)}</span>
     </div>
-    <div class="stat-label" style="margin-bottom:10px">Line items</div>
-    ${inv.items.map(it=>`<div class="inv-item-row">
-      <input class="inp" value="${esc(it.desc)}" data-action="editInvoiceItem" data-id="${p.id}" data-item="${it.id}" data-field="desc">
-      <input class="inp inv-item-amt" type="number" value="${it.amount}" data-action="editInvoiceItem" data-id="${p.id}" data-item="${it.id}" data-field="amount">
-      <button class="inv-remove" data-action="removeInvoiceItem" data-id="${p.id}" data-item="${it.id}">${I.trash}</button>
-    </div>`).join('')}
-    <button class="btn btn-sm btn-ghost" data-action="addInvoiceItem" data-id="${p.id}">${I.plus} Add Line Item</button>
+
+    <div class="stat-label" style="margin-bottom:10px">Motty's Fee — ${fmtMoney(mottySum)}</div>
+    ${mottyItems.map(it=>invItemRow(p,it)).join('')||`<div class="empty" style="padding:16px">No fee line yet.</div>`}
+    <button class="btn btn-sm btn-ghost" data-action="addInvoiceItem" data-id="${p.id}" data-category="motty">${I.plus} Add Fee Line</button>
+
+    <div class="stat-label" style="margin:20px 0 10px">Other Budget — ${fmtMoney(otherSum)}
+      <span style="text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink-3)">(crew, rentals, props, talent — all creative materials)</span></div>
+    ${otherItems.map(it=>invItemRow(p,it)).join('')||`<div class="empty" style="padding:16px">No budget lines yet.</div>`}
+    <button class="btn btn-sm btn-ghost" data-action="addInvoiceItem" data-id="${p.id}" data-category="other">${I.plus} Add Budget Line</button>
+
     <div class="inv-totals">
       <div class="inv-total-row grand"><span>Total</span><span class="mono">${fmtMoney(total)}</span></div>
     </div>
@@ -1139,10 +1276,97 @@ function personCard(c){
 }
 
 /* ── Schedule ─────────────────────────────────────────────────────────── */
+function eventCardHTML(e,conflictEventIds){
+  const p=project(e.projectId); const crew=e.crew.map(contact).filter(Boolean);
+  const loc=p?getLoc(p.locationIds[0]):null;
+  return `<div class="event-card ${conflictEventIds.has(e.id)?'conflict':''}" data-action="openProject" data-id="${e.projectId}">
+    <div class="event-date"><b>${dayNum(e.date)}</b><span>${monAbbr(e.date)}</span></div>
+    <div class="event-main">
+      <div class="event-title">${esc(eventTitle(e))} ${conflictEventIds.has(e.id)?'<span class=\"badge badge-bad\">Conflict</span>':''}</div>
+      <div class="event-sub">
+        <span class="mono">${I.clock.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${e.callTime}–${e.wrapTime}</span>
+        ${loc?`<span>${I.pin.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${esc(loc.name)}</span>`:''}
+        <span>${I.users.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${crew.map(c=>esc(c.name)).join(', ')||'No crew yet'}</span>
+      </div>
+    </div>
+    <span class="badge badge-neutral">${esc(p?p.type:'')}</span>
+  </div>`;
+}
+function calRefDate(){return new Date(S.calDate+'T00:00:00')}
+function startOfWeek(d){const r=new Date(d);r.setDate(r.getDate()-r.getDay());r.setHours(0,0,0,0);return r}
+function startOfMonth(d){return new Date(d.getFullYear(),d.getMonth(),1)}
+function calRangeLabel(){
+  const ref=calRefDate();
+  if(S.calView==='day')return ref.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  if(S.calView==='week'){
+    const s=startOfWeek(ref),e=new Date(s);e.setDate(s.getDate()+6);
+    return s.getMonth()===e.getMonth()
+      ? `${s.toLocaleDateString('en-US',{month:'short'})} ${s.getDate()}–${e.getDate()}, ${e.getFullYear()}`
+      : `${s.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${e.toLocaleDateString('en-US',{month:'short',day:'numeric'})}, ${e.getFullYear()}`;
+  }
+  return ref.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+}
+function calToolbar(){
+  return `<div class="cal-toolbar">
+    <div class="cal-nav">
+      <button class="iconbtn" data-action="calNav" data-dir="-1">${I.back}</button>
+      <button class="btn btn-sm btn-ghost" data-action="calToday">Today</button>
+      <button class="iconbtn" data-action="calNav" data-dir="1">${I.chevR}</button>
+      <span class="cal-nav-label">${esc(calRangeLabel())}</span>
+    </div>
+    <div class="chip-row" style="flex:none">
+      ${['day','week','month'].map(v=>`<span class="chip ${S.calView===v?'active':''}" data-action="calSetView" data-view="${v}">${v[0].toUpperCase()+v.slice(1)}</span>`).join('')}
+    </div>
+  </div>`;
+}
+function monthView(events,conflictEventIds){
+  const ref=calRefDate(); const gridStart=startOfWeek(startOfMonth(ref));
+  const todayIso=isoLocal(new Date());
+  const cells=Array.from({length:42},(_,i)=>{const d=new Date(gridStart);d.setDate(gridStart.getDate()+i);return d});
+  const dows=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  return `<div class="month-grid">
+    ${dows.map(d=>`<div class="month-dow">${d}</div>`).join('')}
+    ${cells.map(d=>{
+      const iso=isoLocal(d); const dayEvents=events.filter(e=>e.date===iso);
+      const out=d.getMonth()!==ref.getMonth(), isToday=iso===todayIso, shown=dayEvents.slice(0,3);
+      return `<div class="month-cell ${out?'out':''} ${isToday?'today':''}" data-action="calGoDay" data-date="${iso}">
+        <div class="month-cell-num">${d.getDate()}</div>
+        ${shown.map(e=>`<div class="month-pill ${conflictEventIds.has(e.id)?'conflict':''}" data-action="openProject" data-id="${e.projectId}" title="${esc(eventTitle(e))}">${esc(eventTitle(e))}</div>`).join('')}
+        ${dayEvents.length>3?`<div class="month-more">+${dayEvents.length-3} more</div>`:''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function weekView(events,conflictEventIds){
+  const start=startOfWeek(calRefDate()); const todayIso=isoLocal(new Date());
+  const days=Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return d});
+  return `<div class="week-grid">
+    ${days.map(d=>{
+      const iso=isoLocal(d), isToday=iso===todayIso, dayEvents=events.filter(e=>e.date===iso);
+      return `<div class="week-col ${isToday?'today':''}">
+        <div class="week-col-head" data-action="calGoDay" data-date="${iso}">
+          <div class="dow">${d.toLocaleDateString('en-US',{weekday:'short'})}</div>
+          <div class="num">${d.getDate()}</div>
+        </div>
+        ${dayEvents.map(e=>`<div class="week-ev ${conflictEventIds.has(e.id)?'conflict':''}" data-action="openProject" data-id="${e.projectId}">
+          <div class="week-ev-title">${esc(eventTitle(e))}</div>
+          <div class="week-ev-time mono">${e.callTime}–${e.wrapTime}</div>
+        </div>`).join('')}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function dayView(events,conflictEventIds){
+  const dayEvents=events.filter(e=>e.date===S.calDate);
+  return dayEvents.length?dayEvents.map(e=>eventCardHTML(e,conflictEventIds)).join('')
+    :`<div class="empty">${I.calendar}<div>No shoots or events scheduled this day.</div></div>`;
+}
 function viewSchedule(){
   const events=allEvents(); const conflicts=conflictsFor(events);
-  const byDate={}; events.forEach(e=>{(byDate[e.date]=byDate[e.date]||[]).push(e)});
   const conflictEventIds=new Set(); conflicts.forEach(c=>{conflictEventIds.add(c.a.id);conflictEventIds.add(c.b.id)});
+  const body = S.calView==='month'?monthView(events,conflictEventIds)
+    : S.calView==='week'?weekView(events,conflictEventIds)
+    : dayView(events,conflictEventIds);
   return `
   <div class="page-head"><div><h1>Schedule</h1><p>Every shoot day across every project — crew conflicts are flagged automatically.</p></div></div>
   ${conflicts.map(c=>`<div class="conflict-banner">${I.alert}<div>
@@ -1150,26 +1374,8 @@ function viewSchedule(){
       ${c.people.map(pid=>esc(contact(pid).name)).join(', ')} ${c.people.length===1?'is':'are'} booked on both
       "${esc(eventTitle(c.a))}" (${c.a.callTime}–${c.a.wrapTime}) and "${esc(eventTitle(c.b))}" (${c.b.callTime}–${c.b.wrapTime}).
     </div></div>`).join('')}
-  ${Object.entries(byDate).map(([date,list])=>`
-    <div class="day-group">
-      <div class="day-label">${fmtDate(date)}</div>
-      ${list.map(e=>{
-        const p=project(e.projectId); const crew=e.crew.map(contact).filter(Boolean);
-        const loc=p?getLoc(p.locationIds[0]):null;
-        return `<div class="event-card ${conflictEventIds.has(e.id)?'conflict':''}" data-action="openProject" data-id="${e.projectId}">
-          <div class="event-date"><b>${dayNum(date)}</b><span>${monAbbr(date)}</span></div>
-          <div class="event-main">
-            <div class="event-title">${esc(eventTitle(e))} ${conflictEventIds.has(e.id)?'<span class=\"badge badge-bad\">Conflict</span>':''}</div>
-            <div class="event-sub">
-              <span class="mono">${I.clock.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${e.callTime}–${e.wrapTime}</span>
-              ${loc?`<span>${I.pin.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${esc(loc.name)}</span>`:''}
-              <span>${I.users.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${crew.map(c=>esc(c.name)).join(', ')||'No crew yet'}</span>
-            </div>
-          </div>
-          <span class="badge badge-neutral">${esc(p?p.type:'')}</span>
-        </div>`;
-      }).join('')}
-    </div>`).join('')}
+  ${calToolbar()}
+  ${body}
   `;
 }
 
@@ -1228,13 +1434,29 @@ const ACTIONS = {
   addScene:(el)=>{const p=project(el.dataset.id);const n=p.scenes.length+1;
     p.scenes.push({id:'s'+Date.now(),heading:'New scene',desc:'Describe the action…',locId:(p.locationIds[0]||LOCATIONS[0].id)});render()},
   shotLocFilter:(el)=>{S.shotLoc=el.dataset.loc;render()},
+  calSetView:(el)=>{S.calView=el.dataset.view;render()},
+  calToday:()=>{S.calDate=isoLocal(new Date());render()},
+  calGoDay:(el)=>{S.calDate=el.dataset.date;S.calView='day';render()},
+  calNav:(el)=>{
+    const dir=Number(el.dataset.dir); const d=calRefDate();
+    if(S.calView==='day')d.setDate(d.getDate()+dir);
+    else if(S.calView==='week')d.setDate(d.getDate()+dir*7);
+    else d.setMonth(d.getMonth()+dir);
+    S.calDate=isoLocal(d); render();
+  },
   locTypeFilter:(el)=>{S.locType=el.dataset.type;render()},
   roleFilter:(el)=>{S.contactRole=el.dataset.role;render()},
   addCrew:(el)=>{project(el.dataset.id).crew.push(el.dataset.cid);render()},
+  toggleProjectLocation:(el)=>{
+    const p=project(el.dataset.id), lid=el.dataset.loc;
+    if(p.locationIds.includes(lid)) p.locationIds=p.locationIds.filter(id=>id!==lid);
+    else p.locationIds.push(lid);
+    render();
+  },
   sendCallsheet:(el)=>{showToast((el.dataset.via==='email'?'Email':'WhatsApp')+' send needs the backend proxy wired up — see INTEGRATIONS.md')},
   printCallsheet:()=>{window.print()},
   addInvoiceItem:(el)=>{const inv=getInvoice(project(el.dataset.id));
-    inv.items.push({id:'ci-'+Date.now(),desc:'New line item',amount:0});render()},
+    inv.items.push({id:'ci-'+Date.now(),desc:'New line item',amount:0,category:el.dataset.category||'other'});render()},
   removeInvoiceItem:(el)=>{const inv=getInvoice(project(el.dataset.id));
     inv.items=inv.items.filter(i=>i.id!==el.dataset.item);render()},
   toggleDeposit:(el)=>{getInvoice(project(el.dataset.id)).depositPaid=el.checked;render()},
@@ -1315,10 +1537,12 @@ document.addEventListener('input',e=>{
     it[el.dataset.field]=el.dataset.field==='amount'?parseMoney(el.value):el.value;
   }
   if(el.dataset.action==='editNotes'){ project(el.dataset.id).notes=el.value; }
+  if(el.dataset.action==='editProject'){ project(el.dataset.id)[el.dataset.field]=el.value; }
 });
 document.addEventListener('change',e=>{
   if(e.target.dataset.action==='editInvoiceItem')render();
   if(e.target.dataset.action==='loadAudioFile')handleAudioFile(e.target);
+  if(e.target.dataset.action==='editProject')render();
 });
 
 /* ── Opener: the logo reveals itself on first load each session ───────────── */
