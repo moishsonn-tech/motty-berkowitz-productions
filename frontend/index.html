@@ -74,7 +74,7 @@ a{color:inherit}
 
 .shell-main{flex:1;min-width:0;display:flex;flex-direction:column}
 .topbar{height:var(--topbar-h);flex:none;display:flex;align-items:center;gap:14px;padding:0 24px;
-  background:rgba(245,242,236,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:rgba(250,250,248,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
 @media (prefers-color-scheme:dark){.topbar{background:rgba(23,22,28,.82)}}
 .topbar-title{font-size:16px;font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -292,7 +292,23 @@ a{color:inherit}
 .audio-time{font-size:12px;color:var(--sb-mut)}
 .audio-hint{font-size:11.5px;color:var(--sb-mut)}
 .audio-loadbtn{margin-left:auto;cursor:pointer}
-.scene-t{font-size:10px;color:var(--accent);font-weight:700;margin-top:3px}
+.scene-range{font-size:10px;color:var(--accent);font-weight:700;margin-top:3px}
+.script-toggle{margin-bottom:16px}
+.songpart-card{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:16px;margin-bottom:16px}
+.songpart-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.songpart-head .inp{font-weight:800;font-size:15px;flex:1;min-width:120px}
+.songpart-range{font-family:var(--mono);font-size:11.5px;color:var(--accent-dark);background:var(--accent-wash);
+  padding:4px 10px;border-radius:999px;font-weight:700;white-space:nowrap}
+.subscene-card{background:var(--surface-2);border:1px solid var(--line-2);border-radius:var(--r-sm);
+  padding:10px 12px;margin:8px 0 0 20px}
+.subscene-card .field{margin-bottom:6px}
+.notes-toolbar{display:flex;gap:8px;margin-bottom:10px}
+.notes-rich{min-height:320px;overflow-y:auto;line-height:1.55}
+.notes-rich img{max-width:100%;border-radius:var(--r-sm);margin:8px 0;display:block}
+.notes-rich ul{padding-left:22px;margin:8px 0}
+.notes-rich:empty:before{content:attr(data-placeholder);color:var(--ink-3)}
+.notes-rich:focus{outline:none}
 
 /* ── Shot list ───────────────────────────────────────────────────────────── */
 .shot-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
@@ -513,6 +529,8 @@ const I = {
   chevR:'<svg class="ico" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>',
   sync:'<svg class="ico" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>',
   invoice:'<svg class="ico" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M10.3 15h3.4"/></svg>',
+  list:'<svg class="ico" viewBox="0 0 24 24"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg>',
+  image:'<svg class="ico" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>',
   trash:'<svg class="ico" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>',
   play:'<svg class="ico" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3" fill="currentColor" stroke="none"/></svg>',
   pause:'<svg class="ico" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/></svg>',
@@ -553,11 +571,11 @@ function personColor(id){const h=[...id].reduce((a,c)=>a+c.charCodeAt(0),0)%360;
 let PROJECTS = [
   {id:'p1',name:'Klein Wedding Film',client:'The Klein Family',type:'Wedding',stage:'pre',
    shootDate:'2026-08-14',callTime:'2:00 PM',wrapTime:'10:00 PM',budget:'$4,200',
-   crew:['c1','c2','c3','c10'],locationIds:['l1'],
+   crew:['c1','c2','c3','c10'],locationIds:['l1'],scriptMode:'regular',
    scenes:[
-     {id:'s1',heading:'Chuppah — processional & ceremony',desc:'Wide establishing of the hall, guests seated, processional down the aisle, close on the couple under the chuppah.',locId:'l1'},
-     {id:'s2',heading:'First look & portraits',desc:'Close-up hands, ring exchange detail, wide couple portraits near the entrance garden.',locId:'l1'},
-     {id:'s3',heading:'Reception — first dance',desc:'Wide of the dance floor, tracking shot following the couple, crowd reactions handheld.',locId:'l1'},
+     {id:'s1',heading:'Chuppah — processional & ceremony',desc:'Wide establishing of the hall, guests seated, processional down the aisle, close on the couple under the chuppah.',locId:'l1',duration:30,subScenes:[]},
+     {id:'s2',heading:'First look & portraits',desc:'Close-up hands, ring exchange detail, wide couple portraits near the entrance garden.',locId:'l1',duration:20,subScenes:[]},
+     {id:'s3',heading:'Reception — first dance',desc:'Wide of the dance floor, tracking shot following the couple, crowd reactions handheld.',locId:'l1',duration:25,subScenes:[]},
    ],
    invoice:{number:'INV-1041',status:'sent',issueDate:'2026-07-20',dueDate:'2026-08-14',depositPct:50,depositPaid:true,balancePaid:false,
      items:[
@@ -569,14 +587,21 @@ let PROJECTS = [
      ]}},
   {id:'p2',name:'Rising — Music Video',client:'Shloime Gold',type:'Music Video',stage:'pre',
    shootDate:'2026-08-22',callTime:'5:30 AM',wrapTime:'8:00 PM',budget:'$6,500',
-   crew:['c1','c7','c2','c5'],locationIds:['l6','l2','l3'],
+   crew:['c1','c7','c2','c5'],locationIds:['l6','l2','l3'],scriptMode:'mv',
    audioTrack:{title:'Rising',artist:'Shloime Gold',duration:'3:24'},
-   scenes:[
-     {id:'s4',heading:'Opening — alone at dawn',desc:'Shloime alone on the rooftop at dawn, city skyline behind him, wide establishing shot as the first verse begins.',locId:'l6'},
-     {id:'s5',heading:'The piano',desc:'Close on his hands over the piano keys, intercut with a wide of the empty studio, moody top light.',locId:'l3'},
-     {id:'s6',heading:'Into the park',desc:'Walking through the park at golden hour, a crowd of dancers gradually joins him as the chorus builds.',locId:'l2'},
-     {id:'s7',heading:'The lift',desc:'Aerial drone pull-back over the full crowd in the park as the chorus hits its peak.',locId:'l2'},
-     {id:'s8',heading:'Closing — sunrise to sunset',desc:'Back on the rooftop, wide shot, time-lapse feel from sunrise to sunset as the track resolves.',locId:'l6'},
+   scenes:[],
+   songParts:[
+     {id:'sp1',label:'Verse 1',t:null,scenes:[
+       {id:'s4',heading:'Opening — alone at dawn',desc:'Shloime alone on the rooftop at dawn, city skyline behind him, wide establishing shot as the first verse begins.',locId:'l6',subScenes:[]},
+       {id:'s5',heading:'The piano',desc:'Close on his hands over the piano keys, intercut with a wide of the empty studio, moody top light.',locId:'l3',subScenes:[]},
+     ]},
+     {id:'sp2',label:'Chorus',t:null,scenes:[
+       {id:'s6',heading:'Into the park',desc:'Walking through the park at golden hour, a crowd of dancers gradually joins him as the chorus builds.',locId:'l2',subScenes:[]},
+       {id:'s7',heading:'The lift',desc:'Aerial drone pull-back over the full crowd in the park as the chorus hits its peak.',locId:'l2',subScenes:[]},
+     ]},
+     {id:'sp3',label:'Outro',t:null,scenes:[
+       {id:'s8',heading:'Closing — sunrise to sunset',desc:'Back on the rooftop, wide shot, time-lapse feel from sunrise to sunset as the track resolves.',locId:'l6',subScenes:[]},
+     ]},
    ],
    invoice:{number:'INV-1042',status:'draft',issueDate:'2026-08-04',dueDate:'2026-08-22',depositPct:50,depositPaid:false,balancePaid:false,
      items:[
@@ -588,10 +613,10 @@ let PROJECTS = [
      ]}},
   {id:'p3',name:'Landers Corporate Brand Reel',client:'Landers College',type:'Corporate',stage:'post',
    shootDate:'2026-07-30',callTime:'9:00 AM',wrapTime:'4:00 PM',budget:'$3,000',
-   crew:['c1','c3','c8'],locationIds:['l5'],
+   crew:['c1','c3','c8'],locationIds:['l5'],scriptMode:'regular',
    scenes:[
-     {id:'s9',heading:'Campus establishing',desc:'Wide establishing shots of the lobby and campus walk-and-talk with the dean.',locId:'l5'},
-     {id:'s10',heading:'Student interviews',desc:'Close-up interview setups with three students, natural light near the lobby windows.',locId:'l5'},
+     {id:'s9',heading:'Campus establishing',desc:'Wide establishing shots of the lobby and campus walk-and-talk with the dean.',locId:'l5',duration:20,subScenes:[]},
+     {id:'s10',heading:'Student interviews',desc:'Close-up interview setups with three students, natural light near the lobby windows.',locId:'l5',duration:25,subScenes:[]},
    ],
    invoice:{number:'INV-1039',status:'paid',issueDate:'2026-07-15',dueDate:'2026-07-30',depositPct:50,depositPaid:true,balancePaid:true,
      items:[
@@ -650,12 +675,40 @@ function shotTypesFor(text){
   types.push({t:'Medium',eq:'50mm'});
   const seen=new Set(); return types.filter(x=>seen.has(x.t)?false:seen.add(x.t));
 }
+function flatScenes(p){
+  const out=[];
+  const addScene=(sc,prefix)=>{
+    out.push({...sc,pathHeading:prefix?prefix+' — '+sc.heading:sc.heading});
+    (sc.subScenes||[]).forEach(sub=>out.push({...sub,pathHeading:(prefix?prefix+' — ':'')+sc.heading+' — '+sub.heading}));
+  };
+  if(p.scriptMode==='mv'){
+    (p.songParts||[]).forEach(sp=>(sp.scenes||[]).forEach(sc=>addScene(sc,sp.label)));
+  } else {
+    (p.scenes||[]).forEach(sc=>addScene(sc));
+  }
+  return out;
+}
+function findScene(p,sceneId){
+  if(p.scriptMode==='mv'){ for(const sp of (p.songParts||[])){ const sc=sp.scenes.find(s=>s.id===sceneId); if(sc)return sc; } return null; }
+  return (p.scenes||[]).find(s=>s.id===sceneId)||null;
+}
+function findAnyScene(p,id){
+  const scenes = p.scriptMode==='mv' ? (p.songParts||[]).flatMap(sp=>sp.scenes) : (p.scenes||[]);
+  for(const sc of scenes){
+    if(sc.id===id) return sc;
+    const sub=(sc.subScenes||[]).find(su=>su.id===id); if(sub) return sub;
+  }
+  return null;
+}
+function regularSceneRanges(p){
+  let t=0; return (p.scenes||[]).map(sc=>{const start=t;t+=(sc.duration||0);return {start,end:t}});
+}
 function shotsForProject(p){
   const rows=[];
-  (p.scenes||[]).forEach((sc,i)=>{
+  flatScenes(p).forEach((sc,i)=>{
     const types=shotTypesFor(sc.heading+' '+sc.desc);
     types.forEach((ty,j)=>{
-      rows.push({code:`SC${i+1}-${String.fromCharCode(65+j)}`,type:ty.t,equip:ty.eq,desc:sc.heading,
+      rows.push({code:`SC${i+1}-${String.fromCharCode(65+j)}`,type:ty.t,equip:ty.eq,desc:sc.pathHeading,
         locId:sc.locId,sceneId:sc.id,status:'Planned'});
     });
   });
@@ -763,6 +816,32 @@ function updateAudioProgress(){
   if(fill && AUD.el.duration) fill.style.width=(AUD.el.currentTime/AUD.el.duration*100)+'%';
   if(time) time.textContent = fmtTime(AUD.el.currentTime)+' / '+fmtTime(AUD.el.duration||0);
 }
+function downscaleImageFile(file,maxDim){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        let {width,height}=img;
+        if(width>maxDim||height>maxDim){ const scale=maxDim/Math.max(width,height); width=Math.round(width*scale); height=Math.round(height*scale); }
+        const canvas=document.createElement('canvas'); canvas.width=width; canvas.height=height;
+        canvas.getContext('2d').drawImage(img,0,0,width,height);
+        resolve(canvas.toDataURL('image/jpeg',0.85));
+      };
+      img.onerror=reject;
+      img.src=reader.result;
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+async function handleNoteImage(input){
+  const file=input.files[0]; if(!file)return;
+  const pid=input.dataset.id;
+  const dataUrl=await downscaleImageFile(file,1000);
+  const ed=document.getElementById('notes-editor-'+pid);
+  if(ed){ ed.focus(); document.execCommand('insertImage',false,dataUrl); project(pid).notes=ed.innerHTML; }
+}
 async function handleAudioFile(input){
   const file=input.files[0]; if(!file)return;
   const pid=input.dataset.id;
@@ -793,24 +872,34 @@ async function handleAudioFile(input){
   }catch(err){ AUD.peaks=[]; }
   render();
 }
+function songPartRange(parts,i,duration){
+  const start = parts[i].t!=null ? parts[i].t : 0;
+  const end = (i<parts.length-1 && parts[i+1].t!=null) ? parts[i+1].t : duration;
+  return {start,end};
+}
 function audioPanel(p){
   const loaded = AUD.projectId===p.id && AUD.duration>0;
   const bars = loaded && AUD.peaks.length ? AUD.peaks
     : Array.from({length:60},(_,i)=>6+Math.round(20*Math.abs(Math.sin(i*0.4))+Math.random()*10));
+  const parts = p.songParts||[];
   return `<div class="audio-panel">
     <div class="audio-head">
       <div><div class="audio-title">🎵 ${esc(p.audioTrack.title)}</div><div class="audio-artist">${esc(p.audioTrack.artist)} · ${esc(p.audioTrack.duration)}</div></div>
-      <span class="badge badge-info">${loaded?'Audio loaded':'Audio synced to storyline'}</span>
+      <span class="badge badge-info">${loaded?'Audio loaded':'Audio synced to script'}</span>
     </div>
     <div class="wave" id="mb-wave" data-action="seekAudio" data-id="${p.id}">
       ${bars.map(h=>`<i style="height:${h}px"></i>`).join('')}
       ${loaded?`<div class="wave-progress" id="mb-progress" style="width:${AUD.el.duration?AUD.el.currentTime/AUD.el.duration*100:0}%"></div>`:''}
-      ${loaded?p.scenes.map((sc,i)=>{
-        const pct = sc.t!=null ? Math.max(0,Math.min(100,sc.t/AUD.duration*100)) : (i/(p.scenes.length-1||1)*100);
-        return `<div class="wave-marker" style="left:${pct}%" data-action="dragMarker" data-id="${p.id}" data-scene="${sc.id}" title="SC${i+1}"></div>`;
+      ${loaded?parts.map((sp,i)=>{
+        const pct = sp.t!=null ? Math.max(0,Math.min(100,sp.t/AUD.duration*100)) : (i/(parts.length-1||1)*100);
+        return `<div class="wave-marker" style="left:${pct}%" data-action="dragMarker" data-id="${p.id}" data-part="${sp.id}" title="${esc(sp.label)}"></div>`;
       }).join(''):''}
     </div>
-    <div class="wave-markers">${p.scenes.map((sc,i)=>`<span><b>SC${i+1}</b>${sc.t!=null?fmtTime(sc.t):Math.round(i/(p.scenes.length-1||1)*100)+'%'}</span>`).join('')}</div>
+    <div class="wave-markers">${parts.map((sp,i)=>{
+      const label = loaded ? (()=>{const r=songPartRange(parts,i,AUD.duration);return fmtTime(r.start)+'–'+fmtTime(r.end)})()
+        : (sp.t!=null?fmtTime(sp.t):Math.round(i/(parts.length-1||1)*100)+'%');
+      return `<span><b>${esc(sp.label)}</b>${label}</span>`;
+    }).join('')}</div>
     <div class="audio-controls">
       ${loaded?`<button class="audio-playbtn" data-action="toggleAudioPlay" data-id="${p.id}">${AUD.el.paused?I.play:I.pause}</button>
         <span class="mono audio-time" id="mb-time">${fmtTime(AUD.el.currentTime)} / ${fmtTime(AUD.duration)}</span>`
@@ -885,7 +974,7 @@ function nextSteps(){
     if(p.stage==='pre' && p.crew.length===0){
       steps.push({icon:I.users,text:`<b>${esc(p.name)}</b> has no crew assigned yet`,id:p.id,tab:'crew',sort:days});
     }
-    if(p.stage==='pre' && (p.type==='Music Video'||p.type==='Wedding') && p.scenes.length===0){
+    if(p.stage==='pre' && (p.type==='Music Video'||p.type==='Wedding') && flatScenes(p).length===0){
       steps.push({icon:I.film,text:`Build the storyline for <b>${esc(p.name)}</b> to generate its shot list`,id:p.id,tab:'storyline',sort:days});
     }
     if(p.invoice){
@@ -982,7 +1071,7 @@ function projectCard(p){
 }
 
 /* ── Project detail ──────────────────────────────────────────────────── */
-const PTABS = [['overview','Overview'],['storyline','Storyline'],['shotlist','Shot List'],['locations','Locations'],['crew','Cast & Crew'],['financials','Financials'],['callsheet','Call Sheet'],['notes','Notes']];
+const PTABS = [['overview','Overview'],['notes','Notes'],['storyline','Script'],['shotlist','Shot List'],['locations','Locations'],['crew','Cast & Crew'],['financials','Financials'],['callsheet','Call Sheet']];
 function viewProject(){
   const p=project(S.projectId); if(!p) return `<div class="empty">Project not found.</div>`;
   return `
@@ -1046,31 +1135,76 @@ function tabOverview(p){
   </div>`;
 }
 function tabStoryline(p){
-  const isMV = !!p.audioTrack;
+  const isMV = p.scriptMode==='mv';
   return `
-  ${isMV?audioPanel(p):''}
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <div class="stat-label">Scenes drive the shot list automatically — add one below</div>
-    <button class="btn btn-sm btn-primary" data-action="addScene" data-id="${p.id}">${I.plus} Add Scene</button>
+  <div class="chip-row script-toggle">
+    <span class="chip ${!isMV?'active':''}" data-action="setScriptMode" data-id="${p.id}" data-mode="regular">Regular Video</span>
+    <span class="chip ${isMV?'active':''}" data-action="setScriptMode" data-id="${p.id}" data-mode="mv">Music Video</span>
   </div>
-  ${p.scenes.length?p.scenes.map((sc,i)=>sceneCard(p,sc,i)).join(''):`<div class="empty">${I.film}<div>No scenes yet — build the storyline to auto-generate a shot list.</div></div>`}
+  ${isMV && p.audioTrack ? audioPanel(p) : ''}
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+    <div class="stat-label">${isMV?'Song parts group your scenes — add one below':'Scenes drive the shot list automatically — add one below'}</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sm btn-ghost" data-action="printCallsheet">${I.print} Print / PDF</button>
+      <button class="btn btn-sm btn-primary" data-action="${isMV?'addSongPart':'addScene'}" data-id="${p.id}">${I.plus} ${isMV?'Add Song Part':'Add Scene'}</button>
+    </div>
+  </div>
+  ${isMV?mvScriptBody(p):regularScriptBody(p)}
   `;
 }
-function sceneCard(p,sc,i){
-  const canMark = !!p.audioTrack && AUD.projectId===p.id && AUD.duration>0;
+function mvScriptBody(p){
+  const parts=p.songParts||[];
+  return parts.length?parts.map((sp,i)=>songPartCard(p,sp,i)).join('')
+    :`<div class="empty">${I.film}<div>No song parts yet — add one to start structuring the video.</div></div>`;
+}
+function regularScriptBody(p){
+  const scenes=p.scenes||[];
+  if(!scenes.length)return `<div class="empty">${I.film}<div>No scenes yet — build the script to auto-generate a shot list.</div></div>`;
+  const ranges=regularSceneRanges(p);
+  return scenes.map((sc,i)=>sceneCard(p,sc,i,{range:ranges[i]})).join('');
+}
+function songPartCard(p,sp,i){
+  const parts=p.songParts;
+  const loaded=AUD.projectId===p.id && AUD.duration>0;
+  const rangeLabel=loaded?(()=>{const r=songPartRange(parts,i,AUD.duration);return fmtTime(r.start)+'–'+fmtTime(r.end)})():(sp.t!=null?fmtTime(sp.t):'');
+  return `<div class="songpart-card">
+    <div class="songpart-head">
+      <input class="inp inline-edit" value="${esc(sp.label)}" data-action="editSongPart" data-id="${p.id}" data-part="${sp.id}">
+      ${rangeLabel?`<span class="songpart-range mono">${rangeLabel}</span>`:''}
+      ${loaded?`<button class="btn btn-sm btn-subtle" data-action="markSplit" data-id="${p.id}" data-part="${sp.id}">${I.plus} Mark split here</button>`:''}
+    </div>
+    ${(sp.scenes||[]).map((sc,j)=>sceneCard(p,sc,j)).join('')||`<div class="empty" style="padding:16px">No scenes in this part yet.</div>`}
+    <button class="btn btn-sm btn-ghost" data-action="addScene" data-id="${p.id}" data-part="${sp.id}">${I.plus} Add Scene to ${esc(sp.label)}</button>
+  </div>`;
+}
+function sceneCard(p,sc,i,opts){
+  opts=opts||{};
   return `<div class="scene-card">
-    <div class="scene-num">SC${i+1}${sc.t!=null?`<div class="scene-t mono">${fmtTime(sc.t)}</div>`:''}</div>
+    <div class="scene-num">SC${i+1}${opts.range?`<div class="scene-range mono">${fmtTime(opts.range.start)}–${fmtTime(opts.range.end)}</div>`:''}</div>
     <div class="scene-body">
       <div class="field"><input class="inp" style="font-weight:700" value="${esc(sc.heading)}" data-action="editScene" data-id="${p.id}" data-scene="${sc.id}" data-field="heading"></div>
       <div class="field"><textarea class="txt" data-action="editScene" data-id="${p.id}" data-scene="${sc.id}" data-field="desc">${esc(sc.desc)}</textarea></div>
-      <div class="field scene-loc-select">
-        <label>Location</label>
-        <select class="sel" data-action="editScene" data-id="${p.id}" data-scene="${sc.id}" data-field="locId">
-          ${LOCATIONS.map(l=>`<option value="${l.id}" ${sc.locId===l.id?'selected':''}>${esc(l.name)}</option>`).join('')}
-        </select>
+      <div class="field-row">
+        <div class="field scene-loc-select">
+          <label>Location</label>
+          <select class="sel" data-action="editScene" data-id="${p.id}" data-scene="${sc.id}" data-field="locId">
+            ${LOCATIONS.map(l=>`<option value="${l.id}" ${sc.locId===l.id?'selected':''}>${esc(l.name)}</option>`).join('')}
+          </select>
+        </div>
+        ${opts.range?`<div class="field" style="max-width:150px"><label>Duration (sec)</label><input class="inp" type="number" min="0" value="${sc.duration||0}" data-action="editScene" data-id="${p.id}" data-scene="${sc.id}" data-field="duration"></div>`:''}
       </div>
-      ${canMark?`<button class="btn btn-sm btn-subtle" data-action="markSplit" data-id="${p.id}" data-scene="${sc.id}">${I.plus} Mark split here</button>`:''}
+      ${(sc.subScenes||[]).map((sub,k)=>subSceneCard(p,sub,k)).join('')}
+      <button class="btn btn-sm btn-ghost" data-action="addSubScene" data-id="${p.id}" data-scene="${sc.id}">${I.plus} Add Sub-scene</button>
     </div>
+  </div>`;
+}
+function subSceneCard(p,sub,i){
+  return `<div class="subscene-card">
+    <div class="field"><input class="inp" style="font-weight:600;font-size:13px" value="${esc(sub.heading)}" data-action="editScene" data-id="${p.id}" data-scene="${sub.id}" data-field="heading"></div>
+    <div class="field"><textarea class="txt" style="min-height:44px;font-size:12.5px" data-action="editScene" data-id="${p.id}" data-scene="${sub.id}" data-field="desc">${esc(sub.desc)}</textarea></div>
+    <select class="sel" style="font-size:12.5px" data-action="editScene" data-id="${p.id}" data-scene="${sub.id}" data-field="locId">
+      ${LOCATIONS.map(l=>`<option value="${l.id}" ${sub.locId===l.id?'selected':''}>${esc(l.name)}</option>`).join('')}
+    </select>
   </div>`;
 }
 function tabShotlist(p){
@@ -1224,9 +1358,19 @@ function tabNotes(p){
   return `<div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap">
       <div class="stat-label">Project notes</div>
-      <button class="btn btn-sm btn-ghost" data-action="syncGoogleDocs" data-id="${p.id}">${I.sync} Sync to Google Docs</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-ghost" data-action="syncGoogleDocs" data-id="${p.id}">${I.sync} Sync to Google Docs</button>
+        <button class="btn btn-sm btn-primary" data-action="generateScript" data-id="${p.id}">${I.film} Generate Script from Notes</button>
+      </div>
     </div>
-    <textarea class="txt" style="min-height:340px" placeholder="Notes, ideas, client feedback…" data-action="editNotes" data-id="${p.id}">${esc(p.notes||'')}</textarea>
+    <div class="notes-toolbar">
+      <button class="iconbtn" type="button" data-action="noteBulletList" data-id="${p.id}" title="Bullet list">${I.list}</button>
+      <label class="iconbtn" title="Insert image" style="cursor:pointer">${I.image}
+        <input type="file" accept="image/*" style="display:none" data-action="insertNoteImage" data-id="${p.id}">
+      </label>
+    </div>
+    <div class="txt notes-rich" contenteditable="true" id="notes-editor-${p.id}" data-action="editNotesRich" data-id="${p.id}"
+      data-placeholder="Notes, ideas, client feedback…">${p.notes||''}</div>
   </div>`;
 }
 const TABS = {overview:tabOverview,storyline:tabStoryline,shotlist:tabShotlist,locations:tabLocations,crew:tabCrew,financials:tabFinancials,callsheet:tabCallsheet,notes:tabNotes};
@@ -1431,8 +1575,28 @@ const ACTIONS = {
     S.projectId=el.dataset.id;S.view='project';S.tab=el.dataset.tab||'overview';render()},
   setTab:(el)=>{S.tab=el.dataset.tab;render()},
   setStage:(el)=>{project(el.dataset.id).stage=el.dataset.stage;render()},
-  addScene:(el)=>{const p=project(el.dataset.id);const n=p.scenes.length+1;
-    p.scenes.push({id:'s'+Date.now(),heading:'New scene',desc:'Describe the action…',locId:(p.locationIds[0]||LOCATIONS[0].id)});render()},
+  addScene:(el)=>{
+    const p=project(el.dataset.id);
+    const sc={id:'s'+Date.now(),heading:'New scene',desc:'Describe the action…',locId:(p.locationIds[0]||LOCATIONS[0].id),subScenes:[]};
+    if(el.dataset.part){ const sp=p.songParts.find(s=>s.id===el.dataset.part); sp.scenes.push(sc); }
+    else { sc.duration=15; p.scenes.push(sc); }
+    render();
+  },
+  addSubScene:(el)=>{
+    const p=project(el.dataset.id);
+    const sc = findScene(p,el.dataset.scene);
+    if(!sc)return;
+    sc.subScenes=sc.subScenes||[];
+    sc.subScenes.push({id:'sub'+Date.now(),heading:'New sub-scene',desc:'',locId:sc.locId});
+    render();
+  },
+  addSongPart:(el)=>{
+    const p=project(el.dataset.id);
+    p.songParts=p.songParts||[];
+    p.songParts.push({id:'sp'+Date.now(),label:'New Part',t:null,scenes:[]});
+    render();
+  },
+  setScriptMode:(el)=>{ project(el.dataset.id).scriptMode=el.dataset.mode; render(); },
   shotLocFilter:(el)=>{S.shotLoc=el.dataset.loc;render()},
   calSetView:(el)=>{S.calView=el.dataset.view;render()},
   calToday:()=>{S.calDate=isoLocal(new Date());render()},
@@ -1466,14 +1630,20 @@ const ACTIONS = {
     showToast('Invoice marked sent — connect an email relay in the backend proxy to actually deliver it (see INTEGRATIONS.md)')},
   syncQuickbooks:()=>{showToast('Connect a QuickBooks account to sync invoices — needs QuickBooks OAuth wired up in the backend proxy')},
   syncGoogleDocs:()=>{showToast('Auto-creating a synced Google Doc needs Google OAuth wired up in the backend proxy — see INTEGRATIONS.md')},
+  generateScript:()=>{showToast('Generating a script from your notes needs the AI backend wired up — see INTEGRATIONS.md §9')},
+  noteBulletList:(el)=>{
+    const ed=document.getElementById('notes-editor-'+el.dataset.id);
+    if(!ed)return; ed.focus(); document.execCommand('insertUnorderedList');
+    project(el.dataset.id).notes=ed.innerHTML;
+  },
   toggleAudioPlay:(el)=>{ if(!AUD.el||AUD.projectId!==el.dataset.id)return;
     if(AUD.el.paused)AUD.el.play(); else AUD.el.pause(); },
   seekAudio:(el,ev)=>{ if(!AUD.el||AUD.projectId!==el.dataset.id||!AUD.duration||!ev)return;
     const rect=el.getBoundingClientRect(); const x=ev.clientX-rect.left;
     AUD.el.currentTime=Math.max(0,Math.min(1,x/rect.width))*AUD.duration; updateAudioProgress(); },
   markSplit:(el)=>{ if(!AUD.el||AUD.projectId!==el.dataset.id)return;
-    const p=project(el.dataset.id); const sc=p.scenes.find(s=>s.id===el.dataset.scene);
-    sc.t=AUD.el.currentTime; render(); },
+    const p=project(el.dataset.id); const sp=(p.songParts||[]).find(s=>s.id===el.dataset.part);
+    if(sp){ sp.t=AUD.el.currentTime; render(); } },
   openModal:(el)=>{S.modal=el.dataset.modal;render()},
   closeModal:()=>{S.modal=null;render()},
   newProject:()=>{S.modal='project';render()},
@@ -1508,7 +1678,7 @@ document.addEventListener('pointerdown',e=>{
   e.stopPropagation(); e.preventDefault();
   const wave=document.getElementById('mb-wave'); if(!wave)return;
   const rect=wave.getBoundingClientRect();
-  const p=project(m.dataset.id); const sc=p&&p.scenes.find(s=>s.id===m.dataset.scene); if(!sc)return;
+  const p=project(m.dataset.id); const sp=p&&(p.songParts||[]).find(s=>s.id===m.dataset.part); if(!sp)return;
   let pct=null;
   const move=ev=>{
     const x=Math.min(rect.width,Math.max(0,ev.clientX-rect.left));
@@ -1517,7 +1687,7 @@ document.addEventListener('pointerdown',e=>{
   const up=()=>{
     document.removeEventListener('pointermove',move);
     document.removeEventListener('pointerup',up);
-    if(pct!=null && AUD.duration){ sc.t=pct*AUD.duration; render(); }
+    if(pct!=null && AUD.duration){ sp.t=pct*AUD.duration; render(); }
   };
   document.addEventListener('pointermove',move);
   document.addEventListener('pointerup',up);
@@ -1528,21 +1698,27 @@ document.addEventListener('input',e=>{
     const box=document.querySelector('[data-field="'+el.dataset.field+'"]'); if(box){box.focus();box.setSelectionRange(box.value.length,box.value.length)}
     return;}
   if(el.dataset.action==='editScene'){
-    const p=project(el.dataset.id); const sc=p.scenes.find(s=>s.id===el.dataset.scene);
-    sc[el.dataset.field]=el.value;
+    const p=project(el.dataset.id); const sc=findAnyScene(p,el.dataset.scene);
+    sc[el.dataset.field]=el.dataset.field==='duration'?Number(el.value):el.value;
     if(el.dataset.field==='locId')render();
+  }
+  if(el.dataset.action==='editSongPart'){
+    const p=project(el.dataset.id); const sp=(p.songParts||[]).find(s=>s.id===el.dataset.part);
+    sp.label=el.value;
   }
   if(el.dataset.action==='editInvoiceItem'){
     const inv=getInvoice(project(el.dataset.id)); const it=inv.items.find(i=>i.id===el.dataset.item);
     it[el.dataset.field]=el.dataset.field==='amount'?parseMoney(el.value):el.value;
   }
-  if(el.dataset.action==='editNotes'){ project(el.dataset.id).notes=el.value; }
+  if(el.dataset.action==='editNotesRich'){ project(el.dataset.id).notes=el.innerHTML; }
   if(el.dataset.action==='editProject'){ project(el.dataset.id)[el.dataset.field]=el.value; }
 });
 document.addEventListener('change',e=>{
   if(e.target.dataset.action==='editInvoiceItem')render();
   if(e.target.dataset.action==='loadAudioFile')handleAudioFile(e.target);
+  if(e.target.dataset.action==='insertNoteImage')handleNoteImage(e.target);
   if(e.target.dataset.action==='editProject')render();
+  if(e.target.dataset.action==='editScene'&&e.target.dataset.field==='duration')render();
 });
 
 /* ── Opener: the logo reveals itself on first load each session ───────────── */
