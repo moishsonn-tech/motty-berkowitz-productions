@@ -765,6 +765,11 @@ function defaultInvoice(p){
     dueDate:p.shootDate,depositPct:50,depositPaid:false,balancePaid:false,items};
 }
 function getInvoice(p){ if(!p.invoice) p.invoice=defaultInvoice(p); return p.invoice; }
+function crewPayFor(p,cid){
+  p.crewPay=p.crewPay||{};
+  if(!p.crewPay[cid]){ const c=contact(cid); p.crewPay[cid]={amount:c?parseMoney(c.rate):0,paid:false}; }
+  return p.crewPay[cid];
+}
 function invoiceTotal(inv){ return inv.items.reduce((s,i)=>s+i.amount,0); }
 function invoicePaidToDate(inv){
   const total=invoiceTotal(inv);
@@ -1292,12 +1297,33 @@ function tabLocations(p){
   <div style="margin-top:16px"><button class="btn btn-ghost" data-action="nav" data-view="locations">${I.pin} Open full Locations directory</button></div>`;
 }
 function tabCrew(p){
-  const crew=p.crew.map(contact).filter(Boolean);
+  const crewIds=p.crew.filter(cid=>contact(cid));
   const avail=CONTACTS.filter(c=>!p.crew.includes(c.id));
-  return `<div class="grid-cards">${crew.map(personCard).join('')||`<div class="empty">No crew assigned yet.</div>`}</div>
+  const total=crewIds.reduce((s,cid)=>s+crewPayFor(p,cid).amount,0);
+  const paid=crewIds.reduce((s,cid)=>{const cp=crewPayFor(p,cid);return s+(cp.paid?cp.amount:0)},0);
+  return `
+  ${crewIds.length?`<div class="inv-summary" style="margin-bottom:16px">
+    <div class="card inv-stat"><span class="stat-label">Total Crew Pay</span><span class="val">${fmtMoney(total)}</span></div>
+    <div class="card inv-stat"><span class="stat-label">Paid Out</span><span class="val" style="color:var(--good)">${fmtMoney(paid)}</span></div>
+    <div class="card inv-stat"><span class="stat-label">Still Owed</span><span class="val" style="color:${total-paid>0?'var(--bad)':'var(--ink)'}">${fmtMoney(total-paid)}</span></div>
+  </div>`:''}
+  <div class="grid-cards">${crewIds.map(cid=>projectCrewCard(p,cid)).join('')||`<div class="empty">No crew assigned yet.</div>`}</div>
   <div class="card" style="margin-top:16px">
     <div class="stat-label" style="margin-bottom:10px">Add from directory</div>
     <div class="chip-row">${avail.map(c=>`<span class="chip" data-action="addCrew" data-id="${p.id}" data-cid="${c.id}">${I.plus} ${esc(c.name)} — ${esc(c.role)}</span>`).join('')||'Everyone in the directory is already assigned.'}</div>
+  </div>`;
+}
+function projectCrewCard(p,cid){
+  const c=contact(cid); const cp=crewPayFor(p,cid);
+  const availBadge={available:'badge-good',booked:'badge-warn',unavailable:'badge-bad'}[c.avail];
+  return `<div class="person-card">
+    <div class="person-top"><span class="avatar" style="background:${personColor(c.id)}">${initials(c.name)}</span>
+      <div><div class="person-name">${esc(c.name)}</div><div class="person-role">${esc(c.role)}</div></div></div>
+    <div class="person-meta"><span class="mono">${esc(c.phone)}</span><span class="badge ${availBadge}">${c.avail}</span></div>
+    <div class="field" style="margin-top:10px;margin-bottom:0"><label>Pay for this project</label>
+      <input class="inp" type="number" min="0" value="${cp.amount}" data-action="editCrewPay" data-id="${p.id}" data-cid="${cid}"></div>
+    <label class="inv-pay-check" style="padding:10px 0 0">
+      <input type="checkbox" ${cp.paid?'checked':''} data-action="toggleCrewPaid" data-id="${p.id}" data-cid="${cid}"> Paid</label>
   </div>`;
 }
 function invItemRow(p,it){
@@ -1702,6 +1728,7 @@ const ACTIONS = {
   removeInvoiceItem:(el)=>{const inv=getInvoice(project(el.dataset.id));
     inv.items=inv.items.filter(i=>i.id!==el.dataset.item);render()},
   toggleDeposit:(el)=>{getInvoice(project(el.dataset.id)).depositPaid=el.checked;render()},
+  toggleCrewPaid:(el)=>{crewPayFor(project(el.dataset.id),el.dataset.cid).paid=el.checked;render()},
   toggleBalance:(el)=>{const inv=getInvoice(project(el.dataset.id));inv.balancePaid=el.checked;
     if(el.checked)inv.status='sent';render();
     if(el.checked)showSignOff('Invoice Paid');},
@@ -1805,6 +1832,7 @@ document.addEventListener('input',e=>{
   }
   if(el.dataset.action==='editNotesRich'){ project(el.dataset.id).notes=el.innerHTML; }
   if(el.dataset.action==='editProject'){ project(el.dataset.id)[el.dataset.field]=el.value; }
+  if(el.dataset.action==='editCrewPay'){ crewPayFor(project(el.dataset.id),el.dataset.cid).amount=Number(el.value)||0; }
 });
 document.addEventListener('change',e=>{
   if(e.target.dataset.action==='editInvoiceItem')render();
@@ -1812,6 +1840,7 @@ document.addEventListener('change',e=>{
   if(e.target.dataset.action==='insertNoteImage')handleNoteImage(e.target);
   if(e.target.dataset.action==='editProject')render();
   if(e.target.dataset.action==='editScene'&&e.target.dataset.field==='duration')render();
+  if(e.target.dataset.action==='editCrewPay')render();
 });
 
 /* ── Opener: the logo reveals itself on first load each session ───────────── */
