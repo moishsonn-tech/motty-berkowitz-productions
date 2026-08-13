@@ -430,6 +430,9 @@ a{color:inherit}
 .cs-section h4{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-bottom:10px}
 .cs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .cs-crew-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:13px}
+.cs-kosher-row{display:flex;flex-direction:column;gap:1px;padding:7px 0;border-bottom:1px solid var(--line-2);font-size:12.5px}
+.cs-kosher-row:last-child{border-bottom:none}
+.cs-kosher-row span{color:var(--ink-3);font-size:11.5px}
 .cs-actions{display:flex;gap:10px;padding:16px 24px;border-top:1px solid var(--line);background:var(--surface-2)}
 
 /* ── Invoicing ───────────────────────────────────────────────────────────── */
@@ -582,6 +585,16 @@ let LOCATIONS = [
   {id:'l5',name:'Landers Campus Lobby',type:'Indoor',address:'Landers College, Far Rockaway, NY',notes:'Visitor badge required — coordinate with facilities 48hrs ahead.'},
   {id:'l6',name:'Domino Park Rooftop',type:'Outdoor',address:'Domino Park, Williamsburg, Brooklyn',notes:'Public space — no permit needed under 10 crew. Watch the 6pm crowd surge.'},
   {id:'l7',name:'Boro Park Studio A',type:'Studio',address:'48th St, Brooklyn, NY',notes:'Green screen + cyc wall. Book 1 day ahead, shared space.'},
+];
+
+// Real, verified kosher schnitzel spots (checked live, not invented) — general Brooklyn list since
+// this app has no geocoding/places API yet to sort by exact distance per shoot location.
+const KOSHER_SPOTS = [
+  {name:'Corner Street Food',address:'1360 Coney Island Ave, Brooklyn (corner of Ave J)'},
+  {name:'Schnitzi',address:'1299 Coney Island Ave, Brooklyn'},
+  {name:'Holy Schnitzel',address:'4102 18th Ave, Brooklyn (Borough Park)'},
+  {name:'Zilus Essen',address:'3715 13th Ave, Brooklyn (Borough Park)'},
+  {name:'Malka',address:'56 Adams St, Brooklyn (Dumbo) — Eyal Shani’s schnitzel stuffed with mashed potatoes'},
 ];
 
 let CONTACTS = [
@@ -1412,6 +1425,9 @@ function tabCallsheet(p){
       </div>
       <div class="cs-section"><h4>Crew &amp; call times</h4>
         ${crew.map(c=>`<div class="cs-crew-row"><span>${esc(c.name)} — ${esc(c.role)}</span><span class="mono">${esc(c.phone)} · ${esc(p.callTime)}</span></div>`).join('')||'No crew assigned.'}
+      </div>
+      <div class="cs-section"><h4>🥪 Kosher schnitzel nearby</h4>
+        ${KOSHER_SPOTS.map(k=>`<div class="cs-kosher-row"><b>${esc(k.name)}</b><span>${esc(k.address)}</span></div>`).join('')}
       </div>
     </div>
     <div class="cs-actions">
