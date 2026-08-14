@@ -292,9 +292,7 @@ a{color:inherit}
 
 /* ── Scenes / storyline ─────────────────────────────────────────────────── */
 .scene-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px;
-  margin-bottom:12px;display:flex;gap:14px}
-.scene-num{font-family:var(--mono);font-weight:800;font-size:13px;color:var(--accent);flex:none;width:38px;
-  padding-top:2px}
+  margin-bottom:12px}
 .scene-body{flex:1;min-width:0}
 .scene-body .field{margin-bottom:10px}
 .scene-loc-select{max-width:280px}
@@ -319,7 +317,8 @@ a{color:inherit}
 .audio-time{font-size:12px;color:var(--sb-mut)}
 .audio-hint{font-size:11.5px;color:var(--sb-mut)}
 .audio-loadbtn{margin-left:auto;cursor:pointer}
-.scene-range{font-size:10px;color:var(--accent);font-weight:700;margin-top:3px}
+.scene-range{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--accent-dark);
+  background:var(--accent-wash);padding:3px 8px;border-radius:6px;white-space:nowrap;flex:none}
 .script-toggle{margin-bottom:16px}
 .songpart-card{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-lg);
   padding:16px;margin-bottom:16px}
@@ -656,11 +655,11 @@ let PROJECTS = [
        {id:'s4',heading:'Opening — alone at dawn',desc:'Shloime alone on the rooftop at dawn, city skyline behind him, wide establishing shot as the first verse begins.',locId:'l6',subScenes:[]},
        {id:'s5',heading:'The piano',desc:'Close on his hands over the piano keys, intercut with a wide of the empty studio, moody top light.',locId:'l3',subScenes:[]},
      ]},
-     {id:'sp2',label:'Chorus',t:null,scenes:[
+     {id:'sp2',label:'Chorus 1',t:null,scenes:[
        {id:'s6',heading:'Into the park',desc:'Walking through the park at golden hour, a crowd of dancers gradually joins him as the chorus builds.',locId:'l2',subScenes:[]},
        {id:'s7',heading:'The lift',desc:'Aerial drone pull-back over the full crowd in the park as the chorus hits its peak.',locId:'l2',subScenes:[]},
      ]},
-     {id:'sp3',label:'Outro',t:null,scenes:[
+     {id:'sp3',label:'Ending',t:null,scenes:[
        {id:'s8',heading:'Closing — sunrise to sunset',desc:'Back on the rooftop, wide shot, time-lapse feel from sunrise to sunset as the track resolves.',locId:'l6',subScenes:[]},
      ]},
    ],
@@ -705,6 +704,7 @@ let EXTRA_EVENTS = [
   {id:'e1',projectId:'p2',type:'Shoot Day',label:'Tech Scout / Pre-Light',date:'2026-08-14',callTime:'6:00 PM',wrapTime:'9:00 PM',crew:['c2','c7']},
 ];
 const EVENT_TYPES = ['Call','Meeting','Shoot Day','Release Date','Other'];
+const SONG_PART_PRESETS = ['Intro','Verse 1','Verse 2','Chorus 1','Chorus 2','Bridge','Buildup','Ending'];
 function eventTypeBadge(t){ return {Call:'badge-info',Meeting:'badge-warn','Shoot Day':'badge-good','Release Date':'badge-bad',Other:'badge-neutral'}[t]||'badge-neutral'; }
 
 const STAGES = [
@@ -1263,12 +1263,31 @@ function songPartCard(p,sp,i){
   const parts=p.songParts;
   const loaded=AUD.projectId===p.id && AUD.duration>0;
   const rangeLabel=loaded?(()=>{const r=songPartRange(parts,i,AUD.duration);return fmtTime(r.start)+'–'+fmtTime(r.end)})():(sp.t!=null?fmtTime(sp.t):'');
+  const isCustom=!SONG_PART_PRESETS.includes(sp.label);
+  const projectCrew=CONTACTS.filter(c=>p.crew.includes(c.id));
   return `<div class="songpart-card">
     <div class="songpart-head">
-      <input class="inp inline-edit" value="${esc(sp.label)}" data-action="editSongPart" data-id="${p.id}" data-part="${sp.id}">
+      <select class="sel inline-edit" style="font-weight:800;flex:1;min-width:120px" data-action="editSongPart" data-id="${p.id}" data-part="${sp.id}">
+        ${SONG_PART_PRESETS.map(o=>`<option ${sp.label===o?'selected':''}>${o}</option>`).join('')}
+        <option value="__custom" ${isCustom?'selected':''}>Custom…</option>
+      </select>
       ${rangeLabel?`<span class="songpart-range mono">${rangeLabel}</span>`:''}
       ${loaded?`<button class="btn btn-sm btn-subtle" data-action="markSplit" data-id="${p.id}" data-part="${sp.id}">${I.plus} Mark split here</button>`:''}
     </div>
+    ${isCustom?`<input class="inp inline-edit" style="margin-bottom:12px" value="${esc(sp.label)}" data-action="editSongPart" data-id="${p.id}" data-part="${sp.id}" placeholder="Custom part name">`:''}
+    <div class="field-row" style="margin-bottom:12px">
+      <div class="field" style="margin-bottom:0"><label>Location</label>
+        <select class="sel" data-action="editSongPart" data-id="${p.id}" data-part="${sp.id}" data-field="locId">
+          <option value="">— None —</option>
+          ${LOCATIONS.map(l=>`<option value="${l.id}" ${sp.locId===l.id?'selected':''}>${esc(l.name)}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="stat-label" style="margin-bottom:8px">Crew for this part</div>
+    <div class="chip-row" style="margin-bottom:14px">${projectCrew.length?projectCrew.map(c=>{
+      const on=(sp.crew||[]).includes(c.id);
+      return `<span class="chip ${on?'active':''}" data-action="toggleSongPartCrew" data-id="${p.id}" data-part="${sp.id}" data-cid="${c.id}">${on?I.check:I.plus} ${esc(c.name)}</span>`;
+    }).join(''):'<span style="color:var(--ink-3);font-size:12px">Assign crew to the project first, on the Cast &amp; Crew tab</span>'}</div>
     ${(sp.scenes||[]).map((sc,j)=>sceneCard(p,sc,j)).join('')||`<div class="empty" style="padding:16px">No scenes in this part yet.</div>`}
     <button class="btn btn-sm btn-ghost" data-action="addScene" data-id="${p.id}" data-part="${sp.id}">${I.plus} Add Scene to ${esc(sp.label)}</button>
   </div>`;
@@ -1276,9 +1295,11 @@ function songPartCard(p,sp,i){
 function sceneCard(p,sc,i,opts){
   opts=opts||{};
   return `<div class="scene-card">
-    <div class="scene-num">SC${i+1}${opts.range?`<div class="scene-range mono">${fmtTime(opts.range.start)}–${fmtTime(opts.range.end)}</div>`:''}</div>
     <div class="scene-body">
-      <div class="field"><input class="inp" style="font-weight:700" value="${esc(sc.heading)}" data-action="editScene" data-id="${p.id}" data-scene="${sc.id}" data-field="heading"></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+        <input class="inp" style="font-weight:700;flex:1" value="${esc(sc.heading)}" data-action="editScene" data-id="${p.id}" data-scene="${sc.id}" data-field="heading">
+        ${opts.range?`<span class="scene-range mono">${fmtTime(opts.range.start)}–${fmtTime(opts.range.end)}</span>`:''}
+      </div>
       <div class="field"><textarea class="txt" data-action="editScene" data-id="${p.id}" data-scene="${sc.id}" data-field="desc">${esc(sc.desc)}</textarea></div>
       <div class="field-row">
         <div class="field scene-loc-select">
@@ -1344,8 +1365,21 @@ function shotRow(r){
 }
 function tabLocations(p){
   const locs=p.locationIds.map(getLoc).filter(Boolean);
-  return `<div class="grid-cards">${locs.map(locCard).join('')||`<div class="empty">No locations linked yet.</div>`}</div>
-  <div style="margin-top:16px"><button class="btn btn-ghost" data-action="nav" data-view="locations">${I.pin} Open full Locations directory</button></div>`;
+  return `
+  <div class="grid-cards">${locs.map(l=>`<div class="loc-card">
+    <div class="loc-card-top"><div><div class="loc-name">${esc(l.name)}</div><span class="badge badge-neutral">${esc(l.type)}</span></div></div>
+    <div class="loc-addr">${I.pin.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${esc(l.address)}</div>
+    ${l.notes?`<div class="loc-notes">${esc(l.notes)}</div>`:''}
+    <a class="btn btn-sm btn-primary" style="margin-top:12px;width:100%;justify-content:center" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(l.address)}" target="_blank" rel="noopener">${I.pin} Get Directions</a>
+  </div>`).join('')||`<div class="empty">${I.pin}<div>No locations linked yet — add one below.</div></div>`}</div>
+  <div class="card" style="margin-top:16px">
+    <div class="stat-label" style="margin-bottom:10px">Link a location</div>
+    <div class="chip-row">${LOCATIONS.map(l=>{
+      const linked=p.locationIds.includes(l.id);
+      return `<span class="chip ${linked?'active':''}" data-action="toggleProjectLocation" data-id="${p.id}" data-loc="${l.id}">${linked?I.check:I.plus} ${esc(l.name)}</span>`;
+    }).join('')}</div>
+    <button class="btn btn-sm btn-ghost" style="margin-top:12px" data-action="nav" data-view="locations">${I.pin} Open full Locations directory</button>
+  </div>`;
 }
 function tabCrew(p){
   const crewIds=p.crew.filter(cid=>contact(cid));
@@ -1818,6 +1852,13 @@ const ACTIONS = {
   markSplit:(el)=>{ if(!AUD.el||AUD.projectId!==el.dataset.id)return;
     const p=project(el.dataset.id); const sp=(p.songParts||[]).find(s=>s.id===el.dataset.part);
     if(sp){ sp.t=AUD.el.currentTime; render(); } },
+  toggleSongPartCrew:(el)=>{
+    const p=project(el.dataset.id); const sp=(p.songParts||[]).find(s=>s.id===el.dataset.part);
+    if(!sp)return; sp.crew=sp.crew||[];
+    const i=sp.crew.indexOf(el.dataset.cid);
+    if(i>-1)sp.crew.splice(i,1); else sp.crew.push(el.dataset.cid);
+    render();
+  },
   openModal:(el)=>{S.modal=el.dataset.modal;render()},
   closeModal:()=>{S.modal=null;render()},
   newProject:()=>{S.modal='project';render()},
@@ -1887,7 +1928,9 @@ document.addEventListener('input',e=>{
   }
   if(el.dataset.action==='editSongPart'){
     const p=project(el.dataset.id); const sp=(p.songParts||[]).find(s=>s.id===el.dataset.part);
-    sp.label=el.value;
+    if(el.dataset.field==='locId'){ sp.locId=el.value; }
+    else if(el.tagName==='SELECT'){ sp.label=el.value==='__custom'?'':el.value; }
+    else { sp.label=el.value; }
   }
   if(el.dataset.action==='editInvoiceItem'){
     const inv=getInvoice(project(el.dataset.id)); const it=inv.items.find(i=>i.id===el.dataset.item);
@@ -1904,6 +1947,7 @@ document.addEventListener('change',e=>{
   if(e.target.dataset.action==='editProject')render();
   if(e.target.dataset.action==='editScene'&&e.target.dataset.field==='duration')render();
   if(e.target.dataset.action==='editCrewPay')render();
+  if(e.target.dataset.action==='editSongPart'&&(e.target.tagName==='SELECT'))render();
 });
 
 /* ── Opener: the logo reveals itself on first load each session ───────────── */
