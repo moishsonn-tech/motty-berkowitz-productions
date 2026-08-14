@@ -208,8 +208,14 @@ a{color:inherit}
 .week-day-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
 .week-day.today .week-day-name{color:var(--accent-dark)}
 .week-day-num{font-size:18px;font-weight:800;margin:4px 0 6px;font-variant-numeric:tabular-nums}
-.week-day-dots{display:flex;justify-content:center;gap:3px;min-height:7px}
-@media (max-width:900px){.week-day{padding:8px 3px}.week-day-num{font-size:15px}.week-strip{gap:5px}}
+.week-day-jobs{display:flex;flex-direction:column;gap:3px;min-height:7px}
+.week-day-job{font-size:10px;font-weight:700;padding:3px 5px;border-radius:5px;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;text-align:left}
+.week-day-job.app{background:var(--accent-wash);color:var(--accent-dark)}
+.week-day-job.gcal{background:var(--info-wash);color:var(--info)}
+.week-day-more{font-size:9.5px;color:var(--ink-3);font-weight:600}
+@media (max-width:900px){.week-day{padding:8px 3px}.week-day-num{font-size:15px}.week-strip{gap:5px}
+  .week-day-job{font-size:8.5px;padding:2px 3px}}
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:28px 0 12px}
 .section-head h2{font-size:16px}
 .step-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);
@@ -326,7 +332,8 @@ a{color:inherit}
 .subscene-card .field{margin-bottom:6px}
 .notes-toolbar{display:flex;gap:8px;margin-bottom:10px}
 .notes-rich{min-height:320px;overflow-y:auto;line-height:1.55}
-.notes-rich img{max-width:100%;border-radius:var(--r-sm);margin:8px 0;display:block}
+.notes-rich img{max-width:100%;border-radius:var(--r-sm);margin:8px 0;display:block;
+  resize:both;overflow:hidden;min-width:60px;min-height:40px}
 .notes-rich ul{padding-left:22px;margin:8px 0}
 .notes-rich:empty:before{content:attr(data-placeholder);color:var(--ink-3)}
 .notes-rich:focus{outline:none}
@@ -455,6 +462,13 @@ a{color:inherit}
 .inv-pay-row:last-child{border-bottom:none}
 .inv-pay-check{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px}
 .inv-pay-check input{width:17px;height:17px;accent-color:var(--good)}
+.owed-row{display:flex;justify-content:space-between;align-items:center;padding:12px 4px;
+  border-bottom:1px solid var(--line-2);cursor:pointer;transition:background .15s}
+.owed-row:hover{background:var(--surface-2)}
+.owed-row:last-child{border-bottom:none}
+.owed-name{font-weight:700;font-size:13.5px}
+.owed-client{font-size:12px;color:var(--ink-3)}
+.owed-amt{font-weight:800;font-size:14px}
 
 /* ── Modal / bottom sheet ───────────────────────────────────────────────── */
 .overlay{position:fixed;inset:0;background:rgba(20,18,10,.45);display:flex;align-items:center;justify-content:center;
@@ -706,9 +720,9 @@ const S = {
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function fmtDate(iso){const d=new Date(iso+'T00:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+function fmtDate(iso){if(!iso)return 'Date TBD';const d=new Date(iso+'T00:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
 function dayNum(iso){return new Date(iso+'T00:00:00').getDate()}
-function daysUntil(iso){const ms=new Date(iso+'T00:00:00')-new Date(new Date().toDateString());return Math.round(ms/86400000)}
+function daysUntil(iso){if(!iso)return null;const ms=new Date(iso+'T00:00:00')-new Date(new Date().toDateString());return Math.round(ms/86400000)}
 function monAbbr(iso){return new Date(iso+'T00:00:00').toLocaleDateString('en-US',{month:'short'})}
 function project(id){return PROJECTS.find(p=>p.id===id)}
 function contact(id){return CONTACTS.find(c=>c.id===id)}
@@ -802,7 +816,7 @@ function invoiceStatusBadge(inv){
 
 /* ── schedule + conflict detection ───────────────────────────────────────── */
 function allEvents(){
-  const evs = PROJECTS.map(p=>({id:'shoot-'+p.id,projectId:p.id,label:'Shoot Day',date:p.shootDate,
+  const evs = PROJECTS.filter(p=>p.shootDate).map(p=>({id:'shoot-'+p.id,projectId:p.id,label:'Shoot Day',date:p.shootDate,
     callTime:p.callTime,wrapTime:p.wrapTime,crew:p.crew}));
   return evs.concat(EXTRA_EVENTS).sort((a,b)=>a.date.localeCompare(b.date));
 }
@@ -841,11 +855,16 @@ function weekStrip(){
     <div class="week-strip">
       ${days.map(d=>{
         const iso=isoLocal(d), isToday=iso===todayIso;
-        const appN=app.filter(e=>e.date===iso).length, gcalN=GCAL_EVENTS.filter(e=>e.date===iso).length;
+        const dayApp=app.filter(e=>e.date===iso).map(e=>({label:eventTitle(e),cls:'app'}));
+        const dayGcal=GCAL_EVENTS.filter(e=>e.date===iso).map(e=>({label:e.title||'Google Calendar event',cls:'gcal'}));
+        const all=[...dayApp,...dayGcal]; const shown=all.slice(0,2); const extra=all.length-shown.length;
         return `<div class="week-day ${isToday?'today':''}" data-action="calGoDay" data-date="${iso}">
           <div class="week-day-name">${d.toLocaleDateString('en-US',{weekday:'short'})}</div>
           <div class="week-day-num">${d.getDate()}</div>
-          <div class="week-day-dots">${'<span class="week-dot app"></span>'.repeat(Math.min(appN,3))}${'<span class="week-dot gcal"></span>'.repeat(Math.min(gcalN,3))}</div>
+          <div class="week-day-jobs">
+            ${shown.map(s=>`<div class="week-day-job ${s.cls}" title="${esc(s.label)}">${esc(s.label)}</div>`).join('')}
+            ${extra>0?`<div class="week-day-more">+${extra} more</div>`:''}
+          </div>
         </div>`;
       }).join('')}
     </div>
@@ -1016,9 +1035,13 @@ function nextSteps(){
   const steps=[];
   PROJECTS.forEach(p=>{
     if(p.stage==='delivered')return;
+    if(!p.shootDate){
+      steps.push({icon:I.calendar,text:`<b>${esc(p.name)}</b> has no confirmed shoot date — confirm date with ${esc(p.client)}`,id:p.id,sort:Infinity});
+      return;
+    }
     const days=daysUntil(p.shootDate);
     if(p.stage==='inquiry'){
-      steps.push({icon:I.calendar,text:`<b>${esc(p.name)}</b> has no confirmed shoot date — confirm date with ${esc(p.client)}`,id:p.id,sort:Infinity});
+      steps.push({icon:I.mail,text:`<b>${esc(p.name)}</b> is still in Inquiry — follow up with ${esc(p.client)}`,id:p.id,sort:days});
       return;
     }
     if(days>=0 && days<=14){
@@ -1041,32 +1064,46 @@ function nextSteps(){
   });
   return steps.sort((a,b)=>a.sort-b.sort);
 }
+function owedBreakdown(){
+  const payoutRows=[],otherRows=[];
+  PROJECTS.filter(p=>p.invoice).forEach(p=>{
+    const inv=getInvoice(p), owed=invoiceTotal(inv)-invoicePaidToDate(inv);
+    if(owed<=0)return;
+    const row={id:p.id,name:p.name,client:p.client,owed};
+    (p.stage==='delivered'?payoutRows:otherRows).push(row);
+  });
+  return {payoutRows,otherRows};
+}
 function financialSummary(){
   const withInv=PROJECTS.filter(p=>p.invoice);
-  let payoutDue=0,otherOwed=0,collected=0,invoiced=0;
+  const thisYear=new Date().getFullYear();
+  let invoiced=0,collectedThisYear=0;
   withInv.forEach(p=>{
-    const inv=getInvoice(p),total=invoiceTotal(inv),paid=invoicePaidToDate(inv),owed=total-paid;
-    invoiced+=total;collected+=paid;
-    if(p.stage==='delivered')payoutDue+=owed;else otherOwed+=owed;
+    const inv=getInvoice(p); invoiced+=invoiceTotal(inv);
+    if(p.shootDate && new Date(p.shootDate+'T00:00:00').getFullYear()===thisYear) collectedThisYear+=invoicePaidToDate(inv);
   });
+  const {payoutRows,otherRows}=owedBreakdown();
+  const payoutDue=payoutRows.reduce((s,r)=>s+r.owed,0);
+  const otherOwed=otherRows.reduce((s,r)=>s+r.owed,0);
   return `
   <div class="section-head"><h2>Financial Overview</h2>
     <button class="btn btn-sm btn-ghost" data-action="syncQuickbooks">${I.sync} Sync to QuickBooks</button></div>
   <div class="inv-summary">
-    <div class="card inv-stat"><span class="stat-label">Awaiting Payout</span>
+    <div class="card inv-stat" style="cursor:pointer" data-action="openModal" data-modal="payoutOwed">
+      <span class="stat-label">Awaiting Payout</span>
       <span class="val" style="color:${payoutDue>0?'var(--bad)':'var(--ink)'}">${fmtMoney(payoutDue)}</span>
-      <span class="sub">Finalized projects, balance still owed</span></div>
-    <div class="card inv-stat"><span class="stat-label">Other Money Owed</span>
+      <span class="sub">Finalized projects, balance still owed${payoutRows.length?' — click to see who':''}</span></div>
+    <div class="card inv-stat" style="cursor:pointer" data-action="openModal" data-modal="otherOwed">
+      <span class="stat-label">Other Money Owed</span>
       <span class="val" style="color:${otherOwed>0?'var(--warn)':'var(--ink)'}">${fmtMoney(otherOwed)}</span>
-      <span class="sub">Active projects, not yet collected</span></div>
-    <div class="card inv-stat"><span class="stat-label">Collected to Date</span>
-      <span class="val" style="color:var(--good)">${fmtMoney(collected)}</span>
+      <span class="sub">Active projects, not yet collected${otherRows.length?' — click to see who':''}</span></div>
+    <div class="card inv-stat"><span class="stat-label">Collected This Year</span>
+      <span class="val" style="color:var(--good)">${fmtMoney(collectedThisYear)}</span>
       <span class="sub">of ${fmtMoney(invoiced)} invoiced</span></div>
   </div>`;
 }
 function viewDashboard(){
   const open=PROJECTS.filter(p=>p.stage!=='delivered');
-  const conflicts=conflictsFor(allEvents());
   const steps=nextSteps();
   const today=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   return `
@@ -1078,14 +1115,10 @@ function viewDashboard(){
     <span class="stat-label">Open Projects</span><span class="val">${open.length}</span>
     <span class="sub">In progress right now</span>
   </div>
-  ${conflicts.length?`<div class="conflict-banner">${I.alert}<div>
-      <b>${conflicts.length} scheduling conflict${conflicts.length===1?'':'s'} to resolve</b>
-      ${conflicts.map(c=>`${c.people.map(pid=>esc(contact(pid).name)).join(', ')} booked on both "${esc(eventTitle(c.a))}" and "${esc(eventTitle(c.b))}", ${fmtDate(c.a.date)}`).join(' · ')}
-    </div></div>`:''}
   <div class="section-head"><h2>Next Steps</h2></div>
   ${steps.length?steps.map(s=>`<div class="step-row" data-action="openProject" data-id="${s.id}" data-tab="${s.tab||'overview'}"><span class="step-ico">${s.icon}</span><span class="step-text">${s.text}</span></div>`).join(''):`<div class="empty">You're all caught up — no open action items.</div>`}
   <div class="section-head"><h2>Open Projects</h2><button class="btn btn-sm btn-ghost" data-action="nav" data-view="boards">View all ${I.chevR}</button></div>
-  ${open.length?open.sort((a,b)=>a.shootDate.localeCompare(b.shootDate)).map(p=>{
+  ${open.length?open.sort((a,b)=>(a.shootDate||'9999-99-99').localeCompare(b.shootDate||'9999-99-99')).map(p=>{
     return `<div class="oproj-row" data-action="openProject" data-id="${p.id}">
       <span class="type-dot" style="background:${COLORS[p.type]}"></span>
       <div style="flex:1"><div class="oproj-name">${esc(p.name)}</div><div class="oproj-client">${esc(p.client)}</div></div>
@@ -1168,6 +1201,9 @@ function viewProject(){
 }
 function tabOverview(p){
   const crew=p.crew.map(cid=>contact(cid)).filter(Boolean);
+  const inv=getInvoice(p);
+  const mottyFee=inv.items.filter(i=>i.category!=='other').reduce((s,i)=>s+i.amount,0);
+  const otherCost=inv.items.filter(i=>i.category==='other').reduce((s,i)=>s+i.amount,0);
   return `<div class="card">
     <div class="stat-label" style="margin-bottom:10px">Project info</div>
     <div class="field-row">
@@ -1175,22 +1211,23 @@ function tabOverview(p){
       <div class="field"><label>Type</label><select class="sel" data-action="editProject" data-id="${p.id}" data-field="type">
         ${['Wedding','Music Video','Corporate','Bar Mitzvah','Event'].map(t=>`<option ${p.type===t?'selected':''}>${t}</option>`).join('')}
       </select></div>
-      <div class="field"><label>Shoot day</label><input class="inp" type="date" value="${p.shootDate}" data-action="editProject" data-id="${p.id}" data-field="shootDate"></div>
-      <div class="field"><label>Budget</label><input class="inp" value="${esc(p.budget)}" data-action="editProject" data-id="${p.id}" data-field="budget"></div>
+      <div class="field"><label>Shoot day <span style="text-transform:none;font-weight:400">(optional)</span></label><input class="inp" type="date" value="${p.shootDate||''}" data-action="editProject" data-id="${p.id}" data-field="shootDate"></div>
+      <div class="field"><label>Target budget</label><input class="inp" value="${esc(p.budget)}" data-action="editProject" data-id="${p.id}" data-field="budget"></div>
       <div class="field"><label>Call time</label><input class="inp" value="${esc(p.callTime)}" data-action="editProject" data-id="${p.id}" data-field="callTime"></div>
       <div class="field"><label>Wrap time</label><input class="inp" value="${esc(p.wrapTime)}" data-action="editProject" data-id="${p.id}" data-field="wrapTime"></div>
     </div>
   </div>
   <div class="card" style="margin-top:14px">
-    <div class="stat-label" style="margin-bottom:10px">Linked locations</div>
-    <div class="chip-row">${LOCATIONS.map(l=>{
-      const linked=p.locationIds.includes(l.id);
-      return `<span class="chip ${linked?'active':''}" data-action="toggleProjectLocation" data-id="${p.id}" data-loc="${l.id}">${linked?I.check:I.plus} ${esc(l.name)}</span>`;
-    }).join('')}</div>
+    <div class="stat-label" style="margin-bottom:10px">Budget breakdown <span style="text-transform:none;font-weight:400;color:var(--ink-3)">— from the invoice, edit on Financials</span></div>
+    <div class="inv-summary" style="margin-bottom:0">
+      <div class="inv-stat"><span class="stat-label">Motty's Charge</span><span class="val">${fmtMoney(mottyFee)}</span></div>
+      <div class="inv-stat"><span class="stat-label">Cost of Project</span><span class="val">${fmtMoney(otherCost)}</span></div>
+      <div class="inv-stat"><span class="stat-label">Total</span><span class="val" style="color:var(--accent-dark)">${fmtMoney(mottyFee+otherCost)}</span></div>
+    </div>
   </div>
   <div class="card" style="margin-top:14px">
     <div class="stat-label" style="margin-bottom:10px">Crew on this project</div>
-    ${crew.length?crew.map(c=>`<div class="cs-crew-row"><span style="display:flex;align-items:center;gap:8px"><span class="avatar" style="background:${personColor(c.id)}">${initials(c.name)}</span>${esc(c.name)} · ${esc(c.role)}</span><span class="badge ${c.avail==='available'?'badge-good':c.avail==='booked'?'badge-warn':'badge-bad'}">${c.avail}</span></div>`).join(''):`<div class="empty">No crew assigned yet.</div>`}
+    ${crew.length?crew.map(c=>`<div class="cs-crew-row"><span style="display:flex;align-items:center;gap:8px"><span class="avatar" style="background:${personColor(c.id)}">${initials(c.name)}</span>${esc(c.name)} · ${esc(c.role)}</span></div>`).join(''):`<div class="empty">No crew assigned yet.</div>`}
   </div>`;
 }
 function tabStoryline(p){
@@ -1271,7 +1308,8 @@ function tabShotlist(p){
     (S.shotLoc==='all'||s.locId===S.shotLoc) &&
     (!S.shotSearch || s.desc.toLowerCase().includes(S.shotSearch.toLowerCase())));
   const usedLocIds=[...new Set(shotsForProject(p).map(s=>s.locId))];
-  const groups={}; shots.forEach(s=>{(groups[s.locId]=groups[s.locId]||[]).push(s)});
+  const groups={}; const order=[];
+  shots.forEach(s=>{ if(!groups[s.sceneId]){groups[s.sceneId]=[];order.push(s.sceneId);} groups[s.sceneId].push(s); });
   return `
   <div class="shot-toolbar">
     <div class="chip-row" style="flex:1">
@@ -1281,13 +1319,13 @@ function tabShotlist(p){
     <div class="search-box" style="width:220px;display:block"><span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--ink-3)">${I.search}</span>
       <input class="inp" style="padding-left:34px" placeholder="Search shots…" value="${esc(S.shotSearch)}" data-field="shotSearch" data-action="liveSearch"></div>
   </div>
-  ${Object.keys(groups).length?Object.entries(groups).map(([locId,rows])=>{
-    const l=getLoc(locId);
+  ${order.length?order.map(sceneId=>{
+    const rows=groups[sceneId]; const l=getLoc(rows[0].locId);
     return `<div class="loc-group">
-      <div class="loc-group-head">${I.pin}<b>${esc(l.name)}</b><span>${rows.length} shot${rows.length===1?'':'s'}</span></div>
+      <div class="loc-group-head">${I.film}<b>${esc(rows[0].desc)}</b>${l?`<span>${I.pin.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${esc(l.name)}</span>`:''}<span>${rows.length} shot${rows.length===1?'':'s'}</span></div>
       ${rows.map(r=>shotRow(r)).join('')}
     </div>`;
-  }).join(''):`<div class="empty">${I.film}<div>No shots yet — add scenes in the Storyline tab and they'll generate here automatically.</div></div>`}
+  }).join(''):`<div class="empty">${I.film}<div>No shots yet — add scenes in the Script tab and they'll generate here automatically.</div></div>`}
   `;
 }
 function shotRow(r){
@@ -1328,11 +1366,10 @@ function tabCrew(p){
 }
 function projectCrewCard(p,cid){
   const c=contact(cid); const cp=crewPayFor(p,cid);
-  const availBadge={available:'badge-good',booked:'badge-warn',unavailable:'badge-bad'}[c.avail];
   return `<div class="person-card">
     <div class="person-top"><span class="avatar" style="background:${personColor(c.id)}">${initials(c.name)}</span>
       <div><div class="person-name">${esc(c.name)}</div><div class="person-role">${esc(c.role)}</div></div></div>
-    <div class="person-meta"><span class="mono">${esc(c.phone)}</span><span class="badge ${availBadge}">${c.avail}</span></div>
+    <div class="person-meta" style="border-top:none;padding-top:0"><span class="mono">${esc(c.phone)}</span></div>
     <div class="field" style="margin-top:10px;margin-bottom:0"><label>Pay for this project</label>
       <input class="inp" type="number" min="0" value="${cp.amount}" data-action="editCrewPay" data-id="${p.id}" data-cid="${cid}"></div>
     <label class="inv-pay-check" style="padding:10px 0 0">
@@ -1650,6 +1687,18 @@ function modalHTML(){
       <button class="btn btn-primary" style="width:100%;justify-content:center" data-action="saveProject">${I.plus} Create Project</button>
     </div></div>`;
   }
+  if(S.modal==='payoutOwed'||S.modal==='otherOwed'){
+    const {payoutRows,otherRows}=owedBreakdown();
+    const rows=S.modal==='payoutOwed'?payoutRows:otherRows;
+    const title=S.modal==='payoutOwed'?'Awaiting Payout':'Other Money Owed';
+    return `<div class="overlay" data-action="closeModal"><div class="modal" data-stop>
+      <div class="modal-head"><h3>${title}</h3><button class="iconbtn" data-action="closeModal">${I.close}</button></div>
+      ${rows.length?rows.sort((a,b)=>b.owed-a.owed).map(r=>`<div class="owed-row" data-action="viewOwedProject" data-id="${r.id}">
+        <div><div class="owed-name">${esc(r.name)}</div><div class="owed-client">${esc(r.client)}</div></div>
+        <span class="mono owed-amt">${fmtMoney(r.owed)}</span>
+      </div>`).join(''):`<div class="empty">Nothing owed here right now.</div>`}
+    </div></div>`;
+  }
   if(S.modal==='event'){
     return `<div class="overlay" data-action="closeModal"><div class="modal" data-stop>
       <div class="modal-head"><h3>Add Event</h3><button class="iconbtn" data-action="closeModal">${I.close}</button></div>
@@ -1690,6 +1739,9 @@ const ACTIONS = {
   openProject:(el)=>{
     if(AUD.el && AUD.projectId && AUD.projectId!==el.dataset.id) AUD.el.pause();
     S.projectId=el.dataset.id;S.view='project';S.tab=el.dataset.tab||'overview';render()},
+  viewOwedProject:(el)=>{
+    if(AUD.el && AUD.projectId && AUD.projectId!==el.dataset.id) AUD.el.pause();
+    S.modal=null;S.projectId=el.dataset.id;S.view='project';S.tab='financials';render()},
   setTab:(el)=>{S.tab=el.dataset.tab;render()},
   setStage:(el)=>{
     const p=project(el.dataset.id); const was=p.stage; p.stage=el.dataset.stage; render();
@@ -1771,21 +1823,18 @@ const ACTIONS = {
   newProject:()=>{S.modal='project';render()},
   saveLocation:()=>{
     const v=id=>document.getElementById(id).value.trim();
-    if(!v('f-name')){showToast('Name is required');return}
-    LOCATIONS.push({id:'l'+Date.now(),name:v('f-name'),type:v('f-type'),address:v('f-addr'),notes:v('f-notes')});
+    LOCATIONS.push({id:'l'+Date.now(),name:v('f-name')||'New Location',type:v('f-type'),address:v('f-addr'),notes:v('f-notes')});
     S.modal=null;render();showToast('Location added');
   },
   saveContact:()=>{
     const v=id=>document.getElementById(id).value.trim();
-    if(!v('f-name')){showToast('Name is required');return}
-    CONTACTS.push({id:'c'+Date.now(),name:v('f-name'),role:v('f-role')||'Crew',rate:v('f-rate')||'—',phone:v('f-phone')||'—',avail:'available'});
+    CONTACTS.push({id:'c'+Date.now(),name:v('f-name')||'New Person',role:v('f-role')||'Crew',rate:v('f-rate')||'—',phone:v('f-phone')||'—',avail:'available'});
     S.modal=null;render();showToast('Person added to directory');
   },
   saveProject:()=>{
     const v=id=>document.getElementById(id).value.trim();
-    if(!v('f-name')){showToast('Project name is required');return}
-    const p={id:'p'+Date.now(),name:v('f-name'),client:v('f-client')||'—',type:v('f-type'),stage:'inquiry',
-      shootDate:v('f-date')||new Date().toISOString().slice(0,10),callTime:'9:00 AM',wrapTime:'5:00 PM',budget:'TBD',
+    const p={id:'p'+Date.now(),name:v('f-name')||'Untitled Project',client:v('f-client')||'—',type:v('f-type'),stage:'inquiry',
+      shootDate:v('f-date')||'',callTime:'9:00 AM',wrapTime:'5:00 PM',budget:'TBD',
       crew:[],locationIds:[],scenes:[]};
     PROJECTS.push(p);
     p.invoice=defaultInvoice(p); // every other project has one from creation — without this, it's invisible to
@@ -1795,10 +1844,8 @@ const ACTIONS = {
   },
   saveEvent:()=>{
     const v=id=>document.getElementById(id).value.trim();
-    if(!v('f-elabel')){showToast('Title is required');return}
-    if(!v('f-edate')){showToast('Date is required');return}
-    EXTRA_EVENTS.push({id:'e'+Date.now(),projectId:v('f-eproj')||null,type:v('f-etype'),label:v('f-elabel'),
-      date:v('f-edate'),callTime:v('f-ecall')||'TBD',wrapTime:v('f-ewrap')||'TBD',crew:[]});
+    EXTRA_EVENTS.push({id:'e'+Date.now(),projectId:v('f-eproj')||null,type:v('f-etype'),label:v('f-elabel')||'New Event',
+      date:v('f-edate')||isoLocal(new Date()),callTime:v('f-ecall')||'TBD',wrapTime:v('f-ewrap')||'TBD',crew:[]});
     S.modal=null;render();showToast('Event added');
   },
 };
@@ -1891,9 +1938,18 @@ function showOpener(){
   }
 }
 
+function checkConflictsOnce(){
+  if(sessionStorage.getItem('mb-conflicts-seen'))return;
+  const conflicts=conflictsFor(allEvents());
+  if(!conflicts.length)return;
+  sessionStorage.setItem('mb-conflicts-seen','1');
+  showToast(`${conflicts.length} scheduling conflict${conflicts.length===1?'':'s'} to resolve — check Schedule`);
+}
+
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 showOpener();
 render();
+checkConflictsOnce();
 </script>
 </body>
 </html>
