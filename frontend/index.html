@@ -364,6 +364,13 @@ a{color:inherit}
 .loc-notes{font-size:12px;color:var(--ink-2);background:var(--surface-2);border-radius:var(--r-sm);padding:8px 10px;
   margin-top:8px;line-height:1.5}
 .loc-used{font-size:11px;color:var(--ink-3);margin-top:10px}
+.loc-website{font-size:12px;color:var(--accent);text-decoration:none;display:block;margin-bottom:8px}
+.loc-website:hover{text-decoration:underline}
+.loc-photos{display:flex;gap:6px;overflow-x:auto;margin-bottom:8px}
+.loc-photos img{width:84px;height:64px;object-fit:cover;border-radius:var(--r-sm);flex:none}
+.loc-photo-placeholder{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-3);
+  background:var(--surface-2);border-radius:var(--r-sm);padding:8px 10px}
+.loc-photo-placeholder .ico{width:14px;height:14px}
 
 .person-top{display:flex;gap:12px;align-items:center;margin-bottom:10px}
 .person-top .avatar{width:42px;height:42px;font-size:14px}
@@ -428,13 +435,9 @@ a{color:inherit}
 
 /* ── Call sheet ──────────────────────────────────────────────────────────── */
 .callsheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
-.cs-band{background:var(--sb-bg);color:var(--sb-ink);padding:20px 24px}
-.cs-band h2{font-size:19px}
-.cs-band .cs-date{color:var(--accent);font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
 .cs-body{padding:22px 24px}
-.cs-section{margin-bottom:20px}
-.cs-section h4{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-bottom:10px}
-.cs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.cs-body h2{font-size:19px;margin-bottom:8px}
+.cs-body h4{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin:16px 0 8px}
 .cs-crew-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:13px}
 .cs-kosher-row{display:flex;flex-direction:column;gap:1px;padding:7px 0;border-bottom:1px solid var(--line-2);font-size:12.5px}
 .cs-kosher-row:last-child{border-bottom:none}
@@ -533,7 +536,6 @@ a{color:inherit}
   .content{padding:16px;padding-bottom:calc(var(--bottomnav-h) + 22px + env(safe-area-inset-bottom))}
   .board{display:flex;flex-direction:column;overflow-x:hidden}
   .col{min-width:0}
-  .cs-grid{grid-template-columns:1fr 1fr}
   .field-row{grid-template-columns:1fr}
   .shot-row{grid-template-columns:44px 1fr;row-gap:4px}
   .shot-row .shot-type-badge{grid-column:2}
@@ -591,13 +593,13 @@ const logoMark = '<img src="assets/mb-mark.png" alt="Motty Berkowitz" class="bra
 const COLORS = {Wedding:'#C8862E','Music Video':'#4A6FA5',Corporate:'#3E8F63','Bar Mitzvah':'#8C5FB0',Event:'#C9622A'};
 
 let LOCATIONS = [
-  {id:'l1',name:'Ateres Chaya Hall',type:'Venue',address:'1201 Ave J, Brooklyn, NY',notes:'Load-in via side door. No permit needed. Ceremony music must end by 9:30pm.'},
-  {id:'l2',name:'Prospect Park — Long Meadow',type:'Outdoor',address:'Prospect Park, Brooklyn, NY',notes:'Permit required 14 days out. Golden hour ≈ 7:40pm in August.'},
-  {id:'l3',name:'MBP Studio B',type:'Studio',address:'58 Ross St, Brooklyn, NY',notes:'Cyc wall + 3-point kit on site. Freight elevator access.'},
-  {id:'l4',name:'Klein Residence',type:'Indoor',address:'Private — Flatbush, Brooklyn',notes:'Street parking only. Keep noise down after 8pm.'},
-  {id:'l5',name:'Landers Campus Lobby',type:'Indoor',address:'Landers College, Far Rockaway, NY',notes:'Visitor badge required — coordinate with facilities 48hrs ahead.'},
-  {id:'l6',name:'Domino Park Rooftop',type:'Outdoor',address:'Domino Park, Williamsburg, Brooklyn',notes:'Public space — no permit needed under 10 crew. Watch the 6pm crowd surge.'},
-  {id:'l7',name:'Boro Park Studio A',type:'Studio',address:'48th St, Brooklyn, NY',notes:'Green screen + cyc wall. Book 1 day ahead, shared space.'},
+  {id:'l1',name:'Ateres Chaya Hall',type:'Venue',address:'1201 Ave J, Brooklyn, NY',website:'',notes:'Load-in via side door. No permit needed. Ceremony music must end by 9:30pm.'},
+  {id:'l2',name:'Prospect Park — Long Meadow',type:'Outdoor',address:'Prospect Park, Brooklyn, NY',website:'',notes:'Permit required 14 days out. Golden hour ≈ 7:40pm in August.'},
+  {id:'l3',name:'MBP Studio B',type:'Studio',address:'58 Ross St, Brooklyn, NY',website:'',notes:'Cyc wall + 3-point kit on site. Freight elevator access.'},
+  {id:'l4',name:'Klein Residence',type:'Indoor',address:'Private — Flatbush, Brooklyn',website:'',notes:'Street parking only. Keep noise down after 8pm.'},
+  {id:'l5',name:'Landers Campus Lobby',type:'Indoor',address:'Landers College, Far Rockaway, NY',website:'',notes:'Visitor badge required — coordinate with facilities 48hrs ahead.'},
+  {id:'l6',name:'Domino Park Rooftop',type:'Outdoor',address:'Domino Park, Williamsburg, Brooklyn',website:'',notes:'Public space — no permit needed under 10 crew. Watch the 6pm crowd surge.'},
+  {id:'l7',name:'Boro Park Studio A',type:'Studio',address:'48th St, Brooklyn, NY',website:'',notes:'Green screen + cyc wall. Book 1 day ahead, shared space.'},
 ];
 
 // Real, verified kosher schnitzel spots (checked live, not invented) — general Brooklyn list since
@@ -716,7 +718,8 @@ const STAGES = [
 const S = {
   view:'dashboard', projectId:null, tab:'overview', sidebarOpen:false,
   locSearch:'', locType:'all', contactSearch:'', contactRole:'all', shotLoc:'all', shotSearch:'',
-  modal:null, toast:null, calView:'month', calDate:isoLocal(new Date()),
+  crewAddRole:'all', modal:null, toast:null, calView:'month', calDate:isoLocal(new Date()),
+  locPhotoCache:{}, contactModalProjectIds:[],
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -776,6 +779,15 @@ function shotsForProject(p){
     });
   });
   return rows;
+}
+
+/* ── maps / navigation links (keyless — no API key needed) ──────────────────── */
+function mapsUrl(addr){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(addr)}
+function wazeUrl(addr){return 'https://waze.com/ul?q='+encodeURIComponent(addr)+'&navigate=yes'}
+function navLinks(addr){
+  if(!addr)return '';
+  return `<a class="btn btn-sm btn-ghost" href="${mapsUrl(addr)}" target="_blank" rel="noopener">${I.pin.replace('class="ico"','class="ico" style="width:12px;height:12px"')} Maps</a>
+    <a class="btn btn-sm btn-ghost" href="${wazeUrl(addr)}" target="_blank" rel="noopener">${I.pin.replace('class="ico"','class="ico" style="width:12px;height:12px"')} Waze</a>`;
 }
 
 /* ── invoicing ────────────────────────────────────────────────────────────── */
@@ -909,10 +921,10 @@ function downscaleImageFile(file,maxDim){
 }
 async function handleNoteImage(input){
   const file=input.files[0]; if(!file)return;
-  const pid=input.dataset.id;
+  const pid=input.dataset.id; const field=input.dataset.field||'notes';
   const dataUrl=await downscaleImageFile(file,1000);
-  const ed=document.getElementById('notes-editor-'+pid);
-  if(ed){ ed.focus(); document.execCommand('insertImage',false,dataUrl); project(pid).notes=ed.innerHTML; }
+  const ed=document.getElementById(field+'-editor-'+pid);
+  if(ed){ ed.focus(); document.execCommand('insertImage',false,dataUrl); project(pid)[field]=ed.innerHTML; }
 }
 async function handleAudioFile(input){
   const file=input.files[0]; if(!file)return;
@@ -1383,7 +1395,9 @@ function tabLocations(p){
 }
 function tabCrew(p){
   const crewIds=p.crew.filter(cid=>contact(cid));
-  const avail=CONTACTS.filter(c=>!p.crew.includes(c.id));
+  const availAll=CONTACTS.filter(c=>!p.crew.includes(c.id));
+  const availRoles=['all',...new Set(availAll.map(c=>c.role))];
+  const avail=availAll.filter(c=>S.crewAddRole==='all'||c.role===S.crewAddRole);
   const total=crewIds.reduce((s,cid)=>s+crewPayFor(p,cid).amount,0);
   const paid=crewIds.reduce((s,cid)=>{const cp=crewPayFor(p,cid);return s+(cp.paid?cp.amount:0)},0);
   return `
@@ -1395,7 +1409,8 @@ function tabCrew(p){
   <div class="grid-cards">${crewIds.map(cid=>projectCrewCard(p,cid)).join('')||`<div class="empty">No crew assigned yet.</div>`}</div>
   <div class="card" style="margin-top:16px">
     <div class="stat-label" style="margin-bottom:10px">Add from directory</div>
-    <div class="chip-row">${avail.map(c=>`<span class="chip" data-action="addCrew" data-id="${p.id}" data-cid="${c.id}">${I.plus} ${esc(c.name)} — ${esc(c.role)}</span>`).join('')||'Everyone in the directory is already assigned.'}</div>
+    <div class="chip-row" style="margin-bottom:10px">${availRoles.map(r=>`<span class="chip ${S.crewAddRole===r?'active':''}" data-action="crewAddRoleFilter" data-role="${esc(r)}">${r==='all'?'All roles':r}</span>`).join('')}</div>
+    <div class="chip-row">${avail.map(c=>`<span class="chip" data-action="addCrew" data-id="${p.id}" data-cid="${c.id}">${I.plus} ${esc(c.name)} — ${esc(c.role)}</span>`).join('')||'No one matches.'}</div>
   </div>`;
 }
 function projectCrewCard(p,cid){
@@ -1474,32 +1489,30 @@ function tabFinancials(p){
   </div>
   `;
 }
-function tabCallsheet(p){
+function defaultCallsheetHTML(p){
   const l=getLoc(p.locationIds[0]); const crew=p.crew.map(contact).filter(Boolean);
+  return `<h2>${esc(p.name)} — Call Sheet</h2>
+    <p><b>${fmtDate(p.shootDate)} · Call ${esc(p.callTime)} · Wrap ${esc(p.wrapTime)}</b></p>
+    <h4>Location</h4>
+    <p>${l?esc(l.name):'TBD'}<br>${l?esc(l.address):''}${l&&l.website?` · <a href="${esc(l.website)}" target="_blank" rel="noopener">${esc(l.website)}</a>`:''}
+    ${l?`<br>${navLinks(l.address)}`:''}${l&&l.notes?`<br>${esc(l.notes)}`:''}</p>
+    <h4>Crew &amp; call times</h4>
+    <ul>${crew.map(c=>`<li>${esc(c.name)} — ${esc(c.role)} · ${esc(c.phone)} · ${esc(p.callTime)}</li>`).join('')||'<li>No crew assigned.</li>'}</ul>
+    <h4>🥪 Kosher schnitzel nearby</h4>
+    <ul>${KOSHER_SPOTS.map(k=>`<li><b>${esc(k.name)}</b> — ${esc(k.address)}</li>`).join('')}</ul>`;
+}
+function tabCallsheet(p){
+  if(p.callsheetDoc==null)p.callsheetDoc=defaultCallsheetHTML(p);
   return `<div class="callsheet">
-    <div class="cs-band">
-      <div class="cs-date">${fmtDate(p.shootDate)} · Call ${esc(p.callTime)}</div>
-      <h2>${esc(p.name)} — Call Sheet</h2>
-    </div>
     <div class="cs-body">
-      <div class="cs-section"><h4>Location</h4>
-        <div style="font-weight:700">${l?esc(l.name):'TBD'}</div>
-        <div style="color:var(--ink-3);font-size:12.5px">${l?esc(l.address):''}</div>
-        ${l&&l.notes?`<div class="loc-notes">${esc(l.notes)}</div>`:''}
+      <div class="notes-toolbar">
+        <button class="iconbtn" type="button" data-action="noteBulletList" data-id="${p.id}" data-field="callsheetDoc" title="Bullet list">${I.list}</button>
+        <label class="iconbtn" title="Insert image" style="cursor:pointer">${I.image}
+          <input type="file" accept="image/*" style="display:none" data-action="insertNoteImage" data-id="${p.id}" data-field="callsheetDoc">
+        </label>
       </div>
-      <div class="cs-section"><h4>Schedule</h4>
-        <div class="cs-grid">
-          <div><div class="stat-label">Call time</div><span class="timecode" style="margin-top:4px">${esc(p.callTime)}</span></div>
-          <div><div class="stat-label">Wrap</div><span class="timecode" style="margin-top:4px">${esc(p.wrapTime)}</span></div>
-          <div><div class="stat-label">Weather</div><div style="font-weight:700">Check morning of</div></div>
-        </div>
-      </div>
-      <div class="cs-section"><h4>Crew &amp; call times</h4>
-        ${crew.map(c=>`<div class="cs-crew-row"><span>${esc(c.name)} — ${esc(c.role)}</span><span class="mono">${esc(c.phone)} · ${esc(p.callTime)}</span></div>`).join('')||'No crew assigned.'}
-      </div>
-      <div class="cs-section"><h4>🥪 Kosher schnitzel nearby</h4>
-        ${KOSHER_SPOTS.map(k=>`<div class="cs-kosher-row"><b>${esc(k.name)}</b><span>${esc(k.address)}</span></div>`).join('')}
-      </div>
+      <div class="txt notes-rich" contenteditable="true" id="callsheetDoc-editor-${p.id}" data-action="editNotesRich" data-id="${p.id}" data-field="callsheetDoc"
+        data-placeholder="Call sheet…">${p.callsheetDoc}</div>
     </div>
     <div class="cs-actions">
       <button class="btn btn-primary" data-action="sendCallsheet" data-via="email">${I.mail} Email Call Sheet</button>
@@ -1547,9 +1560,30 @@ function locCard(l){
   return `<div class="loc-card">
     <div class="loc-card-top"><div><div class="loc-name">${esc(l.name)}</div><span class="badge badge-neutral">${esc(l.type)}</span></div></div>
     <div class="loc-addr">${I.pin.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${esc(l.address)}</div>
+    ${l.website?`<a class="loc-website" href="${esc(l.website)}" target="_blank" rel="noopener">${esc(l.website)}</a>`:''}
+    <div class="loc-photos" id="loc-photos-${l.id}" data-loc="${l.id}">${locPhotoStripHTML(l.id)}</div>
     ${l.notes?`<div class="loc-notes">${esc(l.notes)}</div>`:''}
+    <div class="chip-row" style="margin-top:8px">${navLinks(l.address)}</div>
     <div class="loc-used">Used on ${used.length} project${used.length===1?'':'s'}${used.length?': '+used.map(p=>esc(p.name)).join(', '):''}</div>
   </div>`;
+}
+/* ── Location photos: best-effort, keyless-safe (stub route until a Google key is added) ── */
+function locPhotoStripHTML(locId){
+  const photos=S.locPhotoCache[locId];
+  if(photos===undefined){ fetchLocationPhotos(locId); return `<div class="loc-photo-placeholder">${I.image} Loading photos…</div>`; }
+  if(photos===null) return `<div class="loc-photo-placeholder">${I.image} Loading photos…</div>`;
+  if(!photos.length) return `<div class="loc-photo-placeholder">${I.image} No photos yet</div>`;
+  return photos.map(url=>`<img src="${esc(url)}" alt="" loading="lazy">`).join('');
+}
+async function fetchLocationPhotos(locId){
+  const l=getLoc(locId); if(!l)return;
+  S.locPhotoCache[locId]=null; // in-flight guard, distinct from `undefined` (not-yet-requested)
+  try{
+    const res=await fetch('/api/location-photo?address='+encodeURIComponent(l.address));
+    const data=res.ok?await res.json():{photos:[]};
+    S.locPhotoCache[locId]=data.photos||[];
+  }catch(e){ S.locPhotoCache[locId]=[]; }
+  render();
 }
 
 /* ── Contacts directory ──────────────────────────────────────────────── */
@@ -1588,6 +1622,7 @@ function eventCardHTML(e,conflictEventIds){
         ${loc?`<span>${I.pin.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${esc(loc.name)}</span>`:''}
         <span>${I.users.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${crew.map(c=>esc(c.name)).join(', ')||'No crew yet'}</span>
       </div>
+      ${loc?`<div class="chip-row" data-stop style="margin-top:8px">${navLinks(loc.address)}</div>`:''}
     </div>
     ${e.type&&e.type!=='Shoot Day'?`<span class="badge ${eventTypeBadge(e.type)}">${esc(e.type)}</span>`:`<span class="badge badge-neutral">${esc(p?p.type:'')}</span>`}
   </div>`;
@@ -1693,18 +1728,25 @@ function modalHTML(){
       <div class="field"><label>Name</label><input class="inp" id="f-name" placeholder="e.g. Sunset Rooftop"></div>
       <div class="field"><label>Type</label><select class="sel" id="f-type"><option>Venue</option><option>Outdoor</option><option>Studio</option><option>Indoor</option></select></div>
       <div class="field"><label>Address</label><input class="inp" id="f-addr" placeholder="Street, city, state"></div>
+      <div class="field"><label>Website</label><input class="inp" id="f-website" placeholder="https://…" type="url"></div>
       <div class="field"><label>Notes</label><textarea class="txt" id="f-notes" placeholder="Permits, access, quirks…"></textarea></div>
       <button class="btn btn-primary" style="width:100%;justify-content:center" data-action="saveLocation">${I.plus} Add Location</button>
     </div></div>`;
   }
   if(S.modal==='contact'){
+    const canImportContacts = typeof navigator!=='undefined' && navigator.contacts && navigator.contacts.select;
     return `<div class="overlay" data-action="closeModal"><div class="modal" data-stop>
       <div class="modal-head"><h3>Add Person</h3><button class="iconbtn" data-action="closeModal">${I.close}</button></div>
+      ${canImportContacts?`<button class="btn btn-sm btn-ghost" style="margin-bottom:14px" data-action="importFromContacts">${I.users} Import from Contacts</button>`:''}
       <div class="field"><label>Name</label><input class="inp" id="f-name" placeholder="Full name"></div>
-      <div class="field"><label>Role</label><input class="inp" id="f-role" placeholder="e.g. Gaffer, Actor, Editor…"></div>
+      <div class="field"><label>Role</label><input class="inp" id="f-role" placeholder="e.g. Gaffer, Actor, Editor, Caterer, Rental House…"></div>
       <div class="field-row">
-        <div class="field"><label>Rate</label><input class="inp" id="f-rate" placeholder="$400/day"></div>
+        <div class="field"><label>Rate</label><input class="inp" id="f-rate-amt" type="number" min="0" placeholder="400"></div>
+        <div class="field" style="max-width:110px"><label>Per</label><select class="sel" id="f-rate-unit"><option value="day">day</option><option value="hr">hr</option></select></div>
         <div class="field"><label>Phone</label><input class="inp" id="f-phone" placeholder="(555) 555-0100"></div>
+      </div>
+      <div class="field"><label>Add to project(s)</label>
+        <div class="chip-row">${PROJECTS.map(p=>`<span class="chip ${S.contactModalProjectIds.includes(p.id)?'active':''}" data-action="toggleContactModalProject" data-id="${p.id}">${S.contactModalProjectIds.includes(p.id)?I.check:I.plus} ${esc(p.name)}</span>`).join('')||'No projects yet.'}</div>
       </div>
       <button class="btn btn-primary" style="width:100%;justify-content:center" data-action="saveContact">${I.plus} Add Person</button>
     </div></div>`;
@@ -1816,6 +1858,7 @@ const ACTIONS = {
   },
   locTypeFilter:(el)=>{S.locType=el.dataset.type;render()},
   roleFilter:(el)=>{S.contactRole=el.dataset.role;render()},
+  crewAddRoleFilter:(el)=>{S.crewAddRole=el.dataset.role;render()},
   addCrew:(el)=>{project(el.dataset.id).crew.push(el.dataset.cid);render()},
   toggleProjectLocation:(el)=>{
     const p=project(el.dataset.id), lid=el.dataset.loc;
@@ -1840,9 +1883,10 @@ const ACTIONS = {
   syncGoogleDocs:()=>{showToast('Auto-creating a synced Google Doc needs Google OAuth wired up in the backend proxy — see INTEGRATIONS.md')},
   generateScript:()=>{showToast('Generating a script from your notes needs the AI backend wired up — see INTEGRATIONS.md §9')},
   noteBulletList:(el)=>{
-    const ed=document.getElementById('notes-editor-'+el.dataset.id);
+    const field=el.dataset.field||'notes';
+    const ed=document.getElementById(field+'-editor-'+el.dataset.id);
     if(!ed)return; ed.focus(); document.execCommand('insertUnorderedList');
-    project(el.dataset.id).notes=ed.innerHTML;
+    project(el.dataset.id)[field]=ed.innerHTML;
   },
   toggleAudioPlay:(el)=>{ if(!AUD.el||AUD.projectId!==el.dataset.id)return;
     if(AUD.el.paused)AUD.el.play(); else AUD.el.pause(); },
@@ -1859,17 +1903,38 @@ const ACTIONS = {
     if(i>-1)sp.crew.splice(i,1); else sp.crew.push(el.dataset.cid);
     render();
   },
-  openModal:(el)=>{S.modal=el.dataset.modal;render()},
+  openModal:(el)=>{S.modal=el.dataset.modal;if(el.dataset.modal==='contact')S.contactModalProjectIds=[];render()},
+  toggleContactModalProject:(el)=>{
+    // No render() here on purpose: a full re-render would wipe the modal's other
+    // uncontrolled inputs (name/role/rate/phone) the user may have already typed.
+    const i=S.contactModalProjectIds.indexOf(el.dataset.id);
+    if(i>-1)S.contactModalProjectIds.splice(i,1); else S.contactModalProjectIds.push(el.dataset.id);
+    const active=S.contactModalProjectIds.includes(el.dataset.id);
+    el.classList.toggle('active',active);
+    el.innerHTML=(active?I.check:I.plus)+' '+esc(project(el.dataset.id).name);
+  },
+  importFromContacts:async()=>{
+    try{
+      const [c]=await navigator.contacts.select(['name','tel'],{multiple:false});
+      if(!c)return;
+      if(c.name&&c.name[0])document.getElementById('f-name').value=c.name[0];
+      if(c.tel&&c.tel[0])document.getElementById('f-phone').value=c.tel[0];
+    }catch(e){ showToast('Contact import cancelled or unavailable'); }
+  },
   closeModal:()=>{S.modal=null;render()},
   newProject:()=>{S.modal='project';render()},
   saveLocation:()=>{
     const v=id=>document.getElementById(id).value.trim();
-    LOCATIONS.push({id:'l'+Date.now(),name:v('f-name')||'New Location',type:v('f-type'),address:v('f-addr'),notes:v('f-notes')});
+    LOCATIONS.push({id:'l'+Date.now(),name:v('f-name')||'New Location',type:v('f-type'),address:v('f-addr'),website:v('f-website'),notes:v('f-notes')});
     S.modal=null;render();showToast('Location added');
   },
   saveContact:()=>{
     const v=id=>document.getElementById(id).value.trim();
-    CONTACTS.push({id:'c'+Date.now(),name:v('f-name')||'New Person',role:v('f-role')||'Crew',rate:v('f-rate')||'—',phone:v('f-phone')||'—',avail:'available'});
+    const rateAmt=v('f-rate-amt');
+    const rate=rateAmt?'$'+rateAmt+'/'+v('f-rate-unit'):'—';
+    const id='c'+Date.now();
+    CONTACTS.push({id,name:v('f-name')||'New Person',role:v('f-role')||'Crew',rate,phone:v('f-phone')||'—',avail:'available'});
+    S.contactModalProjectIds.forEach(pid=>{const p=project(pid); if(p&&!p.crew.includes(id))p.crew.push(id);});
     S.modal=null;render();showToast('Person added to directory');
   },
   saveProject:()=>{
@@ -1936,7 +2001,7 @@ document.addEventListener('input',e=>{
     const inv=getInvoice(project(el.dataset.id)); const it=inv.items.find(i=>i.id===el.dataset.item);
     it[el.dataset.field]=el.dataset.field==='amount'?parseMoney(el.value):el.value;
   }
-  if(el.dataset.action==='editNotesRich'){ project(el.dataset.id).notes=el.innerHTML; }
+  if(el.dataset.action==='editNotesRich'){ project(el.dataset.id)[el.dataset.field||'notes']=el.innerHTML; }
   if(el.dataset.action==='editProject'){ project(el.dataset.id)[el.dataset.field]=el.value; }
   if(el.dataset.action==='editCrewPay'){ crewPayFor(project(el.dataset.id),el.dataset.cid).amount=Number(el.value)||0; }
 });

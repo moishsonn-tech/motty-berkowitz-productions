@@ -90,5 +90,12 @@ function route(req,res,url){
   if(req.method==='POST' && url==='/api/claude')
     return proxyReq(req,res,'api.anthropic.com','/v1/messages',
       {'x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01'});
+  if(req.method==='GET' && url==='/api/location-photo'){
+    // STUB — no Google key wired up yet. To go live: get a billing-enabled Google Cloud API key
+    // with the Places API enabled (see INTEGRATIONS.md §6), store it as GOOGLE_MAPS_KEY, then call
+    // Places "Find Place From Text" with the address query param to get a place_id + photo
+    // references, then the Place Photo endpoint per reference, and return the resulting image URLs.
+    return sendJson(res,200,{photos:[]});
+  }
   res.writeHead(404); res.end();
 }
