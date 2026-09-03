@@ -586,6 +586,7 @@ const I = {
   trash:'<svg class="ico" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>',
   play:'<svg class="ico" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3" fill="currentColor" stroke="none"/></svg>',
   pause:'<svg class="ico" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/></svg>',
+  utensils:'<svg class="ico" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>',
 };
 const logoMark = '<img src="assets/mb-mark.png" alt="Motty Berkowitz" class="brand-mark-img">';
 
@@ -1009,6 +1010,7 @@ function render(){
         <div class="nav-group-label">Directories</div>
         ${navItem('locations',I.pin,'Locations')}
         ${navItem('contacts',I.users,'Cast &amp; Crew')}
+        ${navItem('kosher',I.utensils,'Kosher Spots')}
       </nav>
       <div class="sidebar-foot"><div class="sidebar-version">v0.1 · prototype</div></div>
     </aside>
@@ -1034,7 +1036,7 @@ function mobileNav(){
 }
 function topbarTitle(){
   if(S.view==='project'){const p=project(S.projectId);return esc(p?p.name:'')}
-  return {dashboard:'Dashboard',boards:'Boards',schedule:'Schedule',locations:'Locations',contacts:'Cast & Crew'}[S.view]||'';
+  return {dashboard:'Dashboard',boards:'Boards',schedule:'Schedule',locations:'Locations',contacts:'Cast & Crew',kosher:'Kosher Spots'}[S.view]||'';
 }
 function searchBox(){
   const val = S.view==='locations'?S.locSearch:S.contactSearch;
@@ -1586,6 +1588,21 @@ async function fetchLocationPhotos(locId){
   render();
 }
 
+/* ── Kosher spots directory ──────────────────────────────────────────── */
+function viewKosher(){
+  return `
+  <div class="page-head"><div><h1>🥪 Kosher Spots</h1><p>Real, verified kosher schnitzel spots near a shoot — no permit required for lunch.</p></div></div>
+  <div class="sprocket-divider"></div>
+  <div class="grid-cards">${KOSHER_SPOTS.map(kosherCard).join('')}</div>`;
+}
+function kosherCard(k){
+  return `<div class="loc-card">
+    <div class="loc-name" style="margin-bottom:8px">${esc(k.name)}</div>
+    <div class="loc-addr">${I.pin.replace('class="ico"','class="ico" style="width:12px;height:12px"')}${esc(k.address)}</div>
+    <div class="chip-row" style="margin-top:8px">${navLinks(k.address)}</div>
+  </div>`;
+}
+
 /* ── Contacts directory ──────────────────────────────────────────────── */
 function viewContacts(){
   const roles=['all',...new Set(CONTACTS.map(c=>c.role))];
@@ -1718,7 +1735,7 @@ function viewSchedule(){
   `;
 }
 
-const VIEWS = {dashboard:viewDashboard,boards:viewBoards,project:viewProject,locations:viewLocations,contacts:viewContacts,schedule:viewSchedule};
+const VIEWS = {dashboard:viewDashboard,boards:viewBoards,project:viewProject,locations:viewLocations,contacts:viewContacts,schedule:viewSchedule,kosher:viewKosher};
 
 /* ── Modals ───────────────────────────────────────────────────────────── */
 function modalHTML(){
