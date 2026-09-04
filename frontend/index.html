@@ -70,6 +70,7 @@ a{color:inherit}
 .nav-group-label{font-size:10px;font-weight:700;color:var(--sidebar-mut);text-transform:uppercase;
   letter-spacing:.09em;padding:16px 12px 6px}
 .sidebar-foot{border-top:1px solid var(--sidebar-line);padding-top:12px;margin-top:8px}
+.sidebar-account{font-size:11.5px;color:var(--sidebar-mut);padding:8px 12px 6px;word-break:break-all}
 .sidebar-version{font-size:10.5px;color:var(--sidebar-mut);padding:4px 12px}
 
 .shell-main{flex:1;min-width:0;display:flex;flex-direction:column}
@@ -149,6 +150,12 @@ a{color:inherit}
 /* ── Cards / layout helpers ─────────────────────────────────────────────── */
 .card{background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--line);
   padding:20px 22px;box-shadow:var(--sh-sm)}
+.signin-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.signin-card{width:100%;max-width:380px;text-align:center}
+.signin-card .brand-mark-img{height:44px;margin-bottom:14px}
+.signin-divider{color:var(--ink-3);font-size:12px;margin:16px 0;text-transform:uppercase;letter-spacing:.06em}
+.ok-banner{background:var(--good-wash);color:var(--good);border-radius:var(--r-md);padding:12px 14px;font-size:13px;margin-bottom:14px}
+.warn-banner{background:var(--bad-wash);color:var(--bad);border-radius:var(--r-md);padding:12px 14px;font-size:13px}
 .stat-label{font-size:10.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em}
 .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700}
 .badge-good{background:var(--good-wash);color:var(--good)}
@@ -556,7 +563,20 @@ a{color:inherit}
 <body>
 <div id="app"></div>
 
-<script>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// ── Supabase config (PUBLIC values — not secrets; security lives in Row Level Security
+// policies, see supabase/policies.sql) ── Create a free project at supabase.com → run
+// supabase/schema.sql then supabase/policies.sql in the SQL editor → Project Settings →
+// API → copy the Project URL and anon public key into here.
+// TODO: replace with the real values once the Supabase project exists (Project Settings → API).
+// Placeholder form only — createClient() validates the URL/key shape synchronously, so leaving
+// these truly empty would throw at load and blank the whole app instead of showing sign-in.
+const SUPABASE_URL = "https://placeholder.supabase.co";
+const SUPABASE_ANON_KEY = "placeholder-anon-key";
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { experimental: { passkey: true } } });
+
 /* ══════════════════════════════ ICONS ══════════════════════════════ */
 const I = {
   dash:'<svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
@@ -587,24 +607,23 @@ const I = {
   play:'<svg class="ico" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3" fill="currentColor" stroke="none"/></svg>',
   pause:'<svg class="ico" viewBox="0 0 24 24"><rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/></svg>',
   utensils:'<svg class="ico" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>',
+  settings:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
 };
 const logoMark = '<img src="assets/mb-mark.png" alt="Motty Berkowitz" class="brand-mark-img">';
 
-/* ══════════════════════════════ SEED DATA ══════════════════════════════ */
+/* ══════════════════════════════ DATA ══════════════════════════════ */
 const COLORS = {Wedding:'#C8862E','Music Video':'#4A6FA5',Corporate:'#3E8F63','Bar Mitzvah':'#8C5FB0',Event:'#C9622A'};
 
-let LOCATIONS = [
-  {id:'l1',name:'Ateres Chaya Hall',type:'Venue',address:'1201 Ave J, Brooklyn, NY',website:'',notes:'Load-in via side door. No permit needed. Ceremony music must end by 9:30pm.'},
-  {id:'l2',name:'Prospect Park — Long Meadow',type:'Outdoor',address:'Prospect Park, Brooklyn, NY',website:'',notes:'Permit required 14 days out. Golden hour ≈ 7:40pm in August.'},
-  {id:'l3',name:'MBP Studio B',type:'Studio',address:'58 Ross St, Brooklyn, NY',website:'',notes:'Cyc wall + 3-point kit on site. Freight elevator access.'},
-  {id:'l4',name:'Klein Residence',type:'Indoor',address:'Private — Flatbush, Brooklyn',website:'',notes:'Street parking only. Keep noise down after 8pm.'},
-  {id:'l5',name:'Landers Campus Lobby',type:'Indoor',address:'Landers College, Far Rockaway, NY',website:'',notes:'Visitor badge required — coordinate with facilities 48hrs ahead.'},
-  {id:'l6',name:'Domino Park Rooftop',type:'Outdoor',address:'Domino Park, Williamsburg, Brooklyn',website:'',notes:'Public space — no permit needed under 10 crew. Watch the 6pm crowd surge.'},
-  {id:'l7',name:'Boro Park Studio A',type:'Studio',address:'48th St, Brooklyn, NY',website:'',notes:'Green screen + cyc wall. Book 1 day ahead, shared space.'},
-];
+// Real accounts + shared data now live in Supabase (see supabase/schema.sql, policies.sql) —
+// these arrays start empty and are populated by startSync() once someone signs in.
+let LOCATIONS = [];
+let CONTACTS = [];
+let PROJECTS = [];
+let EXTRA_EVENTS = [];
 
 // Real, verified kosher schnitzel spots (checked live, not invented) — general Brooklyn list since
-// this app has no geocoding/places API yet to sort by exact distance per shoot location.
+// this app has no geocoding/places API yet to sort by exact distance per shoot location. Static
+// curated content, not per-user data — intentionally NOT in Supabase.
 const KOSHER_SPOTS = [
   {name:'Corner Street Food',address:'1360 Coney Island Ave, Brooklyn (corner of Ave J)'},
   {name:'Schnitzi',address:'1299 Coney Island Ave, Brooklyn'},
@@ -613,99 +632,9 @@ const KOSHER_SPOTS = [
   {name:'Malka',address:'56 Adams St, Brooklyn (Dumbo) — Eyal Shani’s schnitzel stuffed with mashed potatoes'},
 ];
 
-let CONTACTS = [
-  {id:'c1',name:'Yossi Klein',role:'Cinematographer',rate:'$850/day',phone:'(718) 555-0114',avail:'available'},
-  {id:'c2',name:'Dovid Stern',role:'Gaffer',rate:'$500/day',phone:'(718) 555-0192',avail:'booked'},
-  {id:'c3',name:'Chaim Weiss',role:'Sound Mixer',rate:'$450/day',phone:'(347) 555-0177',avail:'available'},
-  {id:'c4',name:'Shloime Gold',role:'Musician / Talent',rate:'—',phone:'(917) 555-0143',avail:'available'},
-  {id:'c5',name:'Aidy Rosen',role:'Editor',rate:'$400/day',phone:'(718) 555-0165',avail:'available'},
-  {id:'c6',name:'Miri Katz',role:'MUA',rate:'$350/day',phone:'(347) 555-0128',avail:'available'},
-  {id:'c7',name:'Levi Adler',role:'Drone Operator',rate:'$600/day',phone:'(917) 555-0189',avail:'booked'},
-  {id:'c8',name:'Baila Fried',role:'Producer / PA',rate:'$300/day',phone:'(718) 555-0155',avail:'available'},
-  {id:'c9',name:'Yanky Lieber',role:'Actor / Talent',rate:'$500/day',phone:'(347) 555-0101',avail:'available'},
-  {id:'c10',name:'Ruchy Green',role:'2nd Camera',rate:'$500/day',phone:'(718) 555-0133',avail:'available'},
-  {id:'c11',name:'Mendy Katz',role:'PA',rate:'$250/day',phone:'(917) 555-0122',avail:'available'},
-  {id:'c12',name:'Sruly Fischer',role:'Musician — Band Leader',rate:'—',phone:'(718) 555-0148',avail:'unavailable'},
-];
-
 function initials(n){return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()}
 function personColor(id){const h=[...id].reduce((a,c)=>a+c.charCodeAt(0),0)%360;return `hsl(${h} 42% 46%)`}
 
-let PROJECTS = [
-  {id:'p1',name:'Klein Wedding Film',client:'The Klein Family',type:'Wedding',stage:'pre',
-   shootDate:'2026-08-14',callTime:'2:00 PM',wrapTime:'10:00 PM',budget:'$4,200',
-   crew:['c1','c2','c3','c10'],locationIds:['l1'],scriptMode:'regular',
-   scenes:[
-     {id:'s1',heading:'Chuppah — processional & ceremony',desc:'Wide establishing of the hall, guests seated, processional down the aisle, close on the couple under the chuppah.',locId:'l1',duration:30,subScenes:[]},
-     {id:'s2',heading:'First look & portraits',desc:'Close-up hands, ring exchange detail, wide couple portraits near the entrance garden.',locId:'l1',duration:20,subScenes:[]},
-     {id:'s3',heading:'Reception — first dance',desc:'Wide of the dance floor, tracking shot following the couple, crowd reactions handheld.',locId:'l1',duration:25,subScenes:[]},
-   ],
-   invoice:{number:'INV-1041',status:'sent',issueDate:'2026-07-20',dueDate:'2026-08-14',depositPct:50,depositPaid:true,balancePaid:false,
-     items:[
-       {id:'i1',desc:'Wedding Package — Creative & Production Fee',amount:1900,category:'motty'},
-       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850,category:'other'},
-       {id:'i3',desc:'Gaffer (Dovid Stern)',amount:500,category:'other'},
-       {id:'i4',desc:'Sound Mixer (Chaim Weiss)',amount:450,category:'other'},
-       {id:'i5',desc:'2nd Camera (Ruchy Green)',amount:500,category:'other'},
-     ]}},
-  {id:'p2',name:'Rising — Music Video',client:'Shloime Gold',type:'Music Video',stage:'pre',
-   shootDate:'2026-08-22',callTime:'5:30 AM',wrapTime:'8:00 PM',budget:'$6,500',
-   crew:['c1','c7','c2','c5'],locationIds:['l6','l2','l3'],scriptMode:'mv',
-   audioTrack:{title:'Rising',artist:'Shloime Gold',duration:'3:24'},
-   scenes:[],
-   songParts:[
-     {id:'sp1',label:'Verse 1',t:null,scenes:[
-       {id:'s4',heading:'Opening — alone at dawn',desc:'Shloime alone on the rooftop at dawn, city skyline behind him, wide establishing shot as the first verse begins.',locId:'l6',subScenes:[]},
-       {id:'s5',heading:'The piano',desc:'Close on his hands over the piano keys, intercut with a wide of the empty studio, moody top light.',locId:'l3',subScenes:[]},
-     ]},
-     {id:'sp2',label:'Chorus 1',t:null,scenes:[
-       {id:'s6',heading:'Into the park',desc:'Walking through the park at golden hour, a crowd of dancers gradually joins him as the chorus builds.',locId:'l2',subScenes:[]},
-       {id:'s7',heading:'The lift',desc:'Aerial drone pull-back over the full crowd in the park as the chorus hits its peak.',locId:'l2',subScenes:[]},
-     ]},
-     {id:'sp3',label:'Ending',t:null,scenes:[
-       {id:'s8',heading:'Closing — sunrise to sunset',desc:'Back on the rooftop, wide shot, time-lapse feel from sunrise to sunset as the track resolves.',locId:'l6',subScenes:[]},
-     ]},
-   ],
-   invoice:{number:'INV-1042',status:'draft',issueDate:'2026-08-04',dueDate:'2026-08-22',depositPct:50,depositPaid:false,balancePaid:false,
-     items:[
-       {id:'i1',desc:'Music Video Package — Creative & Production Fee',amount:4150,category:'motty'},
-       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850,category:'other'},
-       {id:'i3',desc:'Drone Operator (Levi Adler)',amount:600,category:'other'},
-       {id:'i4',desc:'Gaffer (Dovid Stern)',amount:500,category:'other'},
-       {id:'i5',desc:'Editor (Aidy Rosen)',amount:400,category:'other'},
-     ]}},
-  {id:'p3',name:'Landers Corporate Brand Reel',client:'Landers College',type:'Corporate',stage:'post',
-   shootDate:'2026-07-30',callTime:'9:00 AM',wrapTime:'4:00 PM',budget:'$3,000',
-   crew:['c1','c3','c8'],locationIds:['l5'],scriptMode:'regular',
-   scenes:[
-     {id:'s9',heading:'Campus establishing',desc:'Wide establishing shots of the lobby and campus walk-and-talk with the dean.',locId:'l5',duration:20,subScenes:[]},
-     {id:'s10',heading:'Student interviews',desc:'Close-up interview setups with three students, natural light near the lobby windows.',locId:'l5',duration:25,subScenes:[]},
-   ],
-   invoice:{number:'INV-1039',status:'paid',issueDate:'2026-07-15',dueDate:'2026-07-30',depositPct:50,depositPaid:true,balancePaid:true,
-     items:[
-       {id:'i1',desc:'Corporate Brand Reel — Creative & Production Fee',amount:1400,category:'motty'},
-       {id:'i2',desc:'Cinematographer (Yossi Klein)',amount:850,category:'other'},
-       {id:'i3',desc:'Sound Mixer (Chaim Weiss)',amount:450,category:'other'},
-       {id:'i4',desc:'Producer / PA (Baila Fried)',amount:300,category:'other'},
-     ]}},
-  {id:'p4',name:'Berger Bar Mitzvah Highlight',client:'The Berger Family',type:'Bar Mitzvah',stage:'inquiry',
-   shootDate:'2026-09-10',callTime:'10:00 AM',wrapTime:'6:00 PM',budget:'$2,800',
-   crew:[],locationIds:['l1'],scenes:[],
-   invoice:{number:'INV-1043',status:'draft',issueDate:'2026-08-04',dueDate:'2026-09-10',depositPct:50,depositPaid:false,balancePaid:false,
-     items:[{id:'i1',desc:'Bar Mitzvah Package — Creative & Production Fee',amount:2800,category:'motty'}]}},
-  {id:'p5',name:'Community Chanuka Gala Recap',client:'Community Board',type:'Event',stage:'delivered',
-   shootDate:'2026-06-01',callTime:'6:00 PM',wrapTime:'10:00 PM',budget:'$1,900',
-   crew:['c11'],locationIds:['l1'],scenes:[],
-   invoice:{number:'INV-1038',status:'paid',issueDate:'2026-05-20',dueDate:'2026-06-01',depositPct:50,depositPaid:true,balancePaid:true,
-     items:[
-       {id:'i1',desc:'Event Recap Package — Creative & Production Fee',amount:1650,category:'motty'},
-       {id:'i2',desc:'PA (Mendy Katz)',amount:250,category:'other'},
-     ]}},
-];
-// Pre-light day for the music video happens to land on the wedding date — deliberate conflict for the schedule demo.
-let EXTRA_EVENTS = [
-  {id:'e1',projectId:'p2',type:'Shoot Day',label:'Tech Scout / Pre-Light',date:'2026-08-14',callTime:'6:00 PM',wrapTime:'9:00 PM',crew:['c2','c7']},
-];
 const EVENT_TYPES = ['Call','Meeting','Shoot Day','Release Date','Other'];
 const SONG_PART_PRESETS = ['Intro','Verse 1','Verse 2','Chorus 1','Chorus 2','Bridge','Buildup','Ending'];
 function eventTypeBadge(t){ return {Call:'badge-info',Meeting:'badge-warn','Shoot Day':'badge-good','Release Date':'badge-bad',Other:'badge-neutral'}[t]||'badge-neutral'; }
@@ -715,12 +644,97 @@ const STAGES = [
   {k:'post',label:'Post-Production'},{k:'delivered',label:'Delivered'},
 ];
 
+/* ══════════════════════════ SUPABASE: row <-> app-state mapping ══════════════════════
+   Postgres uses snake_case; the rest of this file keeps the original camelCase object
+   shapes so the render/ACTIONS code is unchanged — these functions are the only place
+   that translates. */
+function rowToLocation(r){ return {id:r.id, name:r.name, type:r.type, address:r.address, website:r.website||'', notes:r.notes}; }
+function locationToRow(l){ return {name:l.name, type:l.type, address:l.address, website:l.website, notes:l.notes}; }
+function rowToContact(r){ return {id:r.id, name:r.name, role:r.role, rate:r.rate, phone:r.phone, avail:r.avail}; }
+function contactToRow(c){ return {name:c.name, role:c.role, rate:c.rate, phone:c.phone, avail:c.avail}; }
+function rowToEvent(r){ return {id:r.id, projectId:r.project_id, type:r.type, label:r.label, date:r.date, callTime:r.call_time, wrapTime:r.wrap_time, crew:r.crew||[]}; }
+function eventToRow(e){ return {project_id:e.projectId||null, type:e.type, label:e.label, date:e.date, call_time:e.callTime, wrap_time:e.wrapTime, crew:e.crew||[]}; }
+function rowToProject(r){
+  return {id:r.id, name:r.name, client:r.client, type:r.type, stage:r.stage,
+    shootDate:r.shoot_date, callTime:r.call_time, wrapTime:r.wrap_time, budget:r.budget, scriptMode:r.script_mode,
+    locationIds:r.location_ids||[], crew:r.crew||[], crewPay:r.crew_pay||{}, scenes:r.scenes||[],
+    songParts:r.song_parts||[], invoice:r.invoice||null, notes:r.notes, callsheetDoc:r.callsheet_doc};
+}
+function projectToRow(p){
+  return {name:p.name, client:p.client, type:p.type, stage:p.stage,
+    shoot_date:p.shootDate||null, call_time:p.callTime, wrap_time:p.wrapTime, budget:p.budget, script_mode:p.scriptMode,
+    location_ids:p.locationIds||[], crew:p.crew||[], crew_pay:p.crewPay||{}, scenes:p.scenes||[],
+    song_parts:p.songParts||[], invoice:p.invoice||null, notes:p.notes||null, callsheet_doc:p.callsheetDoc||null};
+}
+const TABLE_MAP = {locations:{set:v=>LOCATIONS=v, rowToObj:rowToLocation},
+  contacts:{set:v=>CONTACTS=v, rowToObj:rowToContact},
+  projects:{set:v=>PROJECTS=v, rowToObj:rowToProject},
+  extra_events:{set:v=>EXTRA_EVENTS=v, rowToObj:rowToEvent}};
+const TO_ROW = {locations:locationToRow, contacts:contactToRow, projects:projectToRow, extra_events:eventToRow};
+
+/* ── Realtime sync: reload a table on any change, everyone signed in stays in sync ──── */
+function isEditingText(){
+  const el=document.activeElement;
+  return !!el && (el.isContentEditable || el.tagName==='INPUT' || el.tagName==='TEXTAREA');
+}
+async function loadTable(table){
+  const {data,error} = await sb.from(table).select('*').order('created_at');
+  if(!error) TABLE_MAP[table].set((data||[]).map(TABLE_MAP[table].rowToObj));
+  if(!isEditingText()) render();
+}
+let syncChannels=[];
+async function startSync(){
+  if(syncChannels.length) return;
+  await Promise.all(Object.keys(TABLE_MAP).map(loadTable));
+  checkConflictsOnce(); // only meaningful once projects/extra_events have actually loaded
+  Object.keys(TABLE_MAP).forEach(table=>{
+    syncChannels.push(sb.channel(table+'-changes')
+      .on('postgres_changes', {event:'*', schema:'public', table}, ()=>loadTable(table))
+      .subscribe());
+  });
+}
+function stopSync(){
+  syncChannels.forEach(ch=>sb.removeChannel(ch)); syncChannels=[];
+  LOCATIONS=[]; CONTACTS=[]; PROJECTS=[]; EXTRA_EVENTS=[];
+}
+
+// Debounced whole-row save — every project/location/contact/event mutation ends with a call
+// to this instead of hand-instrumenting each field. ~800ms after the last change on a given
+// record, one upsert fires; further edits to the same record just reset the timer.
+const _saveTimers={};
+function scheduleSave(table, row){
+  const key=table+':'+row.id;
+  clearTimeout(_saveTimers[key]);
+  _saveTimers[key]=setTimeout(async()=>{
+    const {error} = await sb.from(table).update(TO_ROW[table](row)).eq('id', row.id);
+    if(error) showToast('Save failed: '+error.message);
+  }, 800);
+}
+
+/* ── Auth: allowlist-gated sign-in (magic link + passkey) ───────────────────────────── */
+async function loadAllowedEmails(){
+  const {data,error} = await sb.from('allowed_emails').select('email').order('created_at');
+  S.allowedEmails = error ? [] : data;
+  render();
+}
+sb.auth.onAuthStateChange((event, session)=>{
+  S.session=session;
+  if(session) startSync(); else { stopSync(); S.allowedEmails=undefined; }
+  render();
+});
+sb.auth.getSession().then(({data:{session}})=>{
+  S.session=session;
+  if(session) startSync();
+  render();
+}).catch(()=>{ /* Supabase not configured yet / unreachable — the sign-in screen is the correct fallback */ });
+
 /* ══════════════════════════════ STATE ══════════════════════════════ */
 const S = {
   view:'dashboard', projectId:null, tab:'overview', sidebarOpen:false,
   locSearch:'', locType:'all', contactSearch:'', contactRole:'all', shotLoc:'all', shotSearch:'',
   crewAddRole:'all', modal:null, toast:null, calView:'month', calDate:isoLocal(new Date()),
   locPhotoCache:{}, contactModalProjectIds:[],
+  session:null, allowedEmails:undefined, authError:null, magicLinkSent:null,
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -801,7 +815,7 @@ function defaultInvoice(p){
   const budgetNum=parseMoney(p.budget);
   const fee=Math.max(budgetNum-crewSum, budgetNum?Math.round(budgetNum*0.3):500);
   items.unshift({id:'ci-fee',desc:p.type+' Package — Creative & Production Fee',amount:fee,category:'motty'});
-  return {number:'INV-'+(1044+PROJECTS.indexOf(p)),status:'draft',issueDate:new Date().toISOString().slice(0,10),
+  return {number:'INV-'+(1044+PROJECTS.length),status:'draft',issueDate:new Date().toISOString().slice(0,10),
     dueDate:p.shootDate,depositPct:50,depositPaid:false,balancePaid:false,items};
 }
 function getInvoice(p){ if(!p.invoice) p.invoice=defaultInvoice(p); return p.invoice; }
@@ -925,7 +939,7 @@ async function handleNoteImage(input){
   const pid=input.dataset.id; const field=input.dataset.field||'notes';
   const dataUrl=await downscaleImageFile(file,1000);
   const ed=document.getElementById(field+'-editor-'+pid);
-  if(ed){ ed.focus(); document.execCommand('insertImage',false,dataUrl); project(pid)[field]=ed.innerHTML; }
+  if(ed){ ed.focus(); document.execCommand('insertImage',false,dataUrl); const p=project(pid); p[field]=ed.innerHTML; scheduleSave('projects',p); }
 }
 async function handleAudioFile(input){
   const file=input.files[0]; if(!file)return;
@@ -998,6 +1012,7 @@ function audioPanel(p){
 /* ══════════════════════════════ RENDER ══════════════════════════════ */
 function render(){
   const app=document.getElementById('app');
+  if(!S.session){ app.innerHTML=signInScreenHtml(); return; }
   app.innerHTML = `
     ${S.sidebarOpen?`<div class="sidebar-backdrop open" data-action="closeSidebar"></div>`:''}
     <aside class="sidebar ${S.sidebarOpen?'open':''}">
@@ -1012,7 +1027,12 @@ function render(){
         ${navItem('contacts',I.users,'Cast &amp; Crew')}
         ${navItem('kosher',I.utensils,'Kosher Spots')}
       </nav>
-      <div class="sidebar-foot"><div class="sidebar-version">v0.1 · prototype</div></div>
+      <div class="sidebar-foot">
+        ${navItem('settings',I.settings,'Settings')}
+        <div class="sidebar-account">${esc(S.session.user.email)}</div>
+        <button class="btn btn-sm btn-ghost" style="width:100%;justify-content:center" data-action="signout">Sign Out</button>
+        <div class="sidebar-version">v0.1 · prototype</div>
+      </div>
     </aside>
     <div class="shell-main">
       <div class="topbar">
@@ -1036,7 +1056,7 @@ function mobileNav(){
 }
 function topbarTitle(){
   if(S.view==='project'){const p=project(S.projectId);return esc(p?p.name:'')}
-  return {dashboard:'Dashboard',boards:'Boards',schedule:'Schedule',locations:'Locations',contacts:'Cast & Crew',kosher:'Kosher Spots'}[S.view]||'';
+  return {dashboard:'Dashboard',boards:'Boards',schedule:'Schedule',locations:'Locations',contacts:'Cast & Crew',kosher:'Kosher Spots',settings:'Settings'}[S.view]||'';
 }
 function searchBox(){
   const val = S.view==='locations'?S.locSearch:S.contactSearch;
@@ -1735,7 +1755,49 @@ function viewSchedule(){
   `;
 }
 
-const VIEWS = {dashboard:viewDashboard,boards:viewBoards,project:viewProject,locations:viewLocations,contacts:viewContacts,schedule:viewSchedule,kosher:viewKosher};
+/* ── Settings: account, passkey, manage users ────────────────────────── */
+function viewSettings(){
+  const email = S.session ? S.session.user.email : '';
+  return `
+  <div class="page-head"><div><h1>Settings</h1><p>Account, passkey, and access management.</p></div></div>
+  <div class="sprocket-divider"></div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="stat-label" style="margin-bottom:10px">Account</div>
+    <div class="field"><label>Signed in as</label><div style="font-weight:700">${esc(email)}</div></div>
+    <button class="btn btn-ghost" data-action="signout">Sign Out</button>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="stat-label" style="margin-bottom:10px">Passkey</div>
+    <p style="color:var(--ink-3);font-size:13px;margin-bottom:12px">Register this device so you can sign in without an email link next time.</p>
+    <button class="btn btn-primary" data-action="register-passkey">Register a passkey on this device</button>
+  </div>
+  <div class="card">
+    <div class="stat-label" style="margin-bottom:10px">Manage users</div>
+    <p style="color:var(--ink-3);font-size:13px;margin-bottom:12px">Anyone on this list can sign in and access all data.</p>
+    ${S.allowedEmails===undefined?'<div class="empty">Loading…</div>':(S.allowedEmails||[]).map(u=>`
+      <div class="cs-crew-row"><span>${esc(u.email)}</span>
+        <button class="btn btn-sm btn-ghost" style="color:var(--bad)" data-action="remove-allowed-email" data-email="${esc(u.email)}">Remove</button>
+      </div>`).join('')}
+    <div class="field" style="margin-top:14px"><label>Add a user</label>
+      <input class="inp" id="new-user-email" type="email" placeholder="newuser@example.com" autocomplete="off"></div>
+    <button class="btn btn-primary" data-action="add-allowed-email">${I.plus} Add User</button>
+  </div>`;
+}
+function signInScreenHtml(){
+  return `<div class="signin-wrap"><div class="card signin-card">
+    ${logoMark}
+    <h1 style="margin-bottom:6px">Sign in</h1>
+    <p style="color:var(--ink-3);font-size:13px;margin-bottom:18px">Motty Berkowitz Video Production — access is restricted to approved users.</p>
+    ${S.magicLinkSent?`<div class="ok-banner">Check ${esc(S.magicLinkSent)} for a sign-in link.</div>`:`
+    <div class="field" style="text-align:left"><label>Email</label><input class="inp" id="signin-email" type="email" placeholder="you@example.com" autocomplete="email"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" data-action="send-magic-link">Email me a sign-in link</button>`}
+    <div class="signin-divider">— or —</div>
+    <button class="btn btn-ghost" style="width:100%;justify-content:center" data-action="signin-passkey">Sign in with passkey</button>
+    ${S.authError?`<div class="warn-banner" style="margin-top:14px">${esc(S.authError)}</div>`:''}
+  </div></div>`;
+}
+
+const VIEWS = {dashboard:viewDashboard,boards:viewBoards,project:viewProject,locations:viewLocations,contacts:viewContacts,schedule:viewSchedule,kosher:viewKosher,settings:viewSettings};
 
 /* ── Modals ───────────────────────────────────────────────────────────── */
 function modalHTML(){
@@ -1826,7 +1888,9 @@ function showSignOff(label){
   setTimeout(()=>el.remove(),2000);
 }
 const ACTIONS = {
-  nav:(el)=>{S.view=el.dataset.view;S.sidebarOpen=false;if(el.dataset.view==='project')S.tab='overview';render()},
+  nav:(el)=>{S.view=el.dataset.view;S.sidebarOpen=false;if(el.dataset.view==='project')S.tab='overview';
+    if(el.dataset.view==='settings'&&S.allowedEmails===undefined)loadAllowedEmails();
+    render()},
   openSidebar:()=>{S.sidebarOpen=true;render()},
   closeSidebar:()=>{S.sidebarOpen=false;render()},
   openProject:(el)=>{
@@ -1837,15 +1901,15 @@ const ACTIONS = {
     S.modal=null;S.projectId=el.dataset.id;S.view='project';S.tab='financials';render()},
   setTab:(el)=>{S.tab=el.dataset.tab;render()},
   setStage:(el)=>{
-    const p=project(el.dataset.id); const was=p.stage; p.stage=el.dataset.stage; render();
+    const p=project(el.dataset.id); const was=p.stage; p.stage=el.dataset.stage; render(); scheduleSave('projects',p);
     if(el.dataset.stage==='delivered'&&was!=='delivered')showSignOff('Delivered');
   },
   addScene:(el)=>{
     const p=project(el.dataset.id);
-    const sc={id:'s'+Date.now(),heading:'New scene',desc:'Describe the action…',locId:(p.locationIds[0]||LOCATIONS[0].id),subScenes:[]};
+    const sc={id:'s'+Date.now(),heading:'New scene',desc:'Describe the action…',locId:(p.locationIds[0]||(LOCATIONS[0]&&LOCATIONS[0].id)||''),subScenes:[]};
     if(el.dataset.part){ const sp=p.songParts.find(s=>s.id===el.dataset.part); sp.scenes.push(sc); }
     else { sc.duration=15; p.scenes.push(sc); }
-    render();
+    render(); scheduleSave('projects',p);
   },
   addSubScene:(el)=>{
     const p=project(el.dataset.id);
@@ -1853,15 +1917,15 @@ const ACTIONS = {
     if(!sc)return;
     sc.subScenes=sc.subScenes||[];
     sc.subScenes.push({id:'sub'+Date.now(),heading:'New sub-scene',desc:'',locId:sc.locId});
-    render();
+    render(); scheduleSave('projects',p);
   },
   addSongPart:(el)=>{
     const p=project(el.dataset.id);
     p.songParts=p.songParts||[];
     p.songParts.push({id:'sp'+Date.now(),label:'New Part',t:null,scenes:[]});
-    render();
+    render(); scheduleSave('projects',p);
   },
-  setScriptMode:(el)=>{ project(el.dataset.id).scriptMode=el.dataset.mode; render(); },
+  setScriptMode:(el)=>{ const p=project(el.dataset.id); p.scriptMode=el.dataset.mode; render(); scheduleSave('projects',p); },
   shotLocFilter:(el)=>{S.shotLoc=el.dataset.loc;render()},
   calSetView:(el)=>{S.calView=el.dataset.view;render()},
   calToday:()=>{S.calDate=isoLocal(new Date());render()},
@@ -1876,25 +1940,25 @@ const ACTIONS = {
   locTypeFilter:(el)=>{S.locType=el.dataset.type;render()},
   roleFilter:(el)=>{S.contactRole=el.dataset.role;render()},
   crewAddRoleFilter:(el)=>{S.crewAddRole=el.dataset.role;render()},
-  addCrew:(el)=>{project(el.dataset.id).crew.push(el.dataset.cid);render()},
+  addCrew:(el)=>{const p=project(el.dataset.id); p.crew.push(el.dataset.cid);render();scheduleSave('projects',p)},
   toggleProjectLocation:(el)=>{
     const p=project(el.dataset.id), lid=el.dataset.loc;
     if(p.locationIds.includes(lid)) p.locationIds=p.locationIds.filter(id=>id!==lid);
     else p.locationIds.push(lid);
-    render();
+    render(); scheduleSave('projects',p);
   },
   sendCallsheet:(el)=>{showToast((el.dataset.via==='email'?'Email':'WhatsApp')+' send needs the backend proxy wired up — see INTEGRATIONS.md')},
   printCallsheet:()=>{window.print()},
-  addInvoiceItem:(el)=>{const inv=getInvoice(project(el.dataset.id));
-    inv.items.push({id:'ci-'+Date.now(),desc:'New line item',amount:0,category:el.dataset.category||'other'});render()},
-  removeInvoiceItem:(el)=>{const inv=getInvoice(project(el.dataset.id));
-    inv.items=inv.items.filter(i=>i.id!==el.dataset.item);render()},
-  toggleDeposit:(el)=>{getInvoice(project(el.dataset.id)).depositPaid=el.checked;render()},
-  toggleCrewPaid:(el)=>{crewPayFor(project(el.dataset.id),el.dataset.cid).paid=el.checked;render()},
-  toggleBalance:(el)=>{const inv=getInvoice(project(el.dataset.id));inv.balancePaid=el.checked;
-    if(el.checked)inv.status='sent';render();
+  addInvoiceItem:(el)=>{const p=project(el.dataset.id); const inv=getInvoice(p);
+    inv.items.push({id:'ci-'+Date.now(),desc:'New line item',amount:0,category:el.dataset.category||'other'});render();scheduleSave('projects',p)},
+  removeInvoiceItem:(el)=>{const p=project(el.dataset.id); const inv=getInvoice(p);
+    inv.items=inv.items.filter(i=>i.id!==el.dataset.item);render();scheduleSave('projects',p)},
+  toggleDeposit:(el)=>{const p=project(el.dataset.id); getInvoice(p).depositPaid=el.checked;render();scheduleSave('projects',p)},
+  toggleCrewPaid:(el)=>{const p=project(el.dataset.id); crewPayFor(p,el.dataset.cid).paid=el.checked;render();scheduleSave('projects',p)},
+  toggleBalance:(el)=>{const p=project(el.dataset.id); const inv=getInvoice(p);inv.balancePaid=el.checked;
+    if(el.checked)inv.status='sent';render();scheduleSave('projects',p);
     if(el.checked)showSignOff('Invoice Paid');},
-  sendInvoice:(el)=>{const inv=getInvoice(project(el.dataset.id));inv.status='sent';render();
+  sendInvoice:(el)=>{const p=project(el.dataset.id); const inv=getInvoice(p);inv.status='sent';render();scheduleSave('projects',p);
     showToast('Invoice marked sent — connect an email relay in the backend proxy to actually deliver it (see INTEGRATIONS.md)')},
   syncQuickbooks:()=>{showToast('Connect a QuickBooks account to sync invoices — needs QuickBooks OAuth wired up in the backend proxy')},
   syncGoogleDocs:()=>{showToast('Auto-creating a synced Google Doc needs Google OAuth wired up in the backend proxy — see INTEGRATIONS.md')},
@@ -1903,7 +1967,7 @@ const ACTIONS = {
     const field=el.dataset.field||'notes';
     const ed=document.getElementById(field+'-editor-'+el.dataset.id);
     if(!ed)return; ed.focus(); document.execCommand('insertUnorderedList');
-    project(el.dataset.id)[field]=ed.innerHTML;
+    const p=project(el.dataset.id); p[field]=ed.innerHTML; scheduleSave('projects',p);
   },
   toggleAudioPlay:(el)=>{ if(!AUD.el||AUD.projectId!==el.dataset.id)return;
     if(AUD.el.paused)AUD.el.play(); else AUD.el.pause(); },
@@ -1912,13 +1976,13 @@ const ACTIONS = {
     AUD.el.currentTime=Math.max(0,Math.min(1,x/rect.width))*AUD.duration; updateAudioProgress(); },
   markSplit:(el)=>{ if(!AUD.el||AUD.projectId!==el.dataset.id)return;
     const p=project(el.dataset.id); const sp=(p.songParts||[]).find(s=>s.id===el.dataset.part);
-    if(sp){ sp.t=AUD.el.currentTime; render(); } },
+    if(sp){ sp.t=AUD.el.currentTime; render(); scheduleSave('projects',p); } },
   toggleSongPartCrew:(el)=>{
     const p=project(el.dataset.id); const sp=(p.songParts||[]).find(s=>s.id===el.dataset.part);
     if(!sp)return; sp.crew=sp.crew||[];
     const i=sp.crew.indexOf(el.dataset.cid);
     if(i>-1)sp.crew.splice(i,1); else sp.crew.push(el.dataset.cid);
-    render();
+    render(); scheduleSave('projects',p);
   },
   openModal:(el)=>{S.modal=el.dataset.modal;if(el.dataset.modal==='contact')S.contactModalProjectIds=[];render()},
   toggleContactModalProject:(el)=>{
@@ -1940,36 +2004,88 @@ const ACTIONS = {
   },
   closeModal:()=>{S.modal=null;render()},
   newProject:()=>{S.modal='project';render()},
-  saveLocation:()=>{
+  saveLocation:async()=>{
     const v=id=>document.getElementById(id).value.trim();
-    LOCATIONS.push({id:'l'+Date.now(),name:v('f-name')||'New Location',type:v('f-type'),address:v('f-addr'),website:v('f-website'),notes:v('f-notes')});
+    const draft={name:v('f-name')||'New Location',type:v('f-type'),address:v('f-addr'),website:v('f-website'),notes:v('f-notes')};
+    const {data,error}=await sb.from('locations').insert(locationToRow(draft)).select().single();
+    if(error){ showToast('Could not add location: '+error.message); return; }
+    LOCATIONS.push(rowToLocation(data));
     S.modal=null;render();showToast('Location added');
   },
-  saveContact:()=>{
+  saveContact:async()=>{
     const v=id=>document.getElementById(id).value.trim();
     const rateAmt=v('f-rate-amt');
     const rate=rateAmt?'$'+rateAmt+'/'+v('f-rate-unit'):'—';
-    const id='c'+Date.now();
-    CONTACTS.push({id,name:v('f-name')||'New Person',role:v('f-role')||'Crew',rate,phone:v('f-phone')||'—',avail:'available'});
-    S.contactModalProjectIds.forEach(pid=>{const p=project(pid); if(p&&!p.crew.includes(id))p.crew.push(id);});
+    const draft={name:v('f-name')||'New Person',role:v('f-role')||'Crew',rate,phone:v('f-phone')||'—',avail:'available'};
+    const {data,error}=await sb.from('contacts').insert(contactToRow(draft)).select().single();
+    if(error){ showToast('Could not add person: '+error.message); return; }
+    const c=rowToContact(data);
+    CONTACTS.push(c);
+    S.contactModalProjectIds.forEach(pid=>{const p=project(pid); if(p&&!p.crew.includes(c.id)){p.crew.push(c.id); scheduleSave('projects',p);}});
     S.modal=null;render();showToast('Person added to directory');
   },
-  saveProject:()=>{
+  saveProject:async()=>{
     const v=id=>document.getElementById(id).value.trim();
-    const p={id:'p'+Date.now(),name:v('f-name')||'Untitled Project',client:v('f-client')||'—',type:v('f-type'),stage:'inquiry',
+    const draft={name:v('f-name')||'Untitled Project',client:v('f-client')||'—',type:v('f-type'),stage:'inquiry',
       shootDate:v('f-date')||'',callTime:'9:00 AM',wrapTime:'5:00 PM',budget:'TBD',
       crew:[],locationIds:[],scenes:[]};
-    PROJECTS.push(p);
-    p.invoice=defaultInvoice(p); // every other project has one from creation — without this, it's invisible to
-                                  // the dashboard's Financial Overview and invoice Next Steps until someone
-                                  // happens to open its Financials tab first (which lazily creates it via getInvoice)
+    draft.invoice=defaultInvoice(draft); // every other project has one from creation — without this, it's
+                                          // invisible to the dashboard's Financial Overview and invoice Next
+                                          // Steps until someone happens to open its Financials tab first
+    const {data,error}=await sb.from('projects').insert(projectToRow(draft)).select().single();
+    if(error){ showToast('Could not create project: '+error.message); return; }
+    PROJECTS.push(rowToProject(data));
     S.modal=null;render();showToast('Project created');
   },
-  saveEvent:()=>{
+  saveEvent:async()=>{
     const v=id=>document.getElementById(id).value.trim();
-    EXTRA_EVENTS.push({id:'e'+Date.now(),projectId:v('f-eproj')||null,type:v('f-etype'),label:v('f-elabel')||'New Event',
-      date:v('f-edate')||isoLocal(new Date()),callTime:v('f-ecall')||'TBD',wrapTime:v('f-ewrap')||'TBD',crew:[]});
+    const draft={projectId:v('f-eproj')||null,type:v('f-etype'),label:v('f-elabel')||'New Event',
+      date:v('f-edate')||isoLocal(new Date()),callTime:v('f-ecall')||'TBD',wrapTime:v('f-ewrap')||'TBD',crew:[]};
+    const {data,error}=await sb.from('extra_events').insert(eventToRow(draft)).select().single();
+    if(error){ showToast('Could not add event: '+error.message); return; }
+    EXTRA_EVENTS.push(rowToEvent(data));
     S.modal=null;render();showToast('Event added');
+  },
+  'send-magic-link':async()=>{
+    const email=document.getElementById('signin-email').value.trim();
+    if(!email)return;
+    S.authError=null;
+    try{
+      const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin}});
+      if(error)throw error;
+      S.magicLinkSent=email;
+    }catch(e){ S.authError=e.message; }
+    render();
+  },
+  'signin-passkey':async()=>{
+    S.authError=null;
+    try{ const {error}=await sb.auth.signInWithPasskey(); if(error)throw error; }
+    catch(e){ S.authError=e.message; render(); }
+  },
+  signout:async()=>{ await sb.auth.signOut(); },
+  'register-passkey':async()=>{
+    try{ const {error}=await sb.auth.registerPasskey(); if(error)throw error; showToast('Passkey registered on this device'); }
+    catch(e){ showToast('Could not register passkey: '+e.message); }
+  },
+  'add-allowed-email':async()=>{
+    const input=document.getElementById('new-user-email');
+    const email=input.value.trim().toLowerCase();
+    if(!email)return;
+    try{
+      const {error}=await sb.from('allowed_emails').insert({email,added_by:S.session.user.email});
+      if(error)throw error;
+      await loadAllowedEmails();
+    }catch(e){ showToast('Could not add user: '+e.message); }
+  },
+  'remove-allowed-email':async(el)=>{
+    const email=el.dataset.email;
+    const isSelf=S.session && email.toLowerCase()===S.session.user.email.toLowerCase();
+    if(!confirm(isSelf?'This removes YOUR OWN access. Continue?':`Remove ${email}'s access?`))return;
+    try{
+      const {error}=await sb.from('allowed_emails').delete().eq('email',email);
+      if(error)throw error;
+      await loadAllowedEmails();
+    }catch(e){ showToast('Could not remove user: '+e.message); }
   },
 };
 document.addEventListener('click',e=>{
@@ -1993,7 +2109,7 @@ document.addEventListener('pointerdown',e=>{
   const up=()=>{
     document.removeEventListener('pointermove',move);
     document.removeEventListener('pointerup',up);
-    if(pct!=null && AUD.duration){ sp.t=pct*AUD.duration; render(); }
+    if(pct!=null && AUD.duration){ sp.t=pct*AUD.duration; render(); scheduleSave('projects',p); }
   };
   document.addEventListener('pointermove',move);
   document.addEventListener('pointerup',up);
@@ -2007,20 +2123,23 @@ document.addEventListener('input',e=>{
     const p=project(el.dataset.id); const sc=findAnyScene(p,el.dataset.scene);
     sc[el.dataset.field]=el.dataset.field==='duration'?Number(el.value):el.value;
     if(el.dataset.field==='locId')render();
+    scheduleSave('projects',p);
   }
   if(el.dataset.action==='editSongPart'){
     const p=project(el.dataset.id); const sp=(p.songParts||[]).find(s=>s.id===el.dataset.part);
     if(el.dataset.field==='locId'){ sp.locId=el.value; }
     else if(el.tagName==='SELECT'){ sp.label=el.value==='__custom'?'':el.value; }
     else { sp.label=el.value; }
+    scheduleSave('projects',p);
   }
   if(el.dataset.action==='editInvoiceItem'){
-    const inv=getInvoice(project(el.dataset.id)); const it=inv.items.find(i=>i.id===el.dataset.item);
+    const p=project(el.dataset.id); const inv=getInvoice(p); const it=inv.items.find(i=>i.id===el.dataset.item);
     it[el.dataset.field]=el.dataset.field==='amount'?parseMoney(el.value):el.value;
+    scheduleSave('projects',p);
   }
-  if(el.dataset.action==='editNotesRich'){ project(el.dataset.id)[el.dataset.field||'notes']=el.innerHTML; }
-  if(el.dataset.action==='editProject'){ project(el.dataset.id)[el.dataset.field]=el.value; }
-  if(el.dataset.action==='editCrewPay'){ crewPayFor(project(el.dataset.id),el.dataset.cid).amount=Number(el.value)||0; }
+  if(el.dataset.action==='editNotesRich'){ const p=project(el.dataset.id); p[el.dataset.field||'notes']=el.innerHTML; scheduleSave('projects',p); }
+  if(el.dataset.action==='editProject'){ const p=project(el.dataset.id); p[el.dataset.field]=el.value; scheduleSave('projects',p); }
+  if(el.dataset.action==='editCrewPay'){ const p=project(el.dataset.id); crewPayFor(p,el.dataset.cid).amount=Number(el.value)||0; scheduleSave('projects',p); }
 });
 document.addEventListener('change',e=>{
   if(e.target.dataset.action==='editInvoiceItem')render();
@@ -2075,7 +2194,6 @@ function checkConflictsOnce(){
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 showOpener();
 render();
-checkConflictsOnce();
 </script>
 </body>
 </html>

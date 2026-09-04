@@ -6,13 +6,30 @@
 > planning any change.** Replace every `<PLACEHOLDER>` when you adopt this kit.
 
 ## What this is
-A starting template for a single-author internal/ops web tool. Two deployables:
+Motty Berkowitz Productions' video-production PM tool — projects, script/shot lists, cast &
+crew, call sheets, invoicing.
 - **Frontend:** one static `frontend/index.html` — **vanilla JS, no build step, no framework.**
   Global `S` state object; `render()` rebuilds views via `innerHTML`; delegated `data-action`
   handlers; `data-field`→form-model input mapping; `esc()` on ALL HTML interpolation. PWA
-  (manifest + icons + service worker). Data via a backend proxy and/or a hosted DB over REST.
-- **Backend:** `backend/proxy.js` — Node, **no dependencies**. Holds all third-party API keys
-  server-side, gates every `/api/*` route behind verified auth, encrypts secrets at rest.
+  (manifest + icons + service worker).
+- **Data + auth:** Supabase Postgres, talked to directly from the browser via
+  `@supabase/supabase-js` (loaded from the `esm.sh` CDN as an ES module — no npm install, still
+  a no-build single file). Security lives in Row Level Security policies
+  (`supabase/policies.sql`), not in a server. Schema lives in `supabase/schema.sql`. Object
+  shapes stay camelCase throughout the render/state code; `rowToProject`/`projectToRow` and
+  friends in `frontend/index.html` are the only place that translates to Postgres's snake_case
+  columns. Realtime subscriptions keep everyone signed in in sync (see `startSync`/`loadTable`).
+  Free-typing fields (Notes, Call Sheet, scene text) go through a debounced `scheduleSave()`
+  rather than a network call per keystroke, and an incoming realtime update skips its `render()`
+  while focus is inside a text field — never yank the DOM out from under someone mid-sentence.
+- **Auth:** magic-link + passkey (WebAuthn) via Supabase Auth's native beta support, gated by a
+  self-service `allowed_emails` allowlist table (email-based, no separate admin role) — the
+  exact proven pattern already built for ENS Auto Group (`~/shmuel-app`). Manage who can sign in
+  from the in-app Settings page.
+- **Backend:** `backend/proxy.js` — Node, **no dependencies**, a separate concern from app
+  data/auth above. Only holds the Anthropic API key (Generate Script) and the location-photo
+  stub's future Google Places key, gated behind its own (still unconfigured) verified-ID-token
+  TODO.
 
 Deploy = SFTP a single file up (`deploy/deploy-index.js` / `deploy-proxy.js`). Never hand-roll SFTP.
 
