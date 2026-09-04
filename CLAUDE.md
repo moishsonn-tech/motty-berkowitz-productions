@@ -49,7 +49,7 @@ template silently regresses production. Rules:
 
 ---
 
-## Engineering Priorities (read before planning any PR)
+## Engineering Priorities (read before planning any PR — and again when reviewing its code)
 1. **Elegance.** Completely, directly, simply solve the problem. Reuse an existing convention
    over inventing one; delete/strangle bad patterns rather than duplicate them. No band-aids
    that leave the root cause in place.
@@ -145,6 +145,9 @@ routine choices, but explain the meaningful ones.
 2. Plan the arc: capability, minimum features to e2e-test it for real, atomic commits, waves.
 3. Assess blast radius: list call sites touched + what could break; mark high-risk for double-review.
 4. Implement (elegance + blast-radius rules).
-5. Review the diff: correctness, scope creep, SSOT violations, security.
+5. Review the diff — against the Engineering Priorities above, not just in general: is it actually
+   elegant (or a band-aid)? Is blast radius really minimal? Is it still scoped to one arc, or did
+   it creep? Does high-risk work here have the double-review it needs? Plus the usual: correctness,
+   SSOT violations, security.
 6. Test against the real deployed app; loop-fix until green.
 7. Verify live, then deploy via the deploy scripts.
