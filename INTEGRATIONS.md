@@ -148,6 +148,12 @@ For portals with no API, scheduled scrapes, and anything a human would click thr
     instructions plus a one-click `relogin.cmd` that opens the profile headed for manual MFA.
 - Alternatives: raw HTTP with a captured bearer token (lighter, when the token is long-lived);
   official APIs whenever they exist.
+- **✓ proven — testing our OWN app end-to-end:** a different case from the above — no bot
+  detection, no third-party login to persist, but you do want a pinned, reliable browser version
+  across machines/CI. Use the full `playwright` package (`npx playwright install chromium`)
+  instead of `playwright-core`, and mint a real session via the backend's own admin API
+  (e.g. Supabase `auth.admin.generateLink` → exchange the token) rather than driving a real email
+  inbox every run. See `test-harness/README.md` for this project's implementation.
 
 ## 8. Scheduled jobs & background work
 - **✓ proven — Windows Task Scheduler** for jobs tied to the owner's PC (browser profiles live

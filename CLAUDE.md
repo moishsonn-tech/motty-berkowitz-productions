@@ -37,6 +37,12 @@ Wiring in any third-party capability (email, payments, maps, browser automation,
 LLM, push, PDF…)? **Read `INTEGRATIONS.md` first** — it catalogs every option with the proven
 picks and the gotchas already paid for.
 
+**Verifying work against the real app?** Read `test-harness/README.md` — a Playwright harness
+that signs in as a dedicated test account and drives the real app (real Supabase writes, real
+RLS, a dedicated test project, auto-cleaned-up data). **Only run it (`node run.js` from
+`test-harness/`) when the owner explicitly asks** — don't run it unprompted as part of finishing
+a change or preparing a PR, even when a registered scenario covers the surface you touched.
+
 ## Deploy discipline (learned the hard way)
 The deploy scripts OVERWRITE the live file with the local copy. If the live file was ever
 hot-patched in place (emergency fix applied directly on the server), a deploy from a stale local
@@ -60,8 +66,9 @@ template silently regresses production. Rules:
    capability against the REAL thing (no mocks/sims). Atomic commits; tightly-scoped PRs; split
    sequential work into ordered waves.
 4. **Double-review high-risk work** (agent-review team + your own hand) before merge.
-5. **Verify on the REAL app** (browser/backend), not just that it compiles. Report outcomes
-   faithfully — if something is unverified, say so.
+5. **Verify on the REAL app** (browser/backend), not just that it compiles. `test-harness/`
+   (see pointer above) exists for this but only runs when the owner explicitly asks — otherwise
+   verify manually. Report outcomes faithfully — if something is unverified, say so.
 6. **Single source of truth.** Before adding state/a collection, confirm the concept isn't already
    owned somewhere. Never create a second source of truth.
 

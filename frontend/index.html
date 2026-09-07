@@ -576,6 +576,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = "https://placeholder.supabase.co";
 const SUPABASE_ANON_KEY = "placeholder-anon-key";
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { experimental: { passkey: true } } });
+// Exposed for the test harness (test-harness/) and devtools convenience — not a security
+// boundary, RLS is. Lets a test inject a real, Admin-API-minted session via sb.auth.setSession().
+window.sb = sb;
 
 /* ══════════════════════════════ ICONS ══════════════════════════════ */
 const I = {
