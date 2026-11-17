@@ -570,11 +570,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 // policies, see supabase/policies.sql) ── Create a free project at supabase.com → run
 // supabase/schema.sql then supabase/policies.sql in the SQL editor → Project Settings →
 // API → copy the Project URL and anon public key into here.
-// TODO: replace with the real values once the Supabase project exists (Project Settings → API).
+// Project "motty-berkowitz-productions" in the free "Motty Berkowitz Productions" org (moishsonn-tech).
 // Placeholder form only — createClient() validates the URL/key shape synchronously, so leaving
 // these truly empty would throw at load and blank the whole app instead of showing sign-in.
-const SUPABASE_URL = "https://placeholder.supabase.co";
-const SUPABASE_ANON_KEY = "placeholder-anon-key";
+const SUPABASE_URL = "https://axvlyznicbidnnnrxtsa.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4dmx5em5pY2JpZG5ubnJ4dHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ5MzkxMzEsImV4cCI6MjExMDUxNTEzMX0.kwBjp-sMEk0bGMyaGWTF4CwHKkRGj0-kIfD8LKh-LlQ";
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { experimental: { passkey: true } } });
 // Exposed for the test harness (test-harness/) and devtools convenience — not a security
 // boundary, RLS is. Lets a test inject a real, Admin-API-minted session via sb.auth.setSession().
@@ -2054,7 +2054,7 @@ const ACTIONS = {
     if(!email)return;
     S.authError=null;
     try{
-      const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin}});
+      const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin+window.location.pathname}});
       if(error)throw error;
       S.magicLinkSent=email;
     }catch(e){ S.authError=e.message; }
