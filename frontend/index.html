@@ -86,9 +86,10 @@ a{color:inherit}
   background:var(--surface);font-size:13px}
 .search-box input:focus{outline:none;border-color:var(--accent)}
 .search-box .ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--ink-3)}
-.content{flex:1;padding:24px;max-width:1440px;width:100%;margin:0 auto;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+.content{flex:1;padding:24px;width:100%;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
 
 .bottomnav{display:none}
+@media (min-width:1700px){.content{padding:28px 36px}.grid-cards{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}}
 
 /* ── Icons ───────────────────────────────────────────────────────────────── */
 .ico{stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
